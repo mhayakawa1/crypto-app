@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import StoreProvider from "./StoreProvider";
 import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -25,6 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <StoreProvider>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -32,6 +34,7 @@ export default function RootLayout({
         <Link href="/portfolio">Portfolio</Link>
         {children}
       </body>
+      </StoreProvider>
     </html>
   );
 }
