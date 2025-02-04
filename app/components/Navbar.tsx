@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import styled from "styled-components";
 import { useState } from "react";
 
@@ -135,6 +136,16 @@ const ThemeButton = styled.button`
   background-color: #191925;
 `;
 
+const LinkContainer = (props: { src: string; path: string; name: string }) => {
+  const { src, path, name } = props;
+  return (
+    <LinkItem>
+      <Image src={src} alt=""></Image>
+      <Link href={`/${path}`}>{name}</Link>
+    </LinkItem>
+  );
+};
+
 const Navbar = () => {
   const options = [
     { currency: "USD", image: "null" },
@@ -149,22 +160,20 @@ const Navbar = () => {
   return (
     <NavbarContainer>
       <Logo>
-        <img src="null" />
+        <Image src="null" alt=""></Image>
         <h1>Logoipsm</h1>
       </Logo>
       <Links>
-        <LinkItem>
-          <img src="null" />
-          <Link href="/">Home</Link>
-        </LinkItem>
-        <LinkItem>
-          <img src="null" />
-          <Link href="/portfolio">Portfolio</Link>
-        </LinkItem>
+        <LinkContainer src="null" path="" name="Home"></LinkContainer>
+        <LinkContainer
+          src="null"
+          path="portfolio"
+          name="Portfolio"
+        ></LinkContainer>
       </Links>
       <RightPanel>
         <Form>
-          <img src="null" />
+          <Image src="null" alt=""></Image>
           <Search placeholder="Search..."></Search>
         </Form>
         <Form>
@@ -177,7 +186,7 @@ const Navbar = () => {
                 >
                   <CurrencyIcon src="null"></CurrencyIcon>
                   {selectedOption.currency}
-                  <img src="null" />
+                  <Image src="null" alt=""></Image>
                 </SelectButton>
               </Option>
               {selectVisible &&
@@ -203,7 +212,7 @@ const Navbar = () => {
           </Dropdown>
         </Form>
         <ThemeButton>
-          <img src="null" />
+          <Image src="null" alt=""></Image>
         </ThemeButton>
       </RightPanel>
     </NavbarContainer>
