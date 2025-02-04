@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import StoreProvider from "./StoreProvider";
 import Navbar from "./components/Navbar";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -25,14 +26,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <header>
-          <Navbar />
-        </header>
-        {children}
-      </body>
+      <StoreProvider>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <header>
+            <Navbar />
+          </header>
+          {children}
+        </body>
+      </StoreProvider>
     </html>
   );
 }
