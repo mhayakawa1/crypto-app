@@ -3,9 +3,17 @@ import Link from "next/link";
 import Image from "next/image";
 import styled from "styled-components";
 import { useState } from "react";
+import LogoIcon from "../../src/icons/Logo.svg";
+import HomeWhite from "../../src/icons/Home_White.svg";
+import HomeGray from "../../src/icons/Home_Gray.svg";
+import PortfolioWhite from "../../src/icons/Portfolio_White.svg";
+import PortfolioGray from "../../src/icons/Portfolio_Gray.svg";
+import SearchWhite from "../../src/icons/Search_White.svg";
+import USDWhite from "../../src/icons/USD_White.svg";
+import ChevronDownWhite from "../../src/icons/Chevron_Down_White.svg";
+import Sun from "../../src/icons/Sun.svg";
 
 const NavbarContainer = styled.nav`
-  border: 1px solid red;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -16,6 +24,18 @@ const NavbarContainer = styled.nav`
 const Logo = styled.div`
   display: flex;
   justify-content: space-between;
+  align-itmes: center;
+  gap: 10px;
+  font-family: Inter;
+  font-size: 21px;
+  font-weight: 700;
+  color: white;
+`;
+
+const LogoImage = styled.img`
+  width: 35px;
+  height: 20px;
+  margin: auto;
 `;
 
 const Links = styled.div`
@@ -24,10 +44,21 @@ const Links = styled.div`
   gap: 24px;
 `;
 
-const LinkItem = styled.div`
+const LinkItem = styled.button.attrs(() => ({ tabIndex: 0 }))`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+  font-family: Space Grotesk;
+  font-size: 16px;
+  font-weight: 500;
+  &.home-active {
+    color: white;
+  }
+  &.home-inactive {
+    color: #353570;
+    opacity: .5;
+  }
 `;
 
 const RightPanel = styled.div`
@@ -43,7 +74,7 @@ const Form = styled.form`
   height: 48px;
   width: auto;
   margin: 0;
-  padding: 0;
+  padding: 0 16px;
   gap: 12px;
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -136,19 +167,9 @@ const ThemeButton = styled.button`
   background-color: #191925;
 `;
 
-const LinkContainer = (props: { src: string; path: string; name: string }) => {
-  const { src, path, name } = props;
-  return (
-    <LinkItem>
-      <Image src={src} alt=""></Image>
-      <Link href={`/${path}`}>{name}</Link>
-    </LinkItem>
-  );
-};
-
 const Navbar = () => {
   const options = [
-    { currency: "USD", image: "null" },
+    { currency: "USD", image: USDWhite },
     { currency: "EUR", image: "null" },
     { currency: "GBP", image: "null" },
     { currency: "ETH", image: "null" },
@@ -156,63 +177,75 @@ const Navbar = () => {
   ];
   const [selectVisible, setSelectVisible] = useState(false);
   const [selectedOption, setSelectedOption] = useState(options[0]);
+  const [homeActive, setHomeActive] = useState(true);
+
+  const LinkContainer = (props: { src: any; path: string; name: string }) => {
+    const { src, path, name } = props;
+    const boolean = path === "" ? homeActive : !homeActive;    
+    return (
+      <LinkItem onClick={() => setHomeActive((current) => !current)} className={boolean ? "home-active" : "home-inactive"}>
+        <Image src={src} alt=""></Image>
+        <Link href={`/${path}`}>{name}</Link>
+      </LinkItem>
+    );
+  };
 
   return (
     <NavbarContainer>
       <Logo>
-        <Image src="null" alt=""></Image>
+        <LogoImage src={LogoIcon.src} alt="" />
         <h1>Logoipsm</h1>
       </Logo>
       <Links>
-        <LinkContainer src="null" path="" name="Home"></LinkContainer>
         <LinkContainer
-          src="null"
+          src={homeActive ? HomeWhite : HomeGray}
+          path=""
+          name="Home"
+        ></LinkContainer>
+        <LinkContainer
+          src={homeActive ? PortfolioGray : PortfolioWhite}
           path="portfolio"
           name="Portfolio"
         ></LinkContainer>
       </Links>
       <RightPanel>
         <Form>
-          <Image src="null" alt=""></Image>
+          <Image src={SearchWhite} alt=""></Image>
           <Search placeholder="Search..."></Search>
         </Form>
-        <Form>
-          <Dropdown>
-            <Select>
-              <Option>
-                <SelectButton
-                  type="button"
-                  onClick={() => setSelectVisible((current) => !current)}
-                >
-                  <CurrencyIcon src="null"></CurrencyIcon>
-                  {selectedOption.currency}
-                  <Image src="null" alt=""></Image>
-                </SelectButton>
-              </Option>
-              {selectVisible &&
-                options
-                  .filter(
-                    (option) => option.currency !== selectedOption.currency
-                  )
-                  .map((option, index) => (
-                    <Option key={index}>
-                      <SelectButton
-                        type="button"
-                        onClick={() => {
-                          setSelectVisible((current) => !current);
-                          setSelectedOption(option);
-                        }}
-                      >
-                        <CurrencyIcon src="null"></CurrencyIcon>
-                        {option.currency}
-                      </SelectButton>
-                    </Option>
-                  ))}
-            </Select>
-          </Dropdown>
-        </Form>
+        <Dropdown>
+          <Select>
+            <Option>
+              <SelectButton
+                type="button"
+                onClick={() => setSelectVisible((current) => !current)}
+              >
+                <CurrencyIcon src={selectedOption.image.src} alt="" />
+                {selectedOption.currency}
+                <Image src={ChevronDownWhite} alt=""></Image>
+              </SelectButton>
+            </Option>
+            {selectVisible &&
+              options
+                .filter((option) => option.currency !== selectedOption.currency)
+                .map((option, index) => (
+                  <Option key={index}>
+                    <SelectButton
+                      type="button"
+                      onClick={() => {
+                        setSelectVisible((current) => !current);
+                        setSelectedOption(option);
+                      }}
+                    >
+                      <CurrencyIcon src={option.image}></CurrencyIcon>
+                      {option.currency}
+                    </SelectButton>
+                  </Option>
+                ))}
+          </Select>
+        </Dropdown>
         <ThemeButton>
-          <Image src="null" alt=""></Image>
+          <Image src={Sun} alt=""></Image>
         </ThemeButton>
       </RightPanel>
     </NavbarContainer>
