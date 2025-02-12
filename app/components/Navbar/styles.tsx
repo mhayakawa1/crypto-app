@@ -1,28 +1,24 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const NavbarContainer = styled.nav`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 48px;
-  padding: 0;
 `;
 
 export const Logo = styled.div`
   display: flex;
   justify-content: space-between;
-  align-itmes: center;
+  align-items: center;
   gap: 10px;
-  font-family: Inter;
   font-size: 21px;
   font-weight: 700;
-  color: white;
 `;
 
 export const LogoImage = styled.img`
+  margin: auto;
   width: 35px;
   height: 20px;
-  margin: auto;
 `;
 
 export const Links = styled.div`
@@ -36,15 +32,14 @@ export const LinkItem = styled.button.attrs(() => ({ tabIndex: 0 }))`
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  font-family: Space Grotesk;
   font-size: 16px;
   font-weight: 500;
   &.home-active {
     color: white;
   }
   &.home-inactive {
+    opacity: 0.5;
     color: #353570;
-    opacity: .5;
   }
 `;
 
@@ -58,11 +53,11 @@ export const Form = styled.form`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 48px;
-  width: auto;
+  gap: 12px;
   margin: 0;
   padding: 0 16px;
-  gap: 12px;
+  height: 48px;
+  width: auto;
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   background-color: #191925;
@@ -77,7 +72,6 @@ export const Search = styled.input`
   font-size: 14px;
   font-weight: 400;
   line-height: 22.4px;
-  color: white;
   &:focus {
     outline: none;
   }
@@ -104,7 +98,6 @@ export const Select = styled.ul`
   margin: 0;
   padding: 0;
   background-color: #191925;
-  color: white;
   &:focus {
     outline: none;
   }
@@ -118,7 +111,6 @@ export const Option = styled.li`
   width: 108px;
   height: 48px;
   margin: 0;
-  color: white;
   list-style-type: none;
 `;
 
@@ -130,7 +122,6 @@ export const SelectButton = styled.button`
   width: 100%;
   height: 100%;
   padding: 0 0 0 16px;
-  font-family: Space Grotesk;
   font-size: 14px;
   font-weight: 500;
   line-height: 24px;
