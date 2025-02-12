@@ -11,8 +11,6 @@ export const Button = styled.button`
   width: 244px;
   height: 45px;
   border-radius: 6px;
-  font-family: Space Grotesk;
-  color: white;
   &.active {
     border: double 1px transparent;
     background-image: linear-gradient(#6161d6, #6161d6),
@@ -102,7 +100,6 @@ export const Slider = styled.div`
 
 export const Table = styled.table`
   width: 100%;
-  font-family: Space Grotesk;
   font-weight: 400;
   font-size: 14px;
   border-collapse: separate;
@@ -115,7 +112,6 @@ export const TableRow = styled.tr`
   }
   &.coin {
     background: #191925;
-    color: white;
     padding: 20px;
     border-radius: 12px;
     height: 77px;
@@ -181,10 +177,8 @@ export const Chart = styled.div`
   aspect-ratio: 158 / 101;
   background-color: #191932;
   border-radius: 12px;
-  font-family: Space Grotesk;
   font-weight: 400;
   font-size: 20px;
-  color: white;
   padding: 24px;
 `;
 
@@ -193,7 +187,6 @@ export const ChartData = styled.div`
 `;
 
 export const ChartUl = styled.ul`
-  font-family: Space Grotesk;
   font-weight: 400;
 `;
 
@@ -245,11 +238,9 @@ export const ConversionInput = styled.div`
 `;
 
 export const InputUl = styled.ul`
-  color: white;
 `;
 
 export const InputLi = styled.li`
-  font-family: Space Grotesk;
   font-weight: 400;
   &.transaction {
     font-size: 14px;
