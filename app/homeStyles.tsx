@@ -11,6 +11,8 @@ export const Button = styled.button`
   width: 244px;
   height: 45px;
   border-radius: 6px;
+  font-family: Space Grotesk;
+  color: white;
   &.active {
     border: double 1px transparent;
     background-image: linear-gradient(#6161d6, #6161d6),
@@ -23,8 +25,11 @@ export const Button = styled.button`
   }
   &.compare {
     width: fit-content;
+    display: flex;
+    gap: 10px;
     padding: 12px 24px;
     font-size: 14px;
+    font-weight: 400;
   }
   &.slider-button {
     width: 253px;
@@ -36,9 +41,7 @@ export const Button = styled.button`
   &.time-range-button {
     width: 56px;
     height: 34px;
-    padding: 8px 20px;
     border-radius: 6px;
-    font-family: Space Grotesk;
     font-size: 14px;
     font-weight: 500;
     line-height: 18px;
@@ -46,23 +49,117 @@ export const Button = styled.button`
       background-color: rgb(0, 0, 0, 0);
     }
   }
-  color: white;
+  &.dropdown {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 24px;
+    flex-grow: 1;
+    font-size: 20px;
+  }
+  &.convert {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 `;
 
-export const Statistics = styled.div``;
+export const Display = styled.div`
+  padding: 4vh 0 0 0;
+  overflow-x: hidden;
+`;
+
+export const Statistics = styled.div`
+`;
 
 export const TopPanel = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: end;
+  padding: 0 0 4vh 0;
 `;
+
+export const CompareIcon = styled.img`
+  width: 24px;
+  height: 24px;
+`
 
 export const Slider = styled.div`
   width: fit-content;
   display: flex;
   gap: 8px;
   overflow-x: hidden;
-  padding: 24px 0;
+  padding: 0 0 4vh 0;
+`;
+
+export const Table = styled.table`
+  width: 100%;
+  font-family: Space Grotesk;
+  font-weight: 400;
+  font-size: 14px;
+  border-collapse: separate;
+  border-spacing: 0px 8px;
+  margin: 16vh 0 0 0;
+`;
+
+export const TableRow = styled.tr`
+  &.column-names {
+  }
+  &.coin {
+    background: #191925;
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    height: 77px;
+  }
+`;
+
+export const TableBody = styled.tbody`
+  width: 100%;
+`;
+
+export const TableHeader = styled.th`
+  margin: 0 4px;
+  text-align: left;
+`;
+
+export const TableCell = styled.td`
+  &.number {
+    text-align: center;
+    padding: 0 10px;
+  }
+`;
+
+export const CellContainer = styled.div`
+  display: flex;
+  align-items: center;
+  &.rising {
+    color: #01f1e3;
+  }
+  &.falling {
+    color: #fe2264;
+  }
+`;
+
+export const CoinIcon = styled.img`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin: 0 16px 0 0;
+`;
+
+export const ArrowIcon = styled.img`
+  width: 6px;
+  height: 3px;
+  margin: 5px;
 `;
 
 export const Charts = styled.div`
@@ -70,6 +167,9 @@ export const Charts = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 32px;
+  &.conversion-data {
+    aspect-ratio: 1296 / 293;
+  }
 `;
 
 export const Chart = styled.div`
@@ -81,12 +181,14 @@ export const Chart = styled.div`
   aspect-ratio: 158 / 101;
   background-color: #191932;
   border-radius: 12px;
+  font-family: Space Grotesk;
+  font-weight: 400;
+  font-size: 20px;
   color: white;
   padding: 24px;
 `;
 
 export const ChartData = styled.div`
-  border: 1px solid red;
   flex-grow: 1;
 `;
 
@@ -123,3 +225,60 @@ export const TimeRanges = styled.div`
   border-radius: 6px;
   background-color: #232336;
 `;
+
+export const ConversionInputs = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 0 0 72px 0;
+`;
+
+export const ConversionInput = styled.div`
+  flex-grow: 1;
+  background-color: #191932;
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 5;
+`;
+
+export const InputUl = styled.ul`
+  color: white;
+`;
+
+export const InputLi = styled.li`
+  font-family: Space Grotesk;
+  font-weight: 400;
+  &.transaction {
+    font-size: 14px;
+    line-height: 24px;
+    margin: 0 0 40px 0;
+  }
+  &.conversion {
+    margin: 8px;
+    font-size: 14px;
+    line-height: 24px;
+    letter-spacing: 0px;
+  }
+`;
+
+export const CurrencyDropdown = styled.div`
+  display: flex;
+  align-items: start;
+  padding: 0 0 24px 0;
+  border-bottom: 1px solid white;
+`;
+
+export const CurrencyIcon = styled.img`
+  width: 24px;
+  height: 24px;
+`;
+
+export const DropdownIcon = styled.img`
+  width: 6px;
+  height: 3px;
+`;
+
+export const InputAmount = styled.span``;
