@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
 import StoreProvider from "./StoreProvider";
 import Navbar from "./components/Navbar";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { Html, Body } from "./globalStyles";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
 });
 
@@ -25,17 +21,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <Html lang="en">
       <StoreProvider>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
+        <Body className={`${spaceGrotesk.className} antialiased`}>
           <header>
             <Navbar />
           </header>
           {children}
-        </body>
+        </Body>
       </StoreProvider>
-    </html>
+    </Html>
   );
 }
