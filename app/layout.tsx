@@ -1,9 +1,10 @@
 "use client";
 import StoreProvider from "./StoreProvider";
 import Navbar from "./components/Navbar";
+import Banner from "./Banner"
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { Html, Body } from "./globalStyles";
+import { Html} from "./globalStyles";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -18,12 +19,13 @@ export default function RootLayout({
   return (
     <Html lang="en">
       <StoreProvider>
-        <Body className={`${spaceGrotesk.className} antialiased`}>
-          <header>
+        <body className={`${spaceGrotesk.className} antialiased bg-[#13121a] text-white`}>
+          <header className="flex flex-col gap-[2vh]">
+            <Banner />
             <Navbar />
           </header>
-          {children}
-        </Body>
+          <main className="py-[4vh] px-[8vh]">{children}</main>
+        </body>
       </StoreProvider>
     </Html>
   );
