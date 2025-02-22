@@ -5,6 +5,10 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --button-bg: #3A3978;
+  --button-border: #7878fa;
+  --rising: #01f1e3;
+  --falling: #fe2264;
 }
 
 @media (prefers-color-scheme: dark) {
