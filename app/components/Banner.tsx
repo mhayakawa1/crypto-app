@@ -1,7 +1,7 @@
 "use client";
-import FlashCircle from "../src/icons/Flash_Circle.svg";
-import Exchange from "../src/icons/Exchange.svg";
-import ArrowUpGreen from "../src/icons/Arrow_Up_Green.svg";
+import FlashCircle from "../../src/icons/Flash_Circle.svg";
+import Exchange from "../../src/icons/Exchange.svg";
+import ArrowUpGreen from "../../src/icons/Arrow_Up_Green.svg";
 import Image from "next/image";
 
 const BannerItem = (props: { children: any }) => {
@@ -10,7 +10,6 @@ const BannerItem = (props: { children: any }) => {
 };
 
 const Banner = () => {
-  //#343046
   return (
     <div className="flex justify-center gap-[4vw] text-xs bg-[rgb(30,25,50)] w-[100%] py-[16px] border-y border-[#343046]">
       <BannerItem>
