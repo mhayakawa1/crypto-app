@@ -1,5 +1,5 @@
 "use client";
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Plus from "./../../../src/icons/Plus.svg";
@@ -11,13 +11,23 @@ import CopyWhite from "./../../../src/icons/Copy_White.svg";
 import Panel from "../../components/Panel";
 type Params = Promise<{ coinId: string }>;
 
-const LinkContainer = (props: { link: string }) => {
-  const { link } = props;
+const LinkContainer = (props: { link: string; sliceIndex: number }) => {
+  const { link, sliceIndex } = props;
+  const shortenedLink = link.slice(sliceIndex);
+
+  const copyText = () => {
+    navigator.clipboard.writeText(link);
+  };
+
   return (
     <Panel className="flex justify-center items-center gap[16px] font-medium text-base/[24px] h-[52px]">
-      <Image src={LinkWhite} alt="" className="w-[20px] h-[20px]" />
-      <a className="mx-[16px]">{link}</a>
-      <Image src={CopyWhite} alt="" className="w-[20px] h-[20px]" />
+      <a href={link} target="_blank">
+        <Image src={LinkWhite} alt="" className="w-[20px] h-[20px]" />
+      </a>
+      <p className="mx-[16px]">{shortenedLink}</p>
+      <button onClick={copyText}>
+        <Image src={CopyWhite} alt="" className="w-[20px] h-[20px]" />
+      </button>
     </Panel>
   );
 };
@@ -25,31 +35,136 @@ const LinkContainer = (props: { link: string }) => {
 const HighLow = (props: { src: any; price: string; time: string }) => {
   const { src, price, time } = props;
   return (
-    <li className="high-low flex justify-start gap-[16px]">
-      <img className="w-[16px] h-[12px] mt-[8px]" src={src} alt="" />
-      <ul className="text-base/[28px]">
-        <li className="text-base/[20px]">
+    <li className="high-low flex justify-start gap-[16px] h-[44px]">
+      <Image width={16} height={16} className="w-[16px] h-[12px] mt-[8px]" src={src} alt="" />
+      <ul className="text-base/[14px] text-nowrap">
+        <li>
           All time high: <span className="text-xl">{price}</span>
         </li>
-        <li className="date text-sm/[24px] text-[#b9b9ba]">{time}</li>
+        <li className="date text-sm text-[#b9b9ba]">{time}</li>
       </ul>
     </li>
   );
 };
 
 export default function CoinPage(props: { params: Params }) {
-  const params = use(props.params);
-  const coinId = params.coinId[0].toUpperCase() + params.coinId.slice(1);
+  const { coinId } = use(props.params);
+  const coinName = coinId[0].toUpperCase() + coinId.slice(1);
+  const [coinData, setCoinData] = useState({
+    src: "",
+    name: "",
+    homeLink: "",
+    priceChange: "",
+    rising: true,
+    description: "",
+    blockchainLinks: ["null", "null", "null"],
+    marketData: [
+      {
+        name: "Market Cap",
+        key: "market_cap.usd",
+        value: "",
+        currency: { symbol: "$", start: true },
+      },
+      {
+        name: "Fully Diluted Valuation",
+        key: "fully_diluted_valuation.usd",
+        value: "",
+        currency: { symbol: "$", start: true },
+      },
+      {
+        name: "Volume 24h",
+        key: "total_volume.usd",
+        value: "",
+        currency: { symbol: "$", start: true },
+      },
+      {
+        name: "Volume/Market",
+        key: "",
+        value: "",
+        currency: { symbol: "", start: true },
+      },
+      {
+        name: "Total Volume",
+        key: "total_volume.btc",
+        value: "",
+        currency: { symbol: "symbol", start: false },
+      },
+      {
+        name: "Circulating Supply",
+        key: "circulating_supply",
+        value: "",
+        currency: { symbol: "symbol", start: false },
+      },
+      {
+        name: "Max Supply",
+        key: "max_supply",
+        value: "",
+        currency: { symbol: "symbol", start: false },
+      },
+    ],
+  });
+  const [textHidden, setTextHidden] = useState(true);
 
-  const statisticsInfo = [
-    { name: "Market Cap", value: "$749,864,345,056" },
-    { name: "Fully Diluted Valuation", value: "$840,523,040,085" },
-    { name: "Volume 24h", value: "$47,714,337,481" },
-    { name: "Volume/Market", value: "0.06363" },
-    { name: "Total Volume", value: "1,192,352 BTC" },
-    { name: "Circulating Supply", value: "18,734,943 BTC" },
-    { name: "Max Supply", value: "21,000,000 BTC" },
-  ];
+  const callAPI = () => {
+    fetch(
+      `https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=true&developer_data=false&sparkline=false`
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        const { image, symbol, name, description, links, market_data } = result;
+        let newMarketData = coinData.marketData;
+        const getValue = (string: string) => {
+          let value = market_data;
+          const keys = string.split(".");
+          keys.forEach((k) => {
+            value = value[k];
+          });
+          return value;
+        };
+
+        newMarketData = newMarketData.map((element) => {
+          if (element.key) {
+            element.value = getValue(element.key);
+          }
+          if (element.currency.symbol === "symbol") {
+            element.currency.symbol = symbol;
+          }
+          return element;
+        });
+
+        newMarketData[3].value = (
+          Number(newMarketData[2].value) / Number(newMarketData[0].value)
+        ).toFixed(5);
+
+        newMarketData = newMarketData.map((element) => {
+          if (Number(element.value) > 1) {
+            const { value, currency } = element;
+            element.value = `${
+              currency.start ? currency.symbol : ""
+            }${value.toLocaleString()} ${
+              !currency.start ? currency.symbol.toUpperCase() : ""
+            }`;
+          }
+          return element;
+        });
+
+        setCoinData({
+          src: `${image.small}`,
+          name: `${name}`,
+          priceChange: `${market_data.price_change_percentage_24h.toFixed(2)}`,
+          rising: market_data.price_change_percentage_24h > 0,
+          homeLink: `${links.homepage[0]}`,
+          description: description.en,
+          blockchainLinks: [...links.blockchain_site.slice(2, 5)],
+          marketData: [...newMarketData],
+        });
+      })
+      .catch((err) => console.log(err));
+  };
+
+  useEffect(() => {
+    callAPI();
+  });
 
   const overviewInfo = {
     price: "$40,017",
@@ -68,10 +183,14 @@ export default function CoinPage(props: { params: Params }) {
     },
   };
 
+  const toggleDescription = () => {
+    setTextHidden((current) => !current);
+  };
+
   return (
     <div>
       <div className="mt-[6vh] mb-[4vh]">
-        <Link href="/portfolio">Portfolio / Your {coinId} summary</Link>
+        <Link href="/portfolio">Portfolio / Your {coinName} summary</Link>
       </div>
       <div className="flex justify-between">
         <div className="w-[53%] flex flex-col gap-[16vh]">
@@ -79,50 +198,53 @@ export default function CoinPage(props: { params: Params }) {
             <div className="flex justify-between flex-col gap-[16px] w-[44%]">
               <Panel className="flex justify-center items-center flex-col grow gap-[24px]">
                 <div className="p-[16px] rounded-xl w-[64px] h-[64px] bg-[#2C2C4A]">
-                  <img
+                  <Image
                     className="rounded-full w-[32px] h-[32px]"
-                    src="null"
+                    width={32}
+                    height={32}
+                    src="https://coin-images.coingecko.com/coins/images/1/small/bitcoin.png?1696501400"
                     alt=""
-                  />
+                  ></Image>
                 </div>
-                <h2>{coinId}</h2>
+                <h2>{coinName}</h2>
               </Panel>
-              <LinkContainer link="www.bitcoin.org" />
+              <LinkContainer link={coinData.homeLink} sliceIndex={7} />
             </div>
-            <Panel className="aspect-[355/333] flex px-[40px]">
-              <ul className="flex flex-col items-center justify-center gap-[10px] h-full">
-                <li className="flex items-center gap-[16px] h-[25px]">
-                  <span className="text-4xl">{overviewInfo.price}</span>
+            <Panel className="aspect-[355/333] flex p-[40px]">
+              <ul className="self-center flex flex-col justify-center gap-[20px] h-fit">
+                <li className="flex items-end gap-[16px] h-[25px]">
+                  <span className="text-4xl/[24px] font-bold">
+                    {overviewInfo.price}
+                  </span>
                   <span
                     className={`${
-                      overviewInfo.rising
-                        ? "text-[--rising]"
-                        : "text-[--falling]"
-                    } text-xl flex`}
+                      coinData.rising ? "text-[--rising]" : "text-[--falling]"
+                    } h-[14px] flex items-end`}
                   >
-                    <img
+                    <Image
                       src={
-                        overviewInfo.rising
-                          ? ArrowUpGreen.src
-                          : ArrowDownRed.src
+                        coinData.rising ? ArrowUpGreen.src : ArrowDownRed.src
                       }
-                      className="w-[9px] h-[5px] my-[10px] mx-[5px]"
+                      width={9} height={5}
+                      className="self-start w-[9px] h-[5px] mx-[5px]"
                       alt=""
                     />
-                    {overviewInfo.percent}
+                    <span className="text-xl/[14px]">
+                      {coinData.priceChange}%
+                    </span>
                   </span>
                 </li>
-                <li className="text-xl">
+                <li className="text-xl/[16px] text-left">
                   Profit:
                   <span
                     className={`${
-                      overviewInfo.rising ? "text-[--rising]" : "text-[--falling]"
+                      coinData.rising ? "text-[--rising]" : "text-[--falling]"
                     } text-2xl ml-[16px]`}
                   >
                     {overviewInfo.profit}
                   </span>
                 </li>
-                <li className="flex justify-center my-[4px]">
+                <li className="flex justify-center self-center mx-auto w-[24px] h-[24px]">
                   <Image src={PortfolioIcon} alt=""></Image>
                 </li>
                 <HighLow
@@ -138,27 +260,24 @@ export default function CoinPage(props: { params: Params }) {
               </ul>
             </Panel>
           </div>
-          <div className="flex flex-col gap-[24px]">
-            <h4 className="text-xl font-medium">Description</h4>
-            <p className="text-sm/[24px]">
-              Bitcoin is the first successful internet money based on
-              peer-to-peer technology; whereby no central bank or authority is
-              involved in the transaction and production of the Bitcoin
-              currency. It was created by an anonymous individual/group under
-              the name, Satoshi Nakamoto. The source code is available publicly
-              as an open source project, anybody can look at it and be part of
-              the developmental process. Bitcoin is changing the way we see
-              money as we speak. The idea was to produce a means of exchange,
-              independent of any central authority, that could be transferred
-              electronically in a secure, verifiable and immutable way. It is a
-              decentralized peer-to-peer internet currency making mobile payment
-              easy, very low transaction fees, protects your identity, and it
-              works anywhere all the time with no central authority and banks.
-              Bitcoin is designed to have only 21 million BC ever
-              <a href="#" className="text-[#6060ff]">
-                {" "}
-                ...read more
-              </a>
+          <div className="flex flex-col gap-[24px] w-100 ">
+            <h4 className="text-xl font-medium ">Description</h4>
+            <p
+              className={`${
+                textHidden
+                  ? "overflow-hidden text-ellipsis h-[210px]"
+                  : "flex flex-col h-auto"
+              } relative text-sm/[21px] w-100`}
+            >
+              {coinData.description}
+              <button
+                onClick={toggleDescription}
+                className={`${
+                  textHidden ? "absolute bottom-0 right-0" : "self-end"
+                } pl-[16px] text-[#6060ff] text-sm/[21px] h-[21px] bg-gradient-to-r from-transparent from-0% to-[#13121A] to-20%`}
+              >
+                {textHidden ? "...read more" : "read less"}
+              </button>
             </p>
           </div>
         </div>
@@ -166,7 +285,7 @@ export default function CoinPage(props: { params: Params }) {
           <Panel className="flex items-center justify-center aspect-[136/105]">
             <div className="flex flex-col gap-[32px]">
               <ul className="flex flex-col gap-[12px]">
-                {statisticsInfo.map((element, index) => (
+                {coinData.marketData.map((element, index) => (
                   <li
                     key={index}
                     className={`flex justify-between gap-[24px] text-base/[20px] ${
@@ -188,9 +307,9 @@ export default function CoinPage(props: { params: Params }) {
             </div>
           </Panel>
           <div className="flex flex-col gap-[24px]">
-            <LinkContainer link="www.blockchain.com/bitcoin" />
-            <LinkContainer link="www.btc.com" />
-            <LinkContainer link="www.btc.tokenview.com" />
+            {coinData.blockchainLinks.map((link: string, index: number) => (
+              <LinkContainer key={index} link={link} sliceIndex={8} />
+            ))}
           </div>
         </div>
       </div>
