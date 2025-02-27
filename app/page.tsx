@@ -8,7 +8,7 @@ import {
   toggleTodo,
   deleteTodo,
 } from "@/lib/features/todos/todosSlice";
-import Coins from "./Coins";
+import Coins from "./components/Coins";
 import Converter from "./Converter";
 
 const List = () => {
