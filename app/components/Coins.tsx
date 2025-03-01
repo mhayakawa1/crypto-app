@@ -103,39 +103,6 @@ const Coins = () => {
         </TimeRanges>
       </Statistics>
       <TableComponent />
-      {/* <Table>
-        <TableBody>
-          <TableRow className="column-names">
-            <TableHeader>#</TableHeader>
-            <TableHeader>Name</TableHeader>
-            <TableHeader>Price</TableHeader>
-            <TableHeader>1h%</TableHeader>
-            <TableHeader>24h%</TableHeader>
-            <TableHeader>7d%</TableHeader>
-            <TableHeader>24h volume / Market Cap</TableHeader>
-            <TableHeader>Circulating / Total supply</TableHeader>
-            <TableHeader>Last 7d</TableHeader>
-          </TableRow>
-          <CoinTableRow
-            rising={true}
-            number={1}
-            name="Bitcoin (BTC)"
-            price={29850}
-            oneHour={2.35}
-            oneDay={11.04}
-            sevenDay={8.41}
-          ></CoinTableRow>
-          <CoinTableRow
-            rising={false}
-            number={2}
-            name="Ethereum (ETH)"
-            price={10561}
-            oneHour={0.24}
-            oneDay={10.24}
-            sevenDay={5.16}
-          ></CoinTableRow>
-        </TableBody>
-      </Table> */}
     </>
   );
 };
