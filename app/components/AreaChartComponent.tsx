@@ -32,8 +32,8 @@ const AreaChartComponent = (props: {
 
   useEffect(() => {
     minMax();
-  });
-  
+  }, []);
+
   return (
     <ChartContainer
       className={`aspect-auto ${height} ${width} p-0 m-0`}
