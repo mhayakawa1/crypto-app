@@ -5,6 +5,7 @@ export const PortfolioContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2vh;
+  
 `;
 
 export const TopPanel = styled.div`
