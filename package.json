@@ -10,6 +10,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@radix-ui/react-progress": "^1.1.2",
     "@reduxjs/toolkit": "^2.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -19,6 +20,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-redux": "^9.2.0",
+    "recharts": "^2.15.1",
     "run-parallel": "^1.2.0",
     "styled-components": "^6.1.14",
     "tailwind-merge": "^3.0.2",

@@ -9,66 +9,12 @@ import {
   ChartUl,
   ChartLi,
   TimeRanges,
-  Table,
-  TableRow,
-  TableBody,
-  TableHeader,
-  TableCell,
-  CellContainer,
-  ArrowIcon,
-  CoinIcon,
-} from "./homeStyles";
+} from "../homeStyles";
 import { useState } from "react";
-import ChartContainer from "./ChartContainer";
-import CompareWhite from "../src/icons/Compare_White.svg";
-import ArrowDownRed from "../src/icons/Arrow_Down_Red.svg";
-import ArrowUpGreen from "../src/icons/Arrow_Up_Green.svg";
-import ExitWhite from "../src/icons/Exit_White.svg";
-
-const CoinTableRow = (props: {
-  rising: boolean;
-  number: number;
-  name: string;
-  price: number;
-  oneHour: number;
-  oneDay: number;
-  sevenDay: number;
-}) => {
-  const { rising, number, name, price, oneHour, oneDay, sevenDay } = props;
-  const className = rising ? "rising" : "falling";
-  const src = rising ? ArrowUpGreen.src : ArrowDownRed.src;
-
-  const PercentCell = (props: { percent: any }) => {
-    const { percent } = props;
-    return (
-      <TableCell>
-        <CellContainer className={className}>
-          <ArrowIcon src={src} alt="" />
-          <span>{percent}%</span>
-        </CellContainer>
-      </TableCell>
-    );
-  };
-
-  return (
-    <TableRow className="coin">
-      <TableCell className="number">{number}</TableCell>
-      <TableCell>
-        <CellContainer>
-          <CoinIcon src="null" alt="" />
-          {name}
-        </CellContainer>
-      </TableCell>
-      <TableCell>${price.toLocaleString()}</TableCell>
-      <PercentCell percent={oneHour}></PercentCell>
-      <PercentCell percent={oneDay}></PercentCell>
-      <PercentCell percent={sevenDay}></PercentCell>
-      <TableCell></TableCell>
-      <TableCell></TableCell>
-      <TableCell></TableCell>
-    </TableRow>
-  );
-};
+import ChartContainer from "../ChartContainer";
+import TableComponent from "./TableComponent";
+import CompareWhite from "../../src/icons/Compare_White.svg";
+import ExitWhite from "../../src/icons/Exit_White.svg";
 
 const Coins = () => {
   const [timeRanges, setTimeRanges] = useState([
@@ -156,39 +102,7 @@ const Coins = () => {
           ))}
         </TimeRanges>
       </Statistics>
-      <Table>
-        <TableBody>
-          <TableRow className="column-names">
-            <TableHeader>#</TableHeader>
-            <TableHeader>Name</TableHeader>
-            <TableHeader>Price</TableHeader>
-            <TableHeader>1h%</TableHeader>
-            <TableHeader>24h%</TableHeader>
-            <TableHeader>7d%</TableHeader>
-            <TableHeader>24h volume / Market Cap</TableHeader>
-            <TableHeader>Circulating / Total supply</TableHeader>
-            <TableHeader>Last 7d</TableHeader>
-          </TableRow>
-          <CoinTableRow
-            rising={true}
-            number={1}
-            name="Bitcoin (BTC)"
-            price={29850}
-            oneHour={2.35}
-            oneDay={11.04}
-            sevenDay={8.41}
-          ></CoinTableRow>
-          <CoinTableRow
-            rising={false}
-            number={2}
-            name="Ethereum (ETH)"
-            price={10561}
-            oneHour={0.24}
-            oneDay={10.24}
-            sevenDay={5.16}
-          ></CoinTableRow>
-        </TableBody>
-      </Table>
+      <TableComponent />
     </>
   );
 };
