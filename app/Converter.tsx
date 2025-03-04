@@ -19,7 +19,7 @@ const InputContainer = (props: {
     const { target } = event;
     const { value } = target;
     setAmount(value);
-    updateData(value)
+    updateData(value);
   };
 
   return (
@@ -31,7 +31,6 @@ const InputContainer = (props: {
         <li>
           <div className="flex justify-between items-start pb-[24px] border-b">
             <button className="flex items-center gap-[8px] w-[244px] h-[45px] rounded-[6px]">
-              {/* <Image width={24} height={24} src="null" alt="" /> */}
               {name}
               <Image width={6} height={3} src={ArrowDownWhite.src} alt="" />
             </button>
@@ -71,8 +70,6 @@ const Converter = () => {
     newPriceData.coinA.displayPrice = newPriceData.coinA.price * amount;
     setPriceData(newPriceData);
   };
-
-  const convert = (price: number) => {};
 
   return (
     <div>
