@@ -5,7 +5,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --button-bg: #3A3978;
+  --dark-gunmetal: #232336;
+  --american-blue: #3A3978;
   --soft-blue: #7878fa;
   --rising-dark: #00B1A7;
   --bg-rising: rgba(1, 241, 227, .5);
@@ -13,7 +14,6 @@
   --rising-light: #AFE5E5;
   --falling: #fe2264;
   --bg-falling: rgba(254, 34, 100, .5);
-
 }
 
 @media (prefers-color-scheme: dark) {
