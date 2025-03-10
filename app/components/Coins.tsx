@@ -38,12 +38,14 @@ const Coins = () => {
       .then((result) => {
         const { prices, total_volumes } = result;
         const formatData = (data: any) => {
-          return data.map((element: any, index: number) => {
-            return {
-              name: index + 3,
-              uv: element[1],
-            };
-          }).filter((element: any) => element.name % 12 === 0);
+          return data
+            .map((element: any, index: number) => {
+              return {
+                name: index + 3,
+                uv: element[1],
+              };
+            })
+            .filter((element: any) => element.name % 12 === 0);
         };
         setPriceData(formatData(prices));
         setVolumeData(formatData(total_volumes));
@@ -107,15 +109,13 @@ const Coins = () => {
               <ChartLi className="value">{`$${13.431} mln`}</ChartLi>
               <ChartLi className="date">September 29, 2023</ChartLi>
             </ChartUl>
-            {priceData.length && (
-              <AreaChartComponent
-                xAxis={false}
-                height={"h-[582px]"}
-                width={"w-full"}
-                data={priceData}
-                color={"var(--soft-blue)"}
-              />
-            )}
+            <AreaChartComponent
+              xAxis={false}
+              height={"h-[582px]"}
+              width={"w-full"}
+              data={priceData}
+              color={"var(--soft-blue)"}
+            />
           </ChartContainer>
           <ChartContainer>
             <ChartUl>
@@ -123,15 +123,13 @@ const Coins = () => {
               <ChartLi className="value">{`$${807.243} bln`}</ChartLi>
               <ChartLi className="date">September 29, 2023</ChartLi>
             </ChartUl>
-            {volumeData.length && (
-              <AreaChartComponent
-                xAxis={false}
-                height={"h-[582px]"}
-                width={"w-full"}
-                data={volumeData}
-                color={"var(--soft-blue)"}
-              />
-            )}
+            <AreaChartComponent
+              xAxis={false}
+              height={"h-[582px]"}
+              width={"w-full"}
+              data={volumeData}
+              color={"#B374F2"}
+            />
           </ChartContainer>
         </Charts>
         <TimeRanges>
