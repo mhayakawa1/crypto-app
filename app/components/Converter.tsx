@@ -25,8 +25,7 @@ const InputContainer = (props: {
   const { name, price, image } = priceData;
 
   const changeAmount = (event: any) => {
-    const { target } = event;
-    const { value } = target;
+    const { target: { value } } = event;
     updateData(Number(value), null, null);
   };
 
@@ -43,7 +42,7 @@ const InputContainer = (props: {
         <li>
           <div className="flex justify-between items-start pb-[24px] border-b">
             <Select
-              onValueChange={(event) => handleChange(event)}
+              onValueChange={handleChange}
               defaultValue={name}
             >
               <SelectTrigger className="flex items-center gap-[8px] w-fit h-[24px] rounded-[6px] p-0 border-none">
@@ -55,7 +54,7 @@ const InputContainer = (props: {
               <SelectContent className="border-none shadow-[4px 0px 10px 16px] shadow-[#7878fa26] bg-[#191932] text-white">
                 {coinsData.map((element: any) => {
                   return (
-                    <SelectItem value={element.name} key={Math.random()}>
+                    <SelectItem value={element.name} key={element.name}>
                       <span className="text-xl">
                         {element.name} ({element.symbol.toUpperCase()})
                       </span>
@@ -68,7 +67,7 @@ const InputContainer = (props: {
               className="text-2xl bg-transparent text-right outline-none"
               type="number"
               value={amount === 0 ? "" : Number(amount.toFixed(2))}
-              onChange={(event) => changeAmount(event)}
+              onChange={changeAmount}
               disabled={!sell}
             />
           </div>
