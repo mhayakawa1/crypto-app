@@ -1,7 +1,6 @@
 "use client";
 import {
   Button,
-  Statistics,
   CompareIcon,
   TopPanel,
   Slider,
@@ -12,6 +11,7 @@ import {
 } from "../homeStyles";
 import { useState, useEffect } from "react";
 import AreaChartComponent from "./AreaChartComponent";
+import BarChartComponent from "./BarChartComponent";
 import ChartContainer from "../ChartContainer";
 import TableComponent from "./TableComponent";
 import CompareWhite from "../../src/icons/Compare_White.svg";
@@ -28,6 +28,8 @@ const Coins = () => {
   ]);
   const [priceData, setPriceData] = useState([]);
   const [volumeData, setVolumeData] = useState([]);
+  const [pricesYRange, setPricesYRange] = useState({ min: 0, max: 100 });
+  const [volumeYRange, setVolumeYRange] = useState({ min: 0, max: 100 });
   const [compareData, setCompareData] = useState(false);
 
   const callAPI = () => {
@@ -47,8 +49,23 @@ const Coins = () => {
             })
             .filter((element: any) => element.name % 12 === 0);
         };
-        setPriceData(formatData(prices));
-        setVolumeData(formatData(total_volumes));
+        const priceDataFormatted = formatData(prices);
+        const volumeDataFormatted = formatData(total_volumes);
+        setPriceData(priceDataFormatted);
+        setVolumeData(volumeDataFormatted);
+        
+        const minMax = (data: any) => {
+          const sortedPrices = data
+            .map((element: any) => element.uv)
+            .sort((x: any, y: any) => x - y);
+          const lowest = sortedPrices[0];
+          return {
+            min: lowest - 0.05 * lowest,
+            max: sortedPrices[sortedPrices.length - 1],
+          };
+        };
+        setPricesYRange(minMax(priceDataFormatted));
+        setVolumeYRange(minMax(volumeDataFormatted));
       })
       .catch((err) => console.log(err));
   };
@@ -90,7 +107,7 @@ const Coins = () => {
 
   return (
     <div>
-      <Statistics>
+      <div>
         <TopPanel>
           <h2>Select the currency to view statistics</h2>
           <CompareButton />
@@ -109,13 +126,17 @@ const Coins = () => {
               <ChartLi className="value">{`$${13.431} mln`}</ChartLi>
               <ChartLi className="date">September 29, 2023</ChartLi>
             </ChartUl>
-            <AreaChartComponent
-              xAxis={false}
-              height={"h-[582px]"}
-              width={"w-full"}
-              data={priceData}
-              color={"var(--soft-blue)"}
-            />
+            {priceData.length && (
+              <AreaChartComponent
+                xAxis={false}
+                height={"h-[193px]"}
+                width={"w-full"}
+                data={priceData}
+                yRange={pricesYRange}
+                color={"var(--soft-blue)"}
+                fill={"url(#area-blue)"}
+              />
+            )}
           </ChartContainer>
           <ChartContainer>
             <ChartUl>
@@ -123,13 +144,17 @@ const Coins = () => {
               <ChartLi className="value">{`$${807.243} bln`}</ChartLi>
               <ChartLi className="date">September 29, 2023</ChartLi>
             </ChartUl>
-            <AreaChartComponent
-              xAxis={false}
-              height={"h-[582px]"}
-              width={"w-full"}
-              data={volumeData}
-              color={"#B374F2"}
-            />
+            {volumeData.length && (
+              <BarChartComponent
+                xAxis={false}
+                height={"h-[193px]"}
+                width={"w-full"}
+                data={volumeData}
+                yRange={volumeYRange}
+                color={"#B374F2"}
+                fill={"url(#area-purple)"}
+              />
+            )}
           </ChartContainer>
         </Charts>
         <TimeRanges>
@@ -145,7 +170,7 @@ const Coins = () => {
             </Button>
           ))}
         </TimeRanges>
-      </Statistics>
+      </div>
       <TableComponent />
     </div>
   );
