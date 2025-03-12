@@ -1,8 +1,6 @@
 "use client";
 import {
   Button,
-  CompareIcon,
-  TopPanel,
   Slider,
   Charts,
   ChartUl,
@@ -10,6 +8,7 @@ import {
   TimeRanges,
 } from "../homeStyles";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import AreaChartComponent from "./AreaChartComponent";
 import BarChartComponent from "./BarChartComponent";
 import ChartContainer from "../ChartContainer";
@@ -41,19 +40,19 @@ const Coins = () => {
         const { prices, total_volumes } = result;
         const formatData = (data: any) => {
           return data
+            .filter((element: any, index: number) => index % 12 === 0)
             .map((element: any, index: number) => {
               return {
                 name: index + 3,
                 uv: element[1],
               };
-            })
-            .filter((element: any) => element.name % 12 === 0);
+            });
         };
         const priceDataFormatted = formatData(prices);
         const volumeDataFormatted = formatData(total_volumes);
         setPriceData(priceDataFormatted);
         setVolumeData(volumeDataFormatted);
-        
+
         const minMax = (data: any) => {
           const sortedPrices = data
             .map((element: any) => element.uv)
@@ -99,7 +98,7 @@ const Coins = () => {
     const index = compareData ? 1 : 0;
     return (
       <Button onClick={toggleCompare} className="inactive compare">
-        <CompareIcon src={buttonInfo[index].src.src} alt=""></CompareIcon>
+        <Image src={buttonInfo[index].src.src} alt="" width={20} height={20} />
         {buttonInfo[index].text}
       </Button>
     );
@@ -108,10 +107,10 @@ const Coins = () => {
   return (
     <div>
       <div>
-        <TopPanel>
+        <div className="flex justify-between items-end pb-[4vh]">
           <h2>Select the currency to view statistics</h2>
           <CompareButton />
-        </TopPanel>
+        </div>
         <Slider>
           <Button className="active slider-button">Bitcoin</Button>
           <Button className="inactive slider-button">Ethereum</Button>
@@ -144,17 +143,15 @@ const Coins = () => {
               <ChartLi className="value">{`$${807.243} bln`}</ChartLi>
               <ChartLi className="date">September 29, 2023</ChartLi>
             </ChartUl>
-            {volumeData.length && (
-              <BarChartComponent
-                xAxis={false}
-                height={"h-[193px]"}
-                width={"w-full"}
-                data={volumeData}
-                yRange={volumeYRange}
-                color={"#B374F2"}
-                fill={"url(#area-purple)"}
-              />
-            )}
+            {volumeData.length && <BarChartComponent
+              xAxis={false}
+              height={"h-[193px]"}
+              width={"w-full"}
+              data={volumeData}
+              yRange={volumeYRange}
+              color={"#B374F2"}
+              fill={"url(#area-purple)"}
+            />}
           </ChartContainer>
         </Charts>
         <TimeRanges>

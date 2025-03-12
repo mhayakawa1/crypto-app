@@ -19,7 +19,6 @@ const BarChartComponent = (props: {
   fill: any;
 }) => {
   const { xAxis, height, width, data, yRange, fill } = props;
-  
   return (
     <ChartContainer
       className={`${height} ${width} p-auto m-0`}
@@ -33,12 +32,14 @@ const BarChartComponent = (props: {
           </linearGradient>
         </defs>
         {xAxis && <XAxis dataKey="name" axisLine={false} tickLine={false} />}
-        {yRange && <YAxis
-          domain={[yRange.min, yRange.max]}
-          axisLine={false}
-          tick={false}
-          width={0}
-        />}
+        {yRange && (
+          <YAxis
+            domain={[yRange.min, yRange.max]}
+            axisLine={false}
+            tick={false}
+            width={0}
+          />
+        )}
         <Bar dataKey="uv" radius={4} fillOpacity={1} fill={fill} />
       </BarChart>
     </ChartContainer>

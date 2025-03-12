@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Progress } from "../../components/ui/progress";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AreaChartComponent from "./AreaChartComponent";
 import ArrowUpGreen from "../../src/icons/Arrow_Up_Green.svg";
 import ArrowDownRed from "../../src/icons/Arrow_Down_Red.svg";
@@ -33,14 +34,14 @@ const ProgressContainer = (props: { numbers: object; rising: boolean }) => {
     {
       barColor: "bg-[--bg-rising]",
       progressColor: "--rising",
-      progressColorBG: "bg-[--rising]"
-    }, 
+      progressColorBG: "bg-[--rising]",
+    },
     {
       barColor: "bg-[--bg-falling]",
       progressColor: "--falling",
-      progressColorBG: "bg-[--falling]"
-    }
-  ]
+      progressColorBG: "bg-[--falling]",
+    },
+  ];
 
   const classes = allClasses[Number(!rising)];
 
@@ -80,7 +81,9 @@ const ProgressContainer = (props: { numbers: object; rising: boolean }) => {
           {formatNumber(values[0])}
         </div>
         <div className="flex content-between items-center gap-[4px]">
-          <span className={`w-[6px] h-[6px] rounded-full ${classes.barColor}`}></span>
+          <span
+            className={`w-[6px] h-[6px] rounded-full ${classes.barColor}`}
+          ></span>
           {formatNumber(values[1])}
         </div>
       </div>
@@ -97,7 +100,7 @@ const TableComponent = () => {
   const [coinsData, setCoinsData] = useState([
     {
       image: null,
-      percents: [{rising: true}],
+      percents: [{ rising: true }],
       volumeMarketCap: {
         totalVolume: 1,
         marketCap: 1,
@@ -110,6 +113,7 @@ const TableComponent = () => {
         { name: 1, uv: 1 },
         { name: 1, uv: 2 },
       ],
+      yRange: { min: 0, max: 100 },
     },
   ]);
 
@@ -134,11 +138,16 @@ const TableComponent = () => {
             total_supply,
             sparkline_in_7d,
           } = data;
-
-          const formatValue = (
-            number: any,
-            isPercent: boolean
-          ) => {
+          const prices = sparkline_in_7d.price.map(
+            (price: any, index: number) => {
+              return { name: index, uv: price };
+            }
+          );
+          const sortedPrices = prices
+            .map((element: any) => element.uv)
+            .sort((x: any, y: any) => x - y);
+          const lowest = sortedPrices[0];
+          const formatValue = (number: any, isPercent: boolean) => {
             const result = { value: number, rising: true };
             if (isPercent) {
               result.value = `${number.toFixed(2)}%`;
@@ -168,13 +177,14 @@ const TableComponent = () => {
               circulating: circulating_supply,
               totalSupply: total_supply,
             },
-            lastSevenDays: sparkline_in_7d.price.map(
-              (price: any, index: number) => {
-                return { name: index, uv: price };
-              }
-            ),
+            lastSevenDays: prices,
+            yRange: {
+              min: lowest - 0.05 * lowest,
+              max: sortedPrices[sortedPrices.length - 1],
+            },
           };
         });
+        console.log(newResult);
         setCoinsData(newResult);
       })
       .catch((err) => console.log(err));
@@ -212,13 +222,10 @@ const TableComponent = () => {
               <TableCell className="">
                 <div className="flex items-center gap-[16px]">
                   {data.image !== null && (
-                    <Image
-                      src={data.image}
-                      alt=""
-                      width="0"
-                      height="0"
-                      className="w-[32px] h-auto"
-                    />
+                    <Avatar>
+                      <AvatarImage src={data.image} />
+                      <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
                   )}
                   {data.name}
                 </div>
@@ -256,7 +263,9 @@ const TableComponent = () => {
                   height={"h-[37px]"}
                   width={"w-[120px]"}
                   data={data.lastSevenDays}
+                  yRange={data.yRange}
                   color={"white"}
+                  fill={"url(#area-white)"}
                 />
               </TableCell>
             </TableRow>
