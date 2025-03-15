@@ -184,7 +184,6 @@ const TableComponent = () => {
             },
           };
         });
-        console.log(newResult);
         setCoinsData(newResult);
       })
       .catch((err) => console.log(err));
