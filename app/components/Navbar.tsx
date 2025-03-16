@@ -2,18 +2,24 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import LogoIcon from "../../../src/icons/Logo.svg";
-import HomeWhite from "../../../src/icons/Home_White.svg";
-import HomeWhiteOutline from "../../../src/icons/Home_White_Outline.svg";
-import PortfolioWhite from "../../../src/icons/Portfolio_White.svg";
-import SearchWhite from "../../../src/icons/Search_White.svg";
-import Sun from "../../../src/icons/Sun.svg";
+import LogoIcon from "../../src/icons/Logo.svg";
+import HomeWhite from "../../src/icons/Home_White.svg";
+import HomeWhiteOutline from "../../src/icons/Home_White_Outline.svg";
+import PortfolioWhite from "../../src/icons/Portfolio_White.svg";
+import SearchWhite from "../../src/icons/Search_White.svg";
+import Sun from "../../src/icons/Sun.svg";
+import Moon from "../../src/icons/Moon.svg";
 
 const Navbar = () => {
   const [homeActive, setHomeActive] = useState(true);
+  const [darkActive, setDarkActive] = useState(true);
 
   const toggleHomeActive = () => {
     setHomeActive((current) => !current);
+  };
+
+  const toggleTheme = () => {
+    setDarkActive((current) => !current);
   };
 
   const LinkContainer = (props: { src: any; path: string; name: string }) => {
@@ -65,9 +71,9 @@ const Navbar = () => {
             className="flex justify-center items-center bg-transparent text-sm outline-none"
           />
         </form>
-        
-        <button className="flex justify-center items-center w-[48px] h-[48px] rounded-[12px] border border-[#242430] bg-[#191925]">
-          <Image src={Sun} alt="" />
+
+        <button onClick={toggleTheme} className="flex justify-center items-center w-[48px] h-[48px] rounded-[12px] border border-[#242430] bg-[#191925]">
+          <Image src={darkActive ? Sun : Moon} alt="" />
         </button>
       </div>
     </nav>
