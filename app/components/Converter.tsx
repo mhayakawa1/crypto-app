@@ -194,15 +194,15 @@ const Converter = (props: { coinsData: any }) => {
         </button>
       </div>
       <div className="w-full flex justify-between gap-[32px] aspect-[1296/293]">
-        <ChartContainer className="">
+        <ChartContainer className="h-auto flex justify-between">
           <h3>
             {`${coinA.name} (${coinA.symbol.toUpperCase()}) to ${
               coinB.name
             } (${coinB.symbol.toUpperCase()})`}
           </h3>
           <AreaChartComponent
-            xAxis={false}
-            height={"h-full"}
+            xAxis={true}
+            height={"h-[165px]"}
             width={"w-full"}
             data={prices}
             yRange={yRange}
