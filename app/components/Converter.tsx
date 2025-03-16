@@ -85,6 +85,7 @@ const InputContainer = (props: {
 const Converter = (props: { coinsData: any }) => {
   const { coinsData } = props;
   const [prices, setPrices] = useState([]);
+  const [yRange, setYRange] = useState({ min: 0, max: 100 });
   const [amountCoinA, setAmountCoinA] = useState(1);
   const [amountCoinB, setAmountCoinB] = useState(1);
   const [coinA, setCoinA] = useState(coinsData[0]);
@@ -96,9 +97,12 @@ const Converter = (props: { coinsData: any }) => {
     "en-US"
   )} ${today.toLocaleTimeString("en-US")}`;
 
-  const convert = useCallback((priceA: any, priceB: any) => {
-    setAmountCoinB((priceA * amountCoinA) / priceB);
-  }, [amountCoinA]);
+  const convert = useCallback(
+    (priceA: any, priceB: any) => {
+      setAmountCoinB((priceA * amountCoinA) / priceB);
+    },
+    [amountCoinA]
+  );
 
   const callAPI = (url: string) => {
     fetch(url)
@@ -108,6 +112,14 @@ const Converter = (props: { coinsData: any }) => {
           name: index,
           uv: element[1],
         }));
+        const sortedPrices = newChartData
+          .map((element: any) => element.uv)
+          .sort((x: any, y: any) => x - y);
+        const lowest = sortedPrices[0];
+        setYRange({
+          min: lowest - 0.05 * lowest,
+          max: sortedPrices[sortedPrices.length - 1],
+        });
         setPrices(newChartData);
       })
       .catch((err) => console.log(err));
@@ -150,7 +162,7 @@ const Converter = (props: { coinsData: any }) => {
       "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=eth&days=1"
     );
   }, [convert, coinsData]);
-
+  //console.log(prices);
   return (
     <div>
       <div className="flex flex-col justify-between items-start pb-[4vh]">
@@ -188,15 +200,15 @@ const Converter = (props: { coinsData: any }) => {
               coinB.name
             } (${coinB.symbol.toUpperCase()})`}
           </h3>
-          {
-            <AreaChartComponent
-              xAxis={false}
-              height={"h-full"}
-              width={"w-full"}
-              data={prices}
-              color={"var(--soft-blue"}
-            />
-          }
+          <AreaChartComponent
+            xAxis={false}
+            height={"h-full"}
+            width={"w-full"}
+            data={prices}
+            yRange={yRange}
+            color={"var(--soft-blue"}
+            fill={"url(#area-blue)"}
+          />
         </ChartContainer>
       </div>
       <TimeRangeButtons updateChart={updateChart} />
