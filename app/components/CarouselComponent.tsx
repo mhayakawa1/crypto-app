@@ -105,8 +105,8 @@ const CarouselComponent = (props: { coinsData: any }) => {
           <CoinButton key={data.id} data={data} />
         ))}
       </CarouselContent>
-      <CarouselPrevious className="ml-[1vw]" />
-      <CarouselNext className="mr-[1vw]" />
+      <CarouselPrevious className="ml-[1vw] -mt-1" />
+      <CarouselNext className="mr-[1vw] -mt-1" />
     </Carousel>
   );
 };

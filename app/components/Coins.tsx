@@ -4,7 +4,7 @@ import Image from "next/image";
 import AreaChartComponent from "./AreaChartComponent";
 import BarChartComponent from "./BarChartComponent";
 import CarouselComponent from "./CarouselComponent";
-import ChartContainer from "../ChartContainer";
+import ChartContainer from "./ChartContainer";
 import TableComponent from "./TableComponent";
 import TimeRangeButtons from "./TimeRangeButtons";
 import CompareWhite from "../../src/icons/Compare_White.svg";
@@ -101,8 +101,8 @@ const Coins = (props: { coinsData: any }) => {
           <CompareButton />
         </div>
         {coinsData.length ? <CarouselComponent coinsData={coinsData} /> : null}
-        <div className="w-full flex justify-between gap-[1vw] pt-[120px]">
-          <ChartContainer>
+        <div className="w-full h-auto flex justify-between gap-[1vw] pt-[120px]">
+          <ChartContainer className="h-auto flex justify-between">
             <ul className="text-[#d1d1d1]">
               <li className="text-xl">Bitcoin (BTC)</li>
               <li className="text-[28px]/[24px] text-white pt-[24px] pb-[16px]">{`$${13.431} mln`}</li>
@@ -111,7 +111,7 @@ const Coins = (props: { coinsData: any }) => {
             {priceData.length && (
               <AreaChartComponent
                 xAxis={true}
-                height={"h-[193px]"}
+                height={"h-[165px]"}
                 width={"w-full"}
                 data={priceData}
                 yRange={pricesYRange}
@@ -120,7 +120,7 @@ const Coins = (props: { coinsData: any }) => {
               />
             )}
           </ChartContainer>
-          <ChartContainer>
+          <ChartContainer className="h-auto flex flex-col justify-between">
             <ul className="text-[#d1d1d1]">
               <li className="text-xl">Volume 24h</li>
               <li className="text-[28px]/[24px] text-white pt-[24px] pb-[16px]">{`$${807.243} bln`}</li>
@@ -129,7 +129,7 @@ const Coins = (props: { coinsData: any }) => {
             {volumeData.length && (
               <BarChartComponent
                 xAxis={true}
-                height={"h-[193px]"}
+                height={"h-[165px]"}
                 width={"w-full"}
                 data={volumeData}
                 yRange={volumeYRange}

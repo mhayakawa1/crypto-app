@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
-import ChartContainer from "../ChartContainer";
+import ChartContainer from "./ChartContainer";
 import TimeRangeButtons from "./TimeRangeButtons";
 import AreaChartComponent from "./AreaChartComponent";
 import VerticalSwitchBlue from "../../src/icons/Vertical_Switch_Blue.svg";
@@ -162,7 +162,7 @@ const Converter = (props: { coinsData: any }) => {
       "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=eth&days=1"
     );
   }, [convert, coinsData]);
-  //console.log(prices);
+
   return (
     <div>
       <div className="flex flex-col justify-between items-start pb-[4vh]">
@@ -194,7 +194,7 @@ const Converter = (props: { coinsData: any }) => {
         </button>
       </div>
       <div className="w-full flex justify-between gap-[32px] aspect-[1296/293]">
-        <ChartContainer>
+        <ChartContainer className="">
           <h3>
             {`${coinA.name} (${coinA.symbol.toUpperCase()}) to ${
               coinB.name
