@@ -48,13 +48,20 @@ const Coins = (props: { coinsData: any }) => {
         setVolumeData(volumeDataFormatted);
 
         const minMax = (data: any) => {
-          const sortedPrices = data
-            .map((element: any) => element.uv)
-            .sort((x: any, y: any) => x - y);
-          const lowest = sortedPrices[0];
+          let min = data[0].uv;
+          let max = data[0].uv;
+          for (let i = 0; i < data.length; i++) {
+            const value = data[i].uv;
+            if (value < min) {
+              min = value;
+            }
+            if (value > max) {
+              max = value;
+            }
+          }
           return {
-            min: lowest - 0.05 * lowest,
-            max: sortedPrices[sortedPrices.length - 1],
+            min: min - 0.05 * min,
+            max: max,
           };
         };
         setPricesYRange(minMax(priceDataFormatted));
