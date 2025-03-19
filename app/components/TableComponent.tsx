@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/table";
 import { Progress } from "../../components/ui/progress";
 import AreaChartComponent from "./AreaChartComponent";
-import Link from "next/link";
 import ArrowUpGreen from "../../src/icons/Arrow_Up_Green.svg";
 import ArrowDownRed from "../../src/icons/Arrow_Down_Red.svg";
 import Image from "next/image";
@@ -20,7 +19,9 @@ const Arrow = (props: { rising: boolean }) => {
     <Image
       src={rising ? ArrowUpGreen : ArrowDownRed}
       alt=""
-      className="w-[8px] h-[4px] my-auto"
+      width="0"
+      height="0"
+      className="w-[7px] h-auto"
     />
   );
 };
@@ -32,14 +33,14 @@ const ProgressContainer = (props: { numbers: object; rising: boolean }) => {
     {
       barColor: "bg-[--bg-rising]",
       progressColor: "--rising",
-      progressColorBG: "bg-[--rising]",
-    },
+      progressColorBG: "bg-[--rising]"
+    }, 
     {
       barColor: "bg-[--bg-falling]",
       progressColor: "--falling",
-      progressColorBG: "bg-[--falling]",
-    },
-  ];
+      progressColorBG: "bg-[--falling]"
+    }
+  ]
 
   const classes = allClasses[Number(!rising)];
 
@@ -79,9 +80,7 @@ const ProgressContainer = (props: { numbers: object; rising: boolean }) => {
           {formatNumber(values[0])}
         </div>
         <div className="flex content-between items-center gap-[4px]">
-          <span
-            className={`w-[6px] h-[6px] rounded-full ${classes.barColor}`}
-          ></span>
+          <span className={`w-[6px] h-[6px] rounded-full ${classes.barColor}`}></span>
           {formatNumber(values[1])}
         </div>
       </div>
@@ -98,7 +97,7 @@ const TableComponent = () => {
   const [coinsData, setCoinsData] = useState([
     {
       image: null,
-      percents: [{ rising: true }],
+      percents: [{rising: true}],
       volumeMarketCap: {
         totalVolume: 1,
         marketCap: 1,
@@ -136,7 +135,10 @@ const TableComponent = () => {
             sparkline_in_7d,
           } = data;
 
-          const formatValue = (number: any, isPercent: boolean) => {
+          const formatValue = (
+            number: any,
+            isPercent: boolean
+          ) => {
             const result = { value: number, rising: true };
             if (isPercent) {
               result.value = `${number.toFixed(2)}%`;
@@ -202,21 +204,24 @@ const TableComponent = () => {
           return (
             <TableRow
               key={Math.random()}
-              className="bg-[#191925] w-full h-[77px]"
+              className="bg-[#191925] w-full h-[77px] border-none"
             >
               <TableCell className="rounded-l-xl">
                 <span className="px-[10px]">{data.number}</span>
               </TableCell>
               <TableCell className="">
-                <Link
-                  href={`/coin/${data.id}`}
-                  className="flex items-center gap-[16px]"
-                >
+                <div className="flex items-center gap-[16px]">
                   {data.image !== null && (
-                    <Image src={data.image} alt="" width={32} height={32} />
+                    <Image
+                      src={data.image}
+                      alt=""
+                      width="0"
+                      height="0"
+                      className="w-[32px] h-auto"
+                    />
                   )}
                   {data.name}
-                </Link>
+                </div>
               </TableCell>
               <TableCell className="">{data.price}</TableCell>
 
