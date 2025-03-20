@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Select,
   SelectContent,
@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
-import ChartContainer from "../ChartContainer";
+import ChartContainer from "./ChartContainer";
 import TimeRangeButtons from "./TimeRangeButtons";
 import AreaChartComponent from "./AreaChartComponent";
 import VerticalSwitchBlue from "../../src/icons/Vertical_Switch_Blue.svg";
@@ -25,13 +25,18 @@ const InputContainer = (props: {
   const { name, price, image } = priceData;
 
   const changeAmount = (event: any) => {
-    const { target: { value } } = event;
+    const {
+      target: { value },
+    } = event;
     updateData(Number(value), null, null);
   };
 
-  const handleChange = (event: any) => {
-    updateData(null, sell, event);
-  };
+  const handleChange = useCallback(
+    (event: any) => {
+      updateData(null, sell, event);
+    },
+    [sell, updateData]
+  );
 
   return (
     <div className="bg-[#191932] rounded-[16px] p-[24px] w-[49%] h-auto aspect-[16 / 5]">
@@ -41,10 +46,7 @@ const InputContainer = (props: {
         </li>
         <li>
           <div className="flex justify-between items-start pb-[24px] border-b">
-            <Select
-              onValueChange={handleChange}
-              defaultValue={name}
-            >
+            <Select onValueChange={handleChange} defaultValue={name}>
               <SelectTrigger className="flex items-center gap-[8px] w-fit h-[24px] rounded-[6px] p-0 border-none">
                 {typeof image === "string" && (
                   <Image width={24} height={24} src={image} alt="" />
@@ -94,9 +96,12 @@ const Converter = (props: { coinsData: any }) => {
     "en-US"
   )} ${today.toLocaleTimeString("en-US")}`;
 
-  const convert = (priceA: any, priceB: any) => {
-    setAmountCoinB((priceA * amountCoinA) / priceB);
-  };
+  const convert = useCallback(
+    (priceA: any, priceB: any) => {
+      setAmountCoinB((priceA * amountCoinA) / priceB);
+    },
+    [amountCoinA]
+  );
 
   const callAPI = (url: string) => {
     fetch(url)
@@ -147,7 +152,7 @@ const Converter = (props: { coinsData: any }) => {
     callAPI(
       "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=eth&days=1"
     );
-  }, []);
+  }, [convert, coinsData]);
 
   return (
     <div>
@@ -180,21 +185,20 @@ const Converter = (props: { coinsData: any }) => {
         </button>
       </div>
       <div className="w-full flex justify-between gap-[32px] aspect-[1296/293]">
-        <ChartContainer>
+        <ChartContainer className="h-auto flex justify-between">
           <h3>
             {`${coinA.name} (${coinA.symbol.toUpperCase()}) to ${
               coinB.name
             } (${coinB.symbol.toUpperCase()})`}
           </h3>
-          {
-            <AreaChartComponent
-              xAxis={false}
-              height={"h-full"}
-              width={"w-full"}
-              data={prices}
-              color={"var(--soft-blue"}
-            />
-          }
+          <AreaChartComponent
+            xAxis={true}
+            height={"h-[165px]"}
+            width={"w-full"}
+            data={prices}
+            color={"var(--soft-blue"}
+            fill={"url(#area-blue)"}
+          />
         </ChartContainer>
       </div>
       <TimeRangeButtons updateChart={updateChart} />
