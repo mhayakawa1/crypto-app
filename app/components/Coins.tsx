@@ -14,8 +14,6 @@ const Coins = (props: { coinsData: any }) => {
   const { coinsData } = props;
   const [priceData, setPriceData] = useState([]);
   const [volumeData, setVolumeData] = useState([]);
-  const [pricesYRange, setPricesYRange] = useState({ min: 0, max: 100 });
-  const [volumeYRange, setVolumeYRange] = useState({ min: 0, max: 100 });
   const [compareData, setCompareData] = useState(false);
 
   const callAPI = (days: number, daily: boolean) => {
@@ -46,26 +44,6 @@ const Coins = (props: { coinsData: any }) => {
         const volumeDataFormatted = formatData(total_volumes);
         setPriceData(priceDataFormatted);
         setVolumeData(volumeDataFormatted);
-
-        const minMax = (data: any) => {
-          let min = data[0].uv;
-          let max = data[0].uv;
-          for (let i = 0; i < data.length; i++) {
-            const value = data[i].uv;
-            if (value < min) {
-              min = value;
-            }
-            if (value > max) {
-              max = value;
-            }
-          }
-          return {
-            min: min - 0.05 * min,
-            max: max,
-          };
-        };
-        setPricesYRange(minMax(priceDataFormatted));
-        setVolumeYRange(minMax(volumeDataFormatted));
       })
       .catch((err) => console.log(err));
   };
@@ -121,7 +99,6 @@ const Coins = (props: { coinsData: any }) => {
                 height={"h-[165px]"}
                 width={"w-full"}
                 data={priceData}
-                yRange={pricesYRange}
                 color={"var(--soft-blue)"}
                 fill={"url(#area-blue)"}
               />
@@ -139,7 +116,6 @@ const Coins = (props: { coinsData: any }) => {
                 height={"h-[165px]"}
                 width={"w-full"}
                 data={volumeData}
-                yRange={volumeYRange}
                 color={"#B374F2"}
                 fill={"url(#area-purple)"}
               />

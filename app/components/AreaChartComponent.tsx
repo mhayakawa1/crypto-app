@@ -14,11 +14,10 @@ const AreaChartComponent = (props: {
   height: string;
   width: string;
   data: any;
-  yRange: any;
   color: any;
   fill: any;
 }) => {
-  const { xAxis, height, width, data, yRange, color, fill } = props;
+  const { xAxis, height, width, data, color, fill } = props;
   return (
     <ChartContainer
       className={`${height} ${width} p-auto m-0`}
@@ -37,12 +36,12 @@ const AreaChartComponent = (props: {
         </defs>
         <Line type="monotone" dataKey="uv" stroke={color} dot={false} />
         {xAxis && <XAxis dataKey="name" axisLine={false} tickLine={false} />}
-        {yRange && <YAxis
-          domain={[yRange.min, yRange.max]}
+        <YAxis
+          domain={["auto", "dataMax"]}
           axisLine={false}
           tick={false}
           width={0}
-        />}
+        />
         <Area
           dataKey="uv"
           radius={4}
