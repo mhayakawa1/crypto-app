@@ -85,7 +85,6 @@ const InputContainer = (props: {
 const Converter = (props: { coinsData: any }) => {
   const { coinsData } = props;
   const [prices, setPrices] = useState([]);
-  const [yRange, setYRange] = useState({ min: 0, max: 100 });
   const [amountCoinA, setAmountCoinA] = useState(1);
   const [amountCoinB, setAmountCoinB] = useState(1);
   const [coinA, setCoinA] = useState(coinsData[0]);
@@ -112,14 +111,6 @@ const Converter = (props: { coinsData: any }) => {
           name: index,
           uv: element[1],
         }));
-        const sortedPrices = newChartData
-          .map((element: any) => element.uv)
-          .sort((x: any, y: any) => x - y);
-        const lowest = sortedPrices[0];
-        setYRange({
-          min: lowest - 0.05 * lowest,
-          max: sortedPrices[sortedPrices.length - 1],
-        });
         setPrices(newChartData);
       })
       .catch((err) => console.log(err));
@@ -205,7 +196,6 @@ const Converter = (props: { coinsData: any }) => {
             height={"h-[165px]"}
             width={"w-full"}
             data={prices}
-            yRange={yRange}
             color={"var(--soft-blue"}
             fill={"url(#area-blue)"}
           />

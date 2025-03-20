@@ -262,7 +262,6 @@ const TableComponent = () => {
                   height={"h-[37px]"}
                   width={"w-[120px]"}
                   data={data.lastSevenDays}
-                  yRange={data.yRange}
                   color={"white"}
                   fill={"url(#area-white)"}
                 />
