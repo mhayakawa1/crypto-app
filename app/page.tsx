@@ -141,7 +141,7 @@ export default function Home() {
         </Button>
       </DisplayButtons>
       <Display>
-        {coinsVisible ? <Coins /> : <Converter coinsData={coinsData} />}
+        {coinsVisible ? <Coins coinsData={coinsData} /> : <Converter coinsData={coinsData} />}
       </Display>
       <List />
     </StoreProvider>
