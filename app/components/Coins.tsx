@@ -1,44 +1,61 @@
 "use client";
-import {
-  Button,
-  Statistics,
-  CompareIcon,
-  TopPanel,
-  Slider,
-  Charts,
-  ChartUl,
-  ChartLi,
-  TimeRanges,
-} from "../homeStyles";
-import { useState } from "react";
-import ChartContainer from "../ChartContainer";
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import AreaChartComponent from "./AreaChartComponent";
+import BarChartComponent from "./BarChartComponent";
+import CarouselComponent from "./CarouselComponent";
+import ChartContainer from "./ChartContainer";
 import TableComponent from "./TableComponent";
+import TimeRangeButtons from "./TimeRangeButtons";
 import CompareWhite from "../../src/icons/Compare_White.svg";
 import ExitWhite from "../../src/icons/Exit_White.svg";
 
-const Coins = () => {
-  const [timeRanges, setTimeRanges] = useState([
-    { time: "1D", active: true },
-    { time: "7D", active: false },
-    { time: "14D", active: false },
-    { time: "1M", active: false },
-    { time: "1Y", active: false },
-    { time: "5Y", active: false },
-  ]);
+const Coins = (props: { coinsData: any }) => {
+  const { coinsData } = props;
+  const [priceData, setPriceData] = useState([]);
+  const [volumeData, setVolumeData] = useState([]);
   const [compareData, setCompareData] = useState(false);
 
-  const toggleTimeButton = (time: string) => {
-    const newTimeRanges = [...timeRanges];
-    newTimeRanges.map((element) => {
-      if (element.time === time) {
-        element.active = true;
-      } else {
-        element.active = false;
-      }
-      return element;
-    });
-    setTimeRanges(newTimeRanges);
+  const callAPI = (days: number, daily: boolean) => {
+    fetch(
+      `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=${days}${
+        daily && "&interval=daily"
+      }`
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        const { prices, total_volumes } = result;
+        const formatData = (data: any) => {
+          let newData = data.slice(1);
+          if (!daily && days !== 365) {
+            newData = newData.filter(
+              (element: any, index: number) => index % 12 === 0
+            );
+          }
+
+          return newData.map((element: any, index: number) => {
+            return {
+              name: index + 1,
+              uv: element[1],
+            };
+          });
+        };
+        const priceDataFormatted = formatData(prices);
+        const volumeDataFormatted = formatData(total_volumes);
+        setPriceData(priceDataFormatted);
+        setVolumeData(volumeDataFormatted);
+      })
+      .catch((err) => console.log(err));
   };
+
+  const updateCharts = (element: any) => {
+    const { days, interval } = element;
+    callAPI(days, interval === "daily");
+  };
+
+  useEffect(() => {
+    callAPI(1, false);
+  }, []);
 
   const toggleCompare = () => {
     setCompareData((current) => !current);
@@ -51,59 +68,64 @@ const Coins = () => {
     ];
     const index = compareData ? 1 : 0;
     return (
-      <Button onClick={toggleCompare} className="inactive compare">
-        <CompareIcon src={buttonInfo[index].src.src} alt=""></CompareIcon>
+      <button
+        onClick={toggleCompare}
+        className="flex gap-[10px] px-[24px] py-[12px] rounded-[6px] w-fit bg-[--dark-gunmetal]"
+      >
+        <Image src={buttonInfo[index].src.src} alt="" width={20} height={20} />
         {buttonInfo[index].text}
-      </Button>
+      </button>
     );
   };
 
   return (
-    <>
-      <Statistics>
-        <TopPanel>
+    <div>
+      <div>
+        <div className="flex justify-between items-end pb-[4vh]">
           <h2>Select the currency to view statistics</h2>
           <CompareButton />
-        </TopPanel>
-        <Slider>
-          <Button className="active slider-button">Bitcoin</Button>
-          <Button className="inactive slider-button">Ethereum</Button>
-          <Button className="inactive slider-button">Tether</Button>
-          <Button className="inactive slider-button">Doge Coin</Button>
-          <Button className="inactive slider-button">Binance Coin</Button>
-        </Slider>
-        <Charts>
-          <ChartContainer>
-            <ChartUl>
-              <ChartLi className="name">Bitcoin (BTC)</ChartLi>
-              <ChartLi className="value">{`$${13.431} mln`}</ChartLi>
-              <ChartLi className="date">September 29, 2023</ChartLi>
-            </ChartUl>
+        </div>
+        {coinsData.length ? <CarouselComponent coinsData={coinsData} /> : null}
+        <div className="w-full h-auto flex justify-between gap-[1vw] pt-[120px]">
+          <ChartContainer className="h-auto flex justify-between">
+            <ul className="text-[#d1d1d1]">
+              <li className="text-xl">Bitcoin (BTC)</li>
+              <li className="text-[28px]/[24px] text-white pt-[24px] pb-[16px]">{`$${13.431} mln`}</li>
+              <li className="text-base">September 29, 2023</li>
+            </ul>
+            {priceData.length && (
+              <AreaChartComponent
+                xAxis={true}
+                height={"h-[165px]"}
+                width={"w-full"}
+                data={priceData}
+                color={"var(--soft-blue)"}
+                fill={"url(#area-blue)"}
+              />
+            )}
           </ChartContainer>
-          <ChartContainer>
-            <ChartUl>
-              <ChartLi className="name">Volume 24h</ChartLi>
-              <ChartLi className="value">{`$${807.243} bln`}</ChartLi>
-              <ChartLi className="date">September 29, 2023</ChartLi>
-            </ChartUl>
+          <ChartContainer className="h-auto flex flex-col justify-between">
+            <ul className="text-[#d1d1d1]">
+              <li className="text-xl">Volume 24h</li>
+              <li className="text-[28px]/[24px] text-white pt-[24px] pb-[16px]">{`$${807.243} bln`}</li>
+              <li className="text-base">September 29, 2023</li>
+            </ul>
+            {volumeData.length && (
+              <BarChartComponent
+                xAxis={true}
+                height={"h-[165px]"}
+                width={"w-full"}
+                data={volumeData}
+                color={"#B374F2"}
+                fill={"url(#area-purple)"}
+              />
+            )}
           </ChartContainer>
-        </Charts>
-        <TimeRanges>
-          {timeRanges.map((element, index) => (
-            <Button
-              key={index}
-              onClick={() => toggleTimeButton(element.time)}
-              className={`${
-                element.active ? "active" : "inactive"
-              } time-range-button`}
-            >
-              {element.time}
-            </Button>
-          ))}
-        </TimeRanges>
-      </Statistics>
+        </div>
+        <TimeRangeButtons updateChart={updateCharts} />
+      </div>
       <TableComponent />
-    </>
+    </div>
   );
 };
 export default Coins;
