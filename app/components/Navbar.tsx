@@ -2,6 +2,19 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import USD from "../../src/icons/USD.svg";
+import GBP from "../../src/icons/GBP.svg";
+import EUR from "../../src/icons/EUR.svg";
+import BTC from "../../src/icons/BTC.svg";
+import ETH from "../../src/icons/ETH.svg";
 import LogoIcon from "../../src/icons/Logo.svg";
 import HomeWhite from "../../src/icons/Home_White.svg";
 import HomeWhiteOutline from "../../src/icons/Home_White_Outline.svg";
@@ -13,6 +26,13 @@ import Moon from "../../src/icons/Moon.svg";
 const Navbar = () => {
   const [homeActive, setHomeActive] = useState(true);
   const [darkActive, setDarkActive] = useState(true);
+  const selectItems = [
+    { name: "usd", icon: USD },
+    { name: "gbp", icon: GBP },
+    { name: "eur", icon: EUR },
+    { name: "btc", icon: BTC },
+    { name: "eth", icon: ETH },
+  ];
 
   const toggleHomeActive = () => {
     setHomeActive((current) => !current);
@@ -71,8 +91,31 @@ const Navbar = () => {
             className="flex justify-center items-center bg-transparent text-sm outline-none"
           />
         </form>
-
-        <button onClick={toggleTheme} className="flex justify-center items-center w-[48px] h-[48px] rounded-[12px] border border-[#242430] bg-[#191925]">
+        <Select defaultValue="usd">
+          <SelectTrigger className="w-[108px] h-[48px] px-[16px] border border-[#242430] bg-[#191925]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="w-[108px] border border-[#242430] bg-[#191925]">
+            <SelectGroup className="bg-none text-white">
+              {selectItems.map((item: any) => (
+                <SelectItem
+                  key={item.name}
+                  value={item.name}
+                  className="hover:bg-[--dark-gunmetal] border"
+                >
+                  <span className="w-[20px] h-[20px] flex justify-center items-center border rounded-full">
+                    <Image src={item.icon} alt="" className="w-auto h-[12px]" />
+                  </span>
+                  <span>{item.name.toUpperCase()}</span>
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <button
+          onClick={toggleTheme}
+          className="flex justify-center items-center w-[48px] h-[48px] rounded-[12px] border border-[#242430] bg-[#191925]"
+        >
           <Image src={darkActive ? Sun : Moon} alt="" />
         </button>
       </div>
