@@ -3,11 +3,7 @@ import { Button, DisplayButtons, Display } from "./homeStyles";
 import StoreProvider from "./StoreProvider";
 import { useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
-import {
-  addTodo,
-  toggleTodo,
-  deleteTodo,
-} from "@/lib/features/todos/todosSlice";
+import { addTodo } from "@/lib/features/todos/todosSlice";
 import Coins from "./components/Coins";
 import Converter from "./components/Converter";
 
@@ -26,19 +22,7 @@ const List = () => {
         Add Stuff
       </button>
       <ul>
-        {todos.map((todo, index) => (
-          <li key={todo.id}>
-            <span>
-              {todo.value} {todo.id}{" "}
-            </span>
-            <button onClick={() => dispatch(toggleTodo(index))}>
-              {todo.completed ? "done" : "pending"}
-            </button>
-            <button onClick={() => dispatch(deleteTodo(todo.id))}>
-              Delete
-            </button>
-          </li>
-        ))}
+        
       </ul>
     </div>
   );
@@ -47,7 +31,6 @@ const List = () => {
 export default function Home() {
   const [coinsVisible, setCoinsVisible] = useState(true);
   const [coinsData, setCoinsData] = useState([]);
-
   const toggleDisplay = () => {
     setCoinsVisible((current) => !current);
   };
@@ -141,7 +124,11 @@ export default function Home() {
         </Button>
       </DisplayButtons>
       <Display>
-        {coinsVisible ? <Coins coinsData={coinsData} /> : <Converter coinsData={coinsData} />}
+        {coinsVisible ? (
+          <Coins coinsData={coinsData} />
+        ) : (
+          <Converter coinsData={coinsData} />
+        )}
       </Display>
       <List />
     </StoreProvider>

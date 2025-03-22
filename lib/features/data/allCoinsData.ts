@@ -61,13 +61,13 @@ const allCoinsData = () => {
         };
       });
       data = newResult;
+      console.log(1, data);
       return data;
     })
     .catch((err) => console.log(err));
-  setTimeout(() => {
-    return data;
-  }, 1000);
+  console.log(2, data);
+  return data;
 };
 
-allCoinsData();
+//allCoinsData();
 export default allCoinsData;
