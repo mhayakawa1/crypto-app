@@ -1,11 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit";
-import todosReducer from "./features/data/globalData";
+import allCoinsReducer from "./features/data/allCoinsData";
+import compareCoinsReducer from "./features/data/compareCoinsData";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      todos: todosReducer,
+      allCoinsData: allCoinsReducer,
+      compareCoinsData: compareCoinsReducer,
     },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+      immutableCheck: false,
+      serializableCheck: false,
+    })
   });
 };
 

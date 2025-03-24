@@ -1,6 +1,8 @@
-let data: any[] = [];
-const allCoinsData = () => {
-  fetch(
+import { createAction, createReducer } from "@reduxjs/toolkit";
+export const allCoins = createAction("data/allCoins");
+
+function getAllCoinsData() {
+  const response = fetch(
     "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=true&price_change_percentage=1h%2C24h%2C7d"
   )
     .then((res) => res.json())
@@ -60,14 +62,18 @@ const allCoinsData = () => {
           ),
         };
       });
-      data = newResult;
-      console.log(1, data);
-      return data;
+      return newResult;
     })
     .catch((err) => console.log(err));
-  console.log(2, data);
-  return data;
-};
+  return response;
+}
+const allCoinsData = await getAllCoinsData();
 
-//allCoinsData();
-export default allCoinsData;
+export const allCoinsReducer = createReducer([], (builder) => {
+  builder
+    .addCase(allCoins, () => {
+      return allCoinsData;
+    })
+});
+
+export default allCoinsReducer;

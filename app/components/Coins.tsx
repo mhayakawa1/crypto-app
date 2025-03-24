@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useAppSelector, useAppDispatch } from "@/lib/hooks";
+import { getCoinsChartData } from "@/lib/features/data/compareCoinsData";
 import AreaChartComponent from "./AreaChartComponent";
 import BarChartComponent from "./BarChartComponent";
 import CarouselComponent from "./CarouselComponent";
@@ -10,52 +12,48 @@ import TimeRangeButtons from "./TimeRangeButtons";
 import CompareWhite from "../../src/icons/Compare_White.svg";
 import ExitWhite from "../../src/icons/Exit_White.svg";
 
-const Coins = (props: { coinsData: any }) => {
-  const { coinsData } = props;
-  const [priceData, setPriceData] = useState([]);
-  const [volumeData, setVolumeData] = useState([]);
+const Coins = () => {
+  const [coinsData, setCoinsData] = useState([]);
+  const allCoinsData = useAppSelector((state) => state.allCoinsData);
+  const compareCoinsData = useAppSelector((state) => state.compareCoinsData);
+  const dispatch = useAppDispatch();
+  const [pricesData, setPricesData] = useState([]);
+  const [volumesData, setVolumesData] = useState([]);
   const [compareData, setCompareData] = useState(false);
 
-  const callAPI = (days: number, daily: boolean) => {
-    fetch(
-      `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=${days}${
-        daily && "&interval=daily"
-      }`
-    )
-      .then((res) => res.json())
-      .then((result) => {
-        const { prices, total_volumes } = result;
-        const formatData = (data: any) => {
-          let newData = data.slice(1);
-          if (!daily && days !== 365) {
-            newData = newData.filter(
-              (element: any, index: number) => index % 12 === 0
-            );
-          }
-
-          return newData.map((element: any, index: number) => {
-            return {
-              name: index + 1,
-              uv: element[1],
-            };
-          });
-        };
-        const priceDataFormatted = formatData(prices);
-        const volumeDataFormatted = formatData(total_volumes);
-        setPriceData(priceDataFormatted);
-        setVolumeData(volumeDataFormatted);
-      })
-      .catch((err) => console.log(err));
-  };
-
   const updateCharts = (element: any) => {
-    const { days, interval } = element;
-    callAPI(days, interval === "daily");
+    const { days, intervalDaily } = element;
+    dispatch(
+      getCoinsChartData({
+        includesVolumes: true,
+        coin: "bitcoin",
+        vsCurrency: "usd",
+        days: days,
+        intervalDaily: intervalDaily,
+      })
+    );
   };
 
   useEffect(() => {
-    callAPI(1, false);
-  }, []);
+    dispatch(
+      getCoinsChartData({
+        includesVolumes: true,
+        coin: "bitcoin",
+        vsCurrency: "usd",
+        days: 2,
+        intervalDaily: false,
+      })
+    );
+    if (compareCoinsData.length) {
+      const { pricesData, volumesData } = compareCoinsData[0] || {
+        pricesData: [],
+        volumesData: [],
+      };
+      setPricesData(pricesData);
+      setVolumesData(volumesData);
+      setCoinsData(allCoinsData);
+    }
+  }, [compareCoinsData, allCoinsData, dispatch]);
 
   const toggleCompare = () => {
     setCompareData((current) => !current);
@@ -93,12 +91,12 @@ const Coins = (props: { coinsData: any }) => {
               <li className="text-[28px]/[24px] text-white pt-[24px] pb-[16px]">{`$${13.431} mln`}</li>
               <li className="text-base">September 29, 2023</li>
             </ul>
-            {priceData.length && (
+            {pricesData.length && (
               <AreaChartComponent
                 xAxis={true}
                 height={"h-[165px]"}
                 width={"w-full"}
-                data={priceData}
+                data={pricesData}
                 color={"var(--soft-blue)"}
                 fill={"url(#area-blue)"}
               />
@@ -110,12 +108,12 @@ const Coins = (props: { coinsData: any }) => {
               <li className="text-[28px]/[24px] text-white pt-[24px] pb-[16px]">{`$${807.243} bln`}</li>
               <li className="text-base">September 29, 2023</li>
             </ul>
-            {volumeData.length && (
+            {volumesData.length && (
               <BarChartComponent
                 xAxis={true}
                 height={"h-[165px]"}
                 width={"w-full"}
-                data={volumeData}
+                data={volumesData}
                 color={"#B374F2"}
                 fill={"url(#area-purple)"}
               />
