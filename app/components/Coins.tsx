@@ -1,8 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { useAppSelector, useAppDispatch } from "@/lib/hooks";
-import { getCoinsChartData } from "@/lib/features/data/compareCoinsData";
+import { useCompareCoinsQuery } from "@/lib/features/api/apiSlice";
+import { formatCompareCoins } from "@/lib/format/formatCompareCoins";
 import AreaChartComponent from "./AreaChartComponent";
 import BarChartComponent from "./BarChartComponent";
 import CarouselComponent from "./CarouselComponent";
@@ -13,47 +13,111 @@ import CompareWhite from "../../src/icons/Compare_White.svg";
 import ExitWhite from "../../src/icons/Exit_White.svg";
 
 const Coins = () => {
-  const [coinsData, setCoinsData] = useState([]);
-  const allCoinsData = useAppSelector((state) => state.allCoinsData);
-  const compareCoinsData = useAppSelector((state) => state.compareCoinsData);
-  const dispatch = useAppDispatch();
-  const [pricesData, setPricesData] = useState([]);
-  const [volumesData, setVolumesData] = useState([]);
   const [compareData, setCompareData] = useState(false);
+  const [days, setDays] = useState(1);
+  const [intervalDaily, setIntervalDaily] = useState(false);
+
+  {
+    /*const {
+    data: data = [],
+    isLoading,
+    isSuccess,
+    isError,
+    error,
+  } = useGetCompareCoinsQuery({
+    coin: "bitcoin",
+    vsCurrency: "usd",
+    days: 1,
+    intervalDaily: false,
+  });
+
+  let areaChartContent: React.ReactNode;
+  let barChartContent: React.ReactNode;
+
+  if (isLoading) {
+    areaChartContent = <p>Loading...</p>;
+  } else if (isSuccess) {
+    const formattedData = formatCompareCoins(data, days, intervalDaily);
+    const { pricesData, volumesData } = formattedData;
+
+    areaChartContent = (
+      <AreaChartComponent
+        xAxis={true}
+        height={"h-[165px]"}
+        width={"w-full"}
+        data={pricesData}
+        color={"var(--soft-blue)"}
+        fill={"url(#area-blue)"}
+      />
+    );
+    barChartContent = (
+      <BarChartComponent
+        xAxis={true}
+        height={"h-[165px]"}
+        width={"w-full"}
+        data={volumesData}
+        color={"#B374F2"}
+        fill={"url(#area-purple)"}
+      />
+    );
+  } else if (isError) {
+    areaChartContent = <p>{error.toString()}</p>;
+  }
+    */
+  }
+  let areaChartContent: React.ReactNode;
+  let barChartContent: React.ReactNode;
+  const loading = <p>Loading...</p>;
+
+  const {
+    data: data = [],
+    isLoading,
+    isSuccess,
+    isError,
+    error,
+  } = useCompareCoinsQuery({
+    coin: "bitcoin",
+    vsCurrency: "usd",
+    days: days,
+    intervalDaily: intervalDaily,
+  });
+  if (isLoading) {
+    areaChartContent = loading;
+    barChartContent = loading;
+  } else if (isSuccess) {
+    const formattedData = formatCompareCoins(data, days, intervalDaily);
+    const { pricesData, volumesData } = formattedData;
+    areaChartContent = (
+      <AreaChartComponent
+        xAxis={true}
+        height={"h-[165px]"}
+        width={"w-full"}
+        data={pricesData}
+        color={"var(--soft-blue)"}
+        fill={"url(#area-blue)"}
+      />
+    );
+    barChartContent = (
+      <BarChartComponent
+        xAxis={true}
+        height={"h-[165px]"}
+        width={"w-full"}
+        data={volumesData}
+        color={"#B374F2"}
+        fill={"url(#area-purple)"}
+      />
+    );
+  } else if (isError) {
+    const errorMessage = <p>{error.toString()}</p>;
+    areaChartContent = errorMessage;
+    areaChartContent = errorMessage;
+  }
 
   const updateCharts = (element: any) => {
     const { days, intervalDaily } = element;
-    dispatch(
-      getCoinsChartData({
-        includesVolumes: true,
-        coin: "bitcoin",
-        vsCurrency: "usd",
-        days: days,
-        intervalDaily: intervalDaily,
-      })
-    );
+    setDays(days);
+    setIntervalDaily(intervalDaily);
   };
-
-  useEffect(() => {
-    dispatch(
-      getCoinsChartData({
-        includesVolumes: true,
-        coin: "bitcoin",
-        vsCurrency: "usd",
-        days: 2,
-        intervalDaily: false,
-      })
-    );
-    if (compareCoinsData.length) {
-      const { pricesData, volumesData } = compareCoinsData[0] || {
-        pricesData: [],
-        volumesData: [],
-      };
-      setPricesData(pricesData);
-      setVolumesData(volumesData);
-      setCoinsData(allCoinsData);
-    }
-  }, [compareCoinsData, allCoinsData, dispatch]);
 
   const toggleCompare = () => {
     setCompareData((current) => !current);
@@ -83,7 +147,7 @@ const Coins = () => {
           <h2>Select the currency to view statistics</h2>
           <CompareButton />
         </div>
-        {coinsData.length ? <CarouselComponent coinsData={coinsData} /> : null}
+        <CarouselComponent />
         <div className="w-full h-auto flex justify-between gap-[1vw] pt-[120px]">
           <ChartContainer className="h-auto flex justify-between">
             <ul className="text-[#d1d1d1]">
@@ -91,16 +155,7 @@ const Coins = () => {
               <li className="text-[28px]/[24px] text-white pt-[24px] pb-[16px]">{`$${13.431} mln`}</li>
               <li className="text-base">September 29, 2023</li>
             </ul>
-            {pricesData.length && (
-              <AreaChartComponent
-                xAxis={true}
-                height={"h-[165px]"}
-                width={"w-full"}
-                data={pricesData}
-                color={"var(--soft-blue)"}
-                fill={"url(#area-blue)"}
-              />
-            )}
+            {areaChartContent}
           </ChartContainer>
           <ChartContainer className="h-auto flex flex-col justify-between">
             <ul className="text-[#d1d1d1]">
@@ -108,16 +163,7 @@ const Coins = () => {
               <li className="text-[28px]/[24px] text-white pt-[24px] pb-[16px]">{`$${807.243} bln`}</li>
               <li className="text-base">September 29, 2023</li>
             </ul>
-            {volumesData.length && (
-              <BarChartComponent
-                xAxis={true}
-                height={"h-[165px]"}
-                width={"w-full"}
-                data={volumesData}
-                color={"#B374F2"}
-                fill={"url(#area-purple)"}
-              />
-            )}
+            {barChartContent}
           </ChartContainer>
         </div>
         <TimeRangeButtons updateChart={updateCharts} />

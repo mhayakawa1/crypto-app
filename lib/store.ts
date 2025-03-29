@@ -1,17 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit";
-import allCoinsReducer from "./features/data/allCoinsData";
-import compareCoinsReducer from "./features/data/compareCoinsData";
+import { apiSlice } from "./features/api/apiSlice";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      allCoinsData: allCoinsReducer,
-      compareCoinsData: compareCoinsReducer,
+      [apiSlice.reducerPath]: apiSlice.reducer,
     },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware({
-      immutableCheck: false,
-      serializableCheck: false,
-    })
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        immutableCheck: false,
+        serializableCheck: false,
+      })
+      .concat(apiSlice.middleware),
   });
 };
 

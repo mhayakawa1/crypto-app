@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -7,7 +6,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
+import { formatAllCoins } from "@/lib/format/formatAllCoins";
 import { Progress } from "../../components/ui/progress";
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AreaChartComponent from "./AreaChartComponent";
 import ArrowUpGreen from "../../src/icons/Arrow_Up_Green.svg";
@@ -97,101 +99,95 @@ const ProgressContainer = (props: { numbers: object; rising: boolean }) => {
 };
 
 const TableComponent = () => {
-  const [coinsData, setCoinsData] = useState([
-    {
-      image: null,
-      percents: [{ rising: true }],
-      volumeMarketCap: {
-        totalVolume: 1,
-        marketCap: 1,
-      },
-      circulatingSupply: {
-        ciruclating: 1,
-        totalSupply: 1,
-      },
-      lastSevenDays: [
-        { name: 1, uv: 1 },
-        { name: 1, uv: 2 },
-      ],
-      yRange: { min: 0, max: 100 },
-    },
-  ]);
+  const {
+    data: data = [],
+    isLoading,
+    isSuccess,
+    isError,
+    error,
+  } = useAllCoinsQuery();
 
-  const callAPI = () => {
-    fetch(
-      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=true&price_change_percentage=1h%2C24h%2C7d"
-    )
-      .then((res) => res.json())
-      .then((result) => {
-        const newResult = result.map((data: any, index: number) => {
-          const {
-            id,
-            name,
-            image,
-            current_price,
-            price_change_percentage_1h_in_currency,
-            price_change_percentage_24h_in_currency,
-            price_change_percentage_7d_in_currency,
-            total_volume,
-            market_cap,
-            circulating_supply,
-            total_supply,
-            sparkline_in_7d,
-          } = data;
-          const prices = sparkline_in_7d.price.map(
-            (price: any, index: number) => {
-              return { name: index, uv: price };
-            }
-          );
-          const sortedPrices = prices
-            .map((element: any) => element.uv)
-            .sort((x: any, y: any) => x - y);
-          const lowest = sortedPrices[0];
-          const formatValue = (number: any, isPercent: boolean) => {
-            const result = { value: number, rising: true };
-            if (isPercent) {
-              result.value = `${number.toFixed(2)}%`;
-              result.rising = Number(number) >= 0;
-              return result;
-            } else {
-              return `$${number.toLocaleString()}`;
-            }
-          };
+  let content: React.ReactNode;
 
-          return {
-            number: index + 1,
-            id: id,
-            name: name,
-            image: image,
-            price: formatValue(current_price, false),
-            percents: [
-              formatValue(price_change_percentage_1h_in_currency, true),
-              formatValue(price_change_percentage_24h_in_currency, true),
-              formatValue(price_change_percentage_7d_in_currency, true),
-            ],
-            volumeMarketCap: {
-              totalVolume: total_volume,
-              marketCap: market_cap,
-            },
-            circulatingSupply: {
-              circulating: circulating_supply,
-              totalSupply: total_supply,
-            },
-            lastSevenDays: prices,
-            yRange: {
-              min: lowest - 0.05 * lowest,
-              max: sortedPrices[sortedPrices.length - 1],
-            },
-          };
-        });
-        setCoinsData(newResult);
-      })
-      .catch((err) => console.log(err));
-  };
+  if (isLoading) {
+    content = (
+      <TableRow>
+        <TableCell>Loading...</TableCell>
+      </TableRow>
+    );
+  } else if (isSuccess) {
+    const formattedData = formatAllCoins(data);
 
-  useEffect(() => {
-    callAPI();
-  }, []);
+    content = formattedData.map((data: any) => {
+      return (
+        <TableRow
+          key={data.id}
+          className="bg-[#191925] w-full h-[77px] border-none"
+        >
+          <TableCell className="rounded-l-xl">
+            <span className="px-[10px]">{data.number}</span>
+          </TableCell>
+          <TableCell>
+            <Link
+              className="flex items-center gap-[16px]"
+              href={`/coin/${data.id}`}
+            >
+              {data.image !== null && (
+                <Avatar>
+                  <AvatarImage src={data.image} />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+              )}
+              {data.name}
+            </Link>
+          </TableCell>
+          <TableCell>${data.price.toLocaleString()}</TableCell>
+
+          {data.percents.map((percent: any) => (
+            <TableCell key={Math.random()}>
+              <div
+                className={`flex text-sm ${
+                  percent.rising ? "text-[--rising]" : "text-[--falling]"
+                } gap-[8px]`}
+              >
+                <Arrow rising={percent.rising} />
+                {percent.value}
+              </div>
+            </TableCell>
+          ))}
+
+          <TableCell className="">
+            <ProgressContainer
+              numbers={data.volumeMarketCap}
+              rising={data.percents[0].rising}
+            />
+          </TableCell>
+          <TableCell className="">
+            <ProgressContainer
+              numbers={data.circulatingSupply}
+              rising={data.percents[0].rising}
+            />
+          </TableCell>
+          <TableCell className="rounded-r-xl w-fit p-0">
+            <AreaChartComponent
+              xAxis={false}
+              height={"h-[37px]"}
+              width={"w-[120px]"}
+              data={data.lastSevenDays}
+              color={"white"}
+              fill={"url(#area-white)"}
+            />
+          </TableCell>
+        </TableRow>
+      );
+    });
+  } else if (isError) {
+    content = (
+      <TableRow>
+        <TableCell>{error.toString()}</TableCell>
+      </TableRow>
+    );
+  }
 
   return (
     <Table className="rounded-xl border-separate border-spacing-y-[8px]">
@@ -208,68 +204,7 @@ const TableComponent = () => {
           <TableHead>Last 7d</TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody className="">
-        {coinsData.map((data: any) => {
-          return (
-            <TableRow
-              key={Math.random()}
-              className="bg-[#191925] w-full h-[77px] border-none"
-            >
-              <TableCell className="rounded-l-xl">
-                <span className="px-[10px]">{data.number}</span>
-              </TableCell>
-              <TableCell className="">
-                <div className="flex items-center gap-[16px]">
-                  {data.image !== null && (
-                    <Avatar>
-                      <AvatarImage src={data.image} />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                  )}
-                  {data.name}
-                </div>
-              </TableCell>
-              <TableCell className="">{data.price}</TableCell>
-
-              {data.percents.map((percent: any) => (
-                <TableCell key={Math.random()}>
-                  <div
-                    className={`flex text-sm ${
-                      percent.rising ? "text-[--rising]" : "text-[--falling]"
-                    } gap-[8px]`}
-                  >
-                    <Arrow rising={percent.rising} />
-                    {percent.value}
-                  </div>
-                </TableCell>
-              ))}
-
-              <TableCell className="">
-                <ProgressContainer
-                  numbers={data.volumeMarketCap}
-                  rising={data.percents[0].rising}
-                />
-              </TableCell>
-              <TableCell className="">
-                <ProgressContainer
-                  numbers={data.circulatingSupply}
-                  rising={data.percents[0].rising}
-                />
-              </TableCell>
-              <TableCell className="rounded-r-xl w-fit p-0">
-                <AreaChartComponent
-                  xAxis={false}
-                  height={"h-[37px]"}
-                  width={"w-[120px]"}
-                  data={data.lastSevenDays}
-                  color={"white"}
-                  fill={"url(#area-white)"}
-                />
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
+      <TableBody>{content}</TableBody>
     </Table>
   );
 };
