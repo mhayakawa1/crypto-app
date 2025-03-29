@@ -2,7 +2,7 @@
 import { use, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useCoinQuery } from "@/lib/features/data/coinAPISlice";
+import { useCoinQuery } from "@/lib/features/api/apiSlice";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Plus from "./../../../src/icons/Plus.svg";
 import PortfolioIcon from "./../../../src/icons/Portfolio_White.svg";
