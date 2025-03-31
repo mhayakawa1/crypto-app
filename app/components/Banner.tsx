@@ -21,7 +21,7 @@ const Banner = () => {
   };
   
   return (
-    <div className="flex justify-center gap-[4vw] text-xs bg-[rgb(30,25,50)] w-full py-[16px] border-y border-[#343046]">
+    <div className="flex justify-center gap-[4vw] text-xs bg-[--dark-slate-blue] dark:bg-[--haiti] w-full py-[16px] border-y border-[#343046]">
       <BannerItem>
         <Image src={FlashCircle} alt="" />
         <span className="text-[#D1D1D1]">Coins</span>
