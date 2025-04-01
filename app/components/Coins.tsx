@@ -1,6 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
+import { useCompareCoinsQuery } from "@/lib/features/api/apiSlice";
+import { formatCompareCoins } from "@/lib/format/formatCompareCoins";
 import AreaChartComponent from "./AreaChartComponent";
 import BarChartComponent from "./BarChartComponent";
 import CarouselComponent from "./CarouselComponent";
@@ -10,52 +12,64 @@ import TimeRangeButtons from "./TimeRangeButtons";
 import CompareWhite from "../../src/icons/Compare_White.svg";
 import ExitWhite from "../../src/icons/Exit_White.svg";
 
-const Coins = (props: { coinsData: any }) => {
-  const { coinsData } = props;
-  const [priceData, setPriceData] = useState([]);
-  const [volumeData, setVolumeData] = useState([]);
+const Coins = () => {
   const [compareData, setCompareData] = useState(false);
+  const [days, setDays] = useState(1);
+  const [intervalDaily, setIntervalDaily] = useState(false);
 
-  const callAPI = (days: number, daily: boolean) => {
-    fetch(
-      `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=${days}${
-        daily && "&interval=daily"
-      }`
-    )
-      .then((res) => res.json())
-      .then((result) => {
-        const { prices, total_volumes } = result;
-        const formatData = (data: any) => {
-          let newData = data.slice(1);
-          if (!daily && days !== 365) {
-            newData = newData.filter(
-              (element: any, index: number) => index % 12 === 0
-            );
-          }
+  let areaChartContent: React.ReactNode;
+  let barChartContent: React.ReactNode;
+  const loading = <p>Loading...</p>;
 
-          return newData.map((element: any, index: number) => {
-            return {
-              name: index + 1,
-              uv: element[1],
-            };
-          });
-        };
-        const priceDataFormatted = formatData(prices);
-        const volumeDataFormatted = formatData(total_volumes);
-        setPriceData(priceDataFormatted);
-        setVolumeData(volumeDataFormatted);
-      })
-      .catch((err) => console.log(err));
-  };
+  const {
+    data: data = [],
+    isLoading,
+    isSuccess,
+    isError,
+    error,
+  } = useCompareCoinsQuery({
+    coin: "bitcoin",
+    vsCurrency: "usd",
+    days: days,
+    intervalDaily: intervalDaily,
+  });
+  if (isLoading) {
+    areaChartContent = loading;
+    barChartContent = loading;
+  } else if (isSuccess) {
+    const formattedData = formatCompareCoins(data, days, intervalDaily);
+    const { pricesData, volumesData } = formattedData;
+    areaChartContent = (
+      <AreaChartComponent
+        xAxis={true}
+        height={"h-[165px]"}
+        width={"w-full"}
+        data={pricesData}
+        color={"var(--soft-blue)"}
+        fill={"url(#area-blue)"}
+      />
+    );
+    barChartContent = (
+      <BarChartComponent
+        xAxis={true}
+        height={"h-[165px]"}
+        width={"w-full"}
+        data={volumesData}
+        color={"#B374F2"}
+        fill={"url(#area-purple)"}
+      />
+    );
+  } else if (isError) {
+    const errorMessage = <p>{error.toString()}</p>;
+    areaChartContent = errorMessage;
+    areaChartContent = errorMessage;
+  }
 
   const updateCharts = (element: any) => {
-    const { days, interval } = element;
-    callAPI(days, interval === "daily");
+    const { days, intervalDaily } = element;
+    setDays(days);
+    setIntervalDaily(intervalDaily);
   };
-
-  useEffect(() => {
-    callAPI(1, false);
-  }, []);
 
   const toggleCompare = () => {
     setCompareData((current) => !current);
@@ -85,7 +99,7 @@ const Coins = (props: { coinsData: any }) => {
           <h2>Select the currency to view statistics</h2>
           <CompareButton />
         </div>
-        {coinsData.length ? <CarouselComponent coinsData={coinsData} /> : null}
+        <CarouselComponent />
         <div className="w-full h-auto flex justify-between gap-[1vw] pt-[120px]">
           <ChartContainer className="h-auto flex justify-between">
             <ul className="text-[#d1d1d1]">
@@ -93,16 +107,7 @@ const Coins = (props: { coinsData: any }) => {
               <li className="text-[28px]/[24px] text-white pt-[24px] pb-[16px]">{`$${13.431} mln`}</li>
               <li className="text-base">September 29, 2023</li>
             </ul>
-            {priceData.length && (
-              <AreaChartComponent
-                xAxis={true}
-                height={"h-[165px]"}
-                width={"w-full"}
-                data={priceData}
-                color={"var(--soft-blue)"}
-                fill={"url(#area-blue)"}
-              />
-            )}
+            {areaChartContent}
           </ChartContainer>
           <ChartContainer className="h-auto flex flex-col justify-between">
             <ul className="text-[#d1d1d1]">
@@ -110,16 +115,7 @@ const Coins = (props: { coinsData: any }) => {
               <li className="text-[28px]/[24px] text-white pt-[24px] pb-[16px]">{`$${807.243} bln`}</li>
               <li className="text-base">September 29, 2023</li>
             </ul>
-            {volumeData.length && (
-              <BarChartComponent
-                xAxis={true}
-                height={"h-[165px]"}
-                width={"w-full"}
-                data={volumeData}
-                color={"#B374F2"}
-                fill={"url(#area-purple)"}
-              />
-            )}
+            {barChartContent}
           </ChartContainer>
         </div>
         <TimeRangeButtons updateChart={updateCharts} />

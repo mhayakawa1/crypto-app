@@ -8,13 +8,14 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
+import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
+import { formatAllCoins } from "@/lib/format/formatAllCoins";
 import Image from "next/image";
 import ArrowUpGreen from "../../src/icons/Arrow_Up_Green.svg";
 import ArrowDownRed from "../../src/icons/Arrow_Down_Red.svg";
 
-const CarouselComponent = (props: { coinsData: any }) => {
-  const { coinsData } = props;
-  const [activeCoins, setActiveCoins] = useState(coinsData.slice(0, 1));
+const CarouselComponent = () => {
+  const [activeCoins, setActiveCoins]: any[] = useState([]);
   const [twoCoinsActive, setTwoCoinsActive] = useState(false);
 
   const CoinButton = (data: any) => {
@@ -22,12 +23,12 @@ const CarouselComponent = (props: { coinsData: any }) => {
       data: { id, image, name, symbol, price, percents },
     } = data;
     const [active, setActive] = useState(
-      activeCoins.filter((element: any) => element.id === id).length
+      Boolean(activeCoins.filter((element: any) => element.id === id).length)
     );
     const rising = percents[0].rising;
 
     const toggleActive = () => {
-      let newActiveCoins = activeCoins;
+      let newActiveCoins: any[] = activeCoins;
       if (!active) {
         if (twoCoinsActive) {
           newActiveCoins = newActiveCoins.slice(1);
@@ -98,13 +99,33 @@ const CarouselComponent = (props: { coinsData: any }) => {
     );
   };
 
+  const {
+    data: data = [],
+    isLoading,
+    isSuccess,
+    isError,
+    error,
+  } = useAllCoinsQuery();
+
+  let content: React.ReactNode;
+  
+  if (isLoading) {
+    content = <p>Loading...</p>;
+  } else if (isSuccess) {
+    const formattedData = formatAllCoins(data);
+    content = formattedData.map((coin: any) => (
+      <CoinButton key={coin.id} data={coin} />
+    ));
+    if (!activeCoins.length) {
+      setActiveCoins(formattedData.slice(0, 1));
+    }
+  } else if (isError) {
+    content = <p>{error.toString()}</p>;
+  }
+  
   return (
     <Carousel className="absolute w-[91vw]">
-      <CarouselContent className="-ml-2 mt-3 mb-5">
-        {coinsData.map((data: any) => (
-          <CoinButton key={data.id} data={data} />
-        ))}
-      </CarouselContent>
+      <CarouselContent className="-ml-2 mt-3 mb-5">{content}</CarouselContent>
       <CarouselPrevious className="ml-[1vw] -mt-1" />
       <CarouselNext className="mr-[1vw] -mt-1" />
     </Carousel>
