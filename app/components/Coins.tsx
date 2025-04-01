@@ -17,54 +17,6 @@ const Coins = () => {
   const [days, setDays] = useState(1);
   const [intervalDaily, setIntervalDaily] = useState(false);
 
-  {
-    /*const {
-    data: data = [],
-    isLoading,
-    isSuccess,
-    isError,
-    error,
-  } = useGetCompareCoinsQuery({
-    coin: "bitcoin",
-    vsCurrency: "usd",
-    days: 1,
-    intervalDaily: false,
-  });
-
-  let areaChartContent: React.ReactNode;
-  let barChartContent: React.ReactNode;
-
-  if (isLoading) {
-    areaChartContent = <p>Loading...</p>;
-  } else if (isSuccess) {
-    const formattedData = formatCompareCoins(data, days, intervalDaily);
-    const { pricesData, volumesData } = formattedData;
-
-    areaChartContent = (
-      <AreaChartComponent
-        xAxis={true}
-        height={"h-[165px]"}
-        width={"w-full"}
-        data={pricesData}
-        color={"var(--soft-blue)"}
-        fill={"url(#area-blue)"}
-      />
-    );
-    barChartContent = (
-      <BarChartComponent
-        xAxis={true}
-        height={"h-[165px]"}
-        width={"w-full"}
-        data={volumesData}
-        color={"#B374F2"}
-        fill={"url(#area-purple)"}
-      />
-    );
-  } else if (isError) {
-    areaChartContent = <p>{error.toString()}</p>;
-  }
-    */
-  }
   let areaChartContent: React.ReactNode;
   let barChartContent: React.ReactNode;
   const loading = <p>Loading...</p>;

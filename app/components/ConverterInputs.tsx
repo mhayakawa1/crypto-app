@@ -24,7 +24,6 @@ const InputContainer = (props: {
     props;
   const { name, price, image } = priceData;
 
-  console.log(priceData)
   const changeAmount = (event: any) => {
     const {
       target: { value },
