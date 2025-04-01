@@ -4,11 +4,11 @@ import { useState } from "react";
 const TimeRangeButtons = (props: { updateChart: any }) => {
   const { updateChart } = props;
   const [timeRanges, setTimeRanges] = useState([
-    { time: "1D", days: 1, interval: "hourly", active: true },
-    { time: "7D", days: 7, interval: "hourly", active: false },
-    { time: "14D", days: 14, interval: "daily", active: false },
-    { time: "1M", days: 30, interval: "daily", active: false },
-    { time: "1Y", days: 365, interval: "daily", active: false },
+    { time: "1D", days: 1, intervalDaily: false, active: true },
+    { time: "7D", days: 7, intervalDaily: false, active: false },
+    { time: "14D", days: 14, intervalDaily: true, active: false },
+    { time: "1M", days: 30, intervalDaily: true, active: false },
+    { time: "1Y", days: 365, intervalDaily: true, active: false },
   ]);
 
   const toggleTimeButton = (value: string) => {
