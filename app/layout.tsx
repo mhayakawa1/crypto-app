@@ -29,7 +29,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <header className="flex flex-col gap-[2vh]">
+            <header className="flex flex-col gap-[2vh] pb-[2vh] bg-white dark:bg-transparent">
               <Banner />
               <Navbar />
             </header>

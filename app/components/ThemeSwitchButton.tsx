@@ -9,13 +9,12 @@ import Sun from "../../src/icons/Sun.svg";
 
 export function ThemeSwitchButton() {
   const { setTheme } = useTheme();
-  const [darkActive, setDarkActive] = useState(localStorage.getItem('theme') === 'dark' || false);
+  const [darkActive, setDarkActive] = useState(false);
 
   const toggleTheme = () => {
     setDarkActive((current) => !current);
     const theme = darkActive ? "light" : "dark";
     setTheme(theme);
-    localStorage.setItem("theme", theme);
   };
 
   return (
