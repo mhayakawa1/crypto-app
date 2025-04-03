@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { useEffect, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
@@ -11,26 +11,27 @@ import Sun from "../../src/icons/Sun.svg";
 
 export function ThemeSwitchButton() {
   const { setTheme } = useTheme();
+  const [isFirstRender, setIsFirstRender] = useState(true);
   const theme = useAppSelector((state) => state.theme);
   const darkActive = theme[0].darkActive;
   const dispatch = useAppDispatch();
 
-  const switchTheme = useCallback(
-    () => {
-      const newTheme = darkActive ? "light" : "dark";
-      localStorage.setItem("savedTheme", newTheme);
-      setTheme(newTheme);
-      dispatch(toggleTheme({ darkActive: !darkActive }));
-    },
-    [darkActive, dispatch, setTheme]
-  );
+  const switchTheme = useCallback(() => {
+    const newTheme = darkActive ? "light" : "dark";
+    localStorage.setItem("savedTheme", newTheme);
+    setTheme(newTheme);
+    dispatch(toggleTheme({ darkActive: !darkActive }));
+  }, [darkActive, dispatch, setTheme]);
 
   useEffect(() => {
-    const storageItem = localStorage.getItem("savedTheme");
-    if (storageItem === "dark") {
-      switchTheme();
+    if (isFirstRender) {
+      const storageItem = localStorage.getItem("savedTheme");
+      if (storageItem === "dark") {
+        switchTheme();
+      }
+      setIsFirstRender(false);
     }
-  }, [switchTheme]);
+  }, [switchTheme, isFirstRender]);
 
   return (
     <Button
