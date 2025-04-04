@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { ThemeSwitchButton } from "./ThemeSwitchButton";
 import USD from "../../src/icons/USD.svg";
 import GBP from "../../src/icons/GBP.svg";
 import EUR from "../../src/icons/EUR.svg";
@@ -21,12 +22,9 @@ import HomeWhite from "../../src/icons/Home_White.svg";
 import HomeWhiteOutline from "../../src/icons/Home_White_Outline.svg";
 import PortfolioWhite from "../../src/icons/Portfolio_White.svg";
 import SearchWhite from "../../src/icons/Search_White.svg";
-import Sun from "../../src/icons/Sun.svg";
-import Moon from "../../src/icons/Moon.svg";
 
 const Navbar = () => {
   const [homeActive, setHomeActive] = useState(true);
-  const [darkActive, setDarkActive] = useState(true);
   const [resultsVisible, setResultsVisible] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const searchResults = ["Bitcoin", "Ethereum", "Tether"];
@@ -48,10 +46,6 @@ const Navbar = () => {
     setHomeActive((current) => !current);
   };
 
-  const toggleTheme = () => {
-    setDarkActive((current) => !current);
-  };
-
   const LinkContainer = (props: { src: any; path: string; name: string }) => {
     const { src, path, name } = props;
     const isHomeActive = path === "" ? homeActive : !homeActive;
@@ -59,7 +53,7 @@ const Navbar = () => {
     return (
       <button
         onClick={!isHomeActive ? toggleHomeActive : undefined}
-        className={`flex justify-between items-center gap-[8px] ${
+        className={`flex justify-between items-center gap-[8px] text-[--dark-slate-blue] dark:text-white ${
           !isHomeActive && "opacity-50"
         }`}
       >
@@ -79,7 +73,7 @@ const Navbar = () => {
           height={20}
           className="m-auto"
         />
-        <h1>Logoipsm</h1>
+        <h1 className="text-[--dark-slate-blue] dark:text-white">Logoipsm</h1>
       </div>
       <div className="flex justify-between gap-[24px]">
         <LinkContainer
@@ -94,7 +88,13 @@ const Navbar = () => {
         ></LinkContainer>
       </div>
       <div className="flex justify-between gap-[16px]">
-        <div className="relative gap-[12px] m-0 w-auto h-auto bg-[#191925]">
+        <div
+          className={`relative gap-[12px] m-0 w-auto h-auto ${
+            resultsVisible
+              ? "rounded-tl-[6px] rounded-tr-[6px] rounded-bl-none rounded-br-none"
+              : "rounded-[6px]"
+          } bg-[--lavender] dark:bg-[#191925]`}
+        >
           <Image
             src={SearchWhite}
             alt=""
@@ -107,10 +107,10 @@ const Navbar = () => {
               resultsVisible
                 ? "rounded-bl-none rounded-br-none"
                 : "rounded-bl-[6px] rounded-br-[6px]"
-            } h-[48px] pl-[44px] flex justify-center items-center bg-transparent text-sm outline-none border border-[#242430]`}
+            } h-[48px] pl-[44px] flex justify-center items-center bg-transparent text-sm outline-none text-[--dark-slate-blue] dark:twxt-white dark:border dark:border-[#242430]`}
           />
           {resultsVisible && (
-            <ul className="absolute rounded-bl-[6px] rounded-br-[6px] w-full border border-[#242430] border-t-0 bg-[#191925]">
+            <ul className="absolute rounded-bl-[6px] rounded-br-[6px] w-full text-[--dark-slate-blue] bg-[--lavender] dark:border dark:border-[#242430] dark:border-t-0 dark:bg-[#191925]">
               {searchResults
                 .filter((result: any) =>
                   result.toLowerCase().includes(searchValue)
@@ -124,19 +124,19 @@ const Navbar = () => {
           )}
         </div>
         <Select defaultValue="usd">
-          <SelectTrigger className="w-[108px] h-[48px] px-[16px] border border-[#242430] bg-[#191925]">
-            <SelectValue className="flex justify-center items-center border" />
+          <SelectTrigger className="w-[108px] h-[48px] px-[16px] bg-[--lavender] text-[--dark-slate-blue] dark:text-white dark:border dark:border-[#242430] dark:bg-[#191925]">
+            <SelectValue className="flex justify-center items-center" />
           </SelectTrigger>
-          <SelectContent className="w-[108px] border border-[#242430] bg-[#191925]">
-            <SelectGroup className="bg-none text-white">
+          <SelectContent className="w-[108px] bg-[--lavender] dark:border dark:border-[#242430] dark:bg-[#191925]">
+            <SelectGroup className="bg-none text-[--dark-slate-blue] dark:text-white">
               {selectItems.map((item: any) => (
                 <SelectItem
                   key={item.name}
                   value={item.name}
-                  className="hover:bg-[--dark-gunmetal]"
+                  className="hover:bg-white dark:hover:bg-[--dark-gunmetal]"
                 >
                   <span className="flex justify-center items-center gap-[8px]">
-                    <span className="flex justify-center items-center w-[20px] h-[20px] border rounded-full">
+                    <span className="flex justify-center items-center w-[20px] h-[20px] border bg-[--dark-slate-blue] dark:bg-transparent dark:border-white rounded-full">
                       <Image
                         src={item.icon}
                         alt=""
@@ -152,12 +152,7 @@ const Navbar = () => {
             </SelectGroup>
           </SelectContent>
         </Select>
-        <button
-          onClick={toggleTheme}
-          className="flex justify-center items-center w-[48px] h-[48px] rounded-[12px] border border-[#242430] bg-[#191925]"
-        >
-          <Image src={darkActive ? Sun : Moon} alt="" />
-        </button>
+        <ThemeSwitchButton />
       </div>
     </nav>
   );
