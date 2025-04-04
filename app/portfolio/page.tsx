@@ -1,16 +1,50 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
+import { formatAllCoins } from "@/lib/format/formatAllCoins";
 import Exit from "../../src/icons/Close_Circle.svg";
 import Edit from "../../src/icons/Edit_White.svg";
 import ArrowUpGreen from "../../src/icons/Arrow_Up_Green.svg";
 
 const Modal = (props: { toggleModal: any }) => {
   const { toggleModal } = props;
+  const {
+    data: data = [],
+    isLoading,
+    isSuccess,
+    isError,
+    error,
+  } = useAllCoinsQuery();
+
+  const handleChange = () => {
+  };
+
+  let content: React.ReactNode;
+
+  if (isLoading) {
+    content = <span>Loading...</span>;
+  } else if (isSuccess) {
+    const formattedData = formatAllCoins(data);
+    content = formattedData.map((coin: any) => (
+      <SelectItem key={coin.id} value={coin.id}>
+        {coin.name}
+      </SelectItem>
+    ));
+  } else if (isError) {
+    content = <span>{error.toString()}</span>;
+  }
 
   return (
     <div className="absolute top-0 left-0 flex justify-center items-center w-[100vw] h-[100vh] backdrop-blur-sm">
-      <div className="flex flex-col gap-[32px] rounded-[20px] p-[48px] bg-[#13121a]">
+      <div className="flex flex-col gap-[32px] rounded-[20px] p-[48px] dark:bg-[#13121a]">
         <div className="flex justify-between  items-center">
           <h2>Select Coins</h2>
           <button
@@ -21,25 +55,28 @@ const Modal = (props: { toggleModal: any }) => {
           </button>
         </div>
         <div className="flex gap-[32px]">
-          <div className="flex flex-col justify-center items-center gap-[24px] aspect-[297/241] p-[24px] text-[28px] bg-[#191932] rounded-[8px]">
-            <div className="w-[64px] h-[64px] rounded-[8px] bg-[--button-bg]"></div>
+          <div className="flex flex-col justify-center items-center gap-[24px] aspect-[297/241] p-[24px] text-[28px] bg-white dark:bg-[#191932] rounded-[8px]">
+            <div className="w-[64px] h-[64px] rounded-[8px] bg-[--lavender] dark:bg-[--space-cadet]"></div>
             <h3 className="font-bold text-[28px]">Bitcoin (BTC)</h3>
           </div>
           <div className="grow flex flex-col gap-[16px] p-0">
+            <Select defaultValue="bitcoin" onValueChange={handleChange}>
+              <SelectTrigger className="w-full h-[44px] rounded-[4px] p-[8px] bg-white dark:bg-[#191925]">
+                <SelectValue className="" />
+              </SelectTrigger>
+              <SelectContent className="">{content}</SelectContent>
+            </Select>
             <input
-              className="w-full h-[44px] rounded-[4px] p-[8px] bg-[#191925]"
-              placeholder="Select coins"
+              className="w-full h-[44px] rounded-[4px] p-[8px] text-black dark:bg-[#191925]"
+              placeholder="1"
+              type="number"
             />
             <input
-              className="w-full h-[44px] rounded-[4px] p-[8px] bg-[#191925]"
-              placeholder="Purchased amount"
-            />
-            <input
-              className="w-full h-[44px] rounded-[4px] p-[8px] bg-[#191925]"
-              placeholder="Purchased date"
+              className="w-full h-[44px] rounded-[4px] p-[8px] dark:bg-[#191925]"
+              type="date"
             />
             <div className="flex justify-between gap-[16px] mt-[16px]">
-              <button className="h-[45px] w-[224px] rounded-[6px] bg-[#232336]">
+              <button className="h-[45px] w-[224px] rounded-[6px] dark:bg-[#232336]">
                 Cancel
               </button>
               <button
@@ -64,7 +101,7 @@ const PortfolioAsset = (props: { toggleModal: any }) => {
   return (
     <div className="flex border-[#191932]">
       <div className="flex flex-col justify-center items-center gap-[24px] aspect-[129/146] bg-[#1e1932] p-[24px]">
-        <div className="w-[64px] h-[64px] rounded-[8px] bg-[--button-bg]"></div>
+        <div className="w-[64px] h-[64px] rounded-[8px] bg-[--lavender] dark:bg-[--space-cadet]"></div>
         <h3 className="font-bold text-[28px]">Bitcoin (BTC)</h3>
       </div>
       <div className="grow flex flex-col gap-[24px] bg-[#191932] p-[32px]">
@@ -101,8 +138,7 @@ const PortfolioAsset = (props: { toggleModal: any }) => {
             <li className="flex flex-col justify-center items-center">
               <ul className="flex flex-col justify-between text-center list-none gap-[16px]">
                 <li className="flex justify-center">Market Cap vs. Volume</li>
-                <li className="text-[--rising] text-base/[16px]">
-                </li>
+                <li className="text-[--rising] text-base/[16px]"></li>
               </ul>
             </li>
             <li className="flex flex-col justify-center items-center">
@@ -187,9 +223,9 @@ export default function Portfolio() {
         <h2>Your statistics</h2>
         <button
           onClick={toggleModal}
-          className="w-[244px] h-[45px] p-[1px] rounded-[6px] flex items-center justify-center bg-gradient-to-b from-[--button-border] to-[--button-bg] shadow-[4px_4px_15px_2px_#7878fa26]"
+          className="w-[244px] h-[45px] p-[1px] rounded-[6px] flex items-center justify-center bg-gradient-to-b from-[--soft-blue] to-[--perano] dark:to-[--american-blue] shadow-[4px_4px_15px_2px_#7878fa26]"
         >
-          <span className="bg-[--button-bg] rounded-[6px] w-full h-full flex items-center justify-center">
+          <span className="bg-[--perano] dark:bg-[--american-blue] rounded-[6px] w-full h-full flex items-center justify-center">
             Add Asset
           </span>
         </button>
