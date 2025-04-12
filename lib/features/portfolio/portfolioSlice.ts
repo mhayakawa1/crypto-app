@@ -3,9 +3,11 @@ import { createAction, createReducer } from "@reduxjs/toolkit";
 interface Asset {
   id: number;
   coinId: string;
+  name: string;
+  symbol: string;
+  src: string;
   initialPrice: number;
   coinAmount: number;
-  change: number;
   date: string;
   apiDate: string;
 }

@@ -26,7 +26,6 @@ export default function Portfolio() {
   const [addAssetVisible, setAddAssetVisible] = useState(false);
   const [deleteAssetVisible, setDeleteAssetVisible] = useState(false);
   const [assetData, setAssetData] = useState(null);
-  const [apiData, setApiData] = useState({});
   const [index, setIndex] = useState(-1);
   const portfolio = useAppSelector((state) => state.portfolio);
   const dispatch = useAppDispatch();
@@ -41,15 +40,6 @@ export default function Portfolio() {
 
   const toggleAddModal = (assetData: any, index: number) => {
     setAssetData(assetData);
-    if (assetData) {
-      setApiData(
-        !addAssetVisible
-          ? formatPortfolioCoin(
-              data.find((element: any) => element.id === assetData.coinId)
-            )
-          : {}
-      );
-    }
     setIndex(index);
     setAddAssetVisible((current) => !current);
   };
@@ -114,7 +104,6 @@ export default function Portfolio() {
         <AddAssetModal
           toggleAddModal={toggleAddModal}
           assetData={assetData}
-          apiData={apiData}
           index={index}
         />
       )}

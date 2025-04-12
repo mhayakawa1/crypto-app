@@ -18,16 +18,16 @@ const PortfolioAsset = (props: {
   const {
     initialPrice,
     coinAmount,
+    name,
+    src,
+    symbol,
     date,
   } = assetData;
   const {
       circulating,
-      src,
       marketCap,
-      name,
       price,
       priceChange,
-      symbol,
       totalVolume,    
   } = apiData;
   const valueColors = [
