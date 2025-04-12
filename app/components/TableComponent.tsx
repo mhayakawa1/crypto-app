@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -6,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
 import { formatAllCoins } from "@/lib/format/formatAllCoins";
 import { Progress } from "../../components/ui/progress";
@@ -99,6 +101,8 @@ const ProgressContainer = (props: { numbers: object; rising: boolean }) => {
 };
 
 const TableComponent = () => {
+  const [sortValue, setSortValue] = useState("#");
+
   const {
     data: data = [],
     isLoading,
@@ -117,33 +121,34 @@ const TableComponent = () => {
     );
   } else if (isSuccess) {
     const formattedData = formatAllCoins(data);
-
+    console.log(sortValue);
     content = formattedData.map((data: any) => {
+      const {id, number, image, name, price, percents, volumeMarketCap, circulatingSupply, lastSevenDays} = data;
       return (
         <TableRow
           key={data.id}
-          className="bg-[#191925] w-full h-[77px] border-none"
+          className="bg-white text-[--dark-gunmetal] dark:text-white dark:bg-[#191925] w-full h-[77px] border-none"
         >
           <TableCell className="rounded-l-xl">
-            <span className="px-[10px]">{data.number}</span>
+            <span className="px-[10px]">{number}</span>
           </TableCell>
           <TableCell>
             <Link
               className="flex items-center gap-[16px]"
-              href={`/coin/${data.id}`}
+              href={`/coin/${id}`}
             >
-              {data.image !== null && (
+              {image !== null && (
                 <Avatar>
-                  <AvatarImage src={data.image} />
+                  <AvatarImage src={image} />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
               )}
-              {data.name}
+              {name}
             </Link>
           </TableCell>
-          <TableCell>${data.price.toLocaleString()}</TableCell>
+          <TableCell>${price.toLocaleString()}</TableCell>
 
-          {data.percents.map((percent: any) => (
+          {percents.map((percent: any) => (
             <TableCell key={Math.random()}>
               <div
                 className={`flex text-sm ${
@@ -158,14 +163,14 @@ const TableComponent = () => {
 
           <TableCell className="">
             <ProgressContainer
-              numbers={data.volumeMarketCap}
-              rising={data.percents[0].rising}
+              numbers={volumeMarketCap}
+              rising={percents[0].rising}
             />
           </TableCell>
           <TableCell className="">
             <ProgressContainer
-              numbers={data.circulatingSupply}
-              rising={data.percents[0].rising}
+              numbers={circulatingSupply}
+              rising={percents[0].rising}
             />
           </TableCell>
           <TableCell className="rounded-r-xl w-fit p-0">
@@ -173,7 +178,7 @@ const TableComponent = () => {
               xAxis={false}
               height={"h-[37px]"}
               width={"w-[120px]"}
-              data={data.lastSevenDays}
+              data={lastSevenDays}
               color={"white"}
               fill={"url(#area-white)"}
             />
@@ -189,23 +194,78 @@ const TableComponent = () => {
     );
   }
 
+  const SortButton = (props: { value: string }) => {
+    const { value } = props;
+    return (
+      <button
+        onClick={() => setSortValue(value)}
+        className="w-full h-full rounded-[4px] hover:bg-[--lavender] hover:text-[--soft-blue]"
+      >
+        {value}
+      </button>
+    );
+  };
+
+  const refresh = () => {};
+
+  const updateQuery = () => {};
+
   return (
+    <InfiniteScroll
+      dataLength={10}
+      next={updateQuery}
+      hasMore={true}
+      loader={<h4>Loading...</h4>}
+      endMessage={
+        <p style={{ textAlign: "center" }}>
+          <b>Yay! You have seen it all</b>
+        </p>
+      }
+      refreshFunction={refresh}
+      pullDownToRefresh
+      pullDownToRefreshThreshold={50}
+      pullDownToRefreshContent={
+        <h3 style={{ textAlign: "center" }}>&#8595; Pull down to refresh</h3>
+      }
+      releaseToRefreshContent={
+        <h3 style={{ textAlign: "center" }}>&#8593; Release to refresh</h3>
+      }
+    >
     <Table className="rounded-xl border-separate border-spacing-y-[8px]">
       <TableHeader>
-        <TableRow className="border-none">
-          <TableHead>#</TableHead>
-          <TableHead>Name</TableHead>
-          <TableHead>Price</TableHead>
-          <TableHead>1h%</TableHead>
-          <TableHead>24h%</TableHead>
-          <TableHead>7d%</TableHead>
-          <TableHead>24h volume / Market Cap</TableHead>
-          <TableHead>Circulating / Total supply</TableHead>
-          <TableHead>Last 7d</TableHead>
+        <TableRow className="border-none hover:bg-transparent">
+          <TableHead>
+            <SortButton value="#" />
+          </TableHead>
+          <TableHead>
+            <SortButton value="Name" />
+          </TableHead>
+          <TableHead>
+            <SortButton value="Price" />
+          </TableHead>
+          <TableHead>
+            <SortButton value="1h%" />
+          </TableHead>
+          <TableHead>
+            <SortButton value="24h%" />
+          </TableHead>
+          <TableHead>
+            <SortButton value="7d%" />
+          </TableHead>
+          <TableHead>
+            <SortButton value="24h volume / Market Cap" />
+          </TableHead>
+          <TableHead>
+            <SortButton value="Circulating / Total supply" />
+          </TableHead>
+          <TableHead>
+            <SortButton value="Last 7d" />
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>{content}</TableBody>
     </Table>
+    </InfiniteScroll>
   );
 };
 export default TableComponent;
