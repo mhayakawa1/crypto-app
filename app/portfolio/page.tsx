@@ -1,11 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AddAssetModal from "../components/AddAssetModal";
 import DeleteAssetModal from "../components/DeleteAssetModal";
 import PortfolioAsset from "../components/PortfolioAsset";
 import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
+import { addLocalStorage } from "@/lib/features/portfolio/portfolioSlice";
 import { formatPortfolioCoin } from "@/lib/format/formatPortfolioCoin";
-import { useAppSelector } from "@/lib/hooks";
+import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
 const AddAssetButton = (props: { toggleAddModal: any; assetData: any }) => {
   const { toggleAddModal, assetData } = props;
@@ -28,6 +29,7 @@ export default function Portfolio() {
   const [apiData, setApiData] = useState({});
   const [index, setIndex] = useState(-1);
   const portfolio = useAppSelector((state) => state.portfolio);
+  const dispatch = useAppDispatch();
 
   const {
     data: data = [],
@@ -91,6 +93,13 @@ export default function Portfolio() {
   } else if (isError) {
     <span>{error.toString()}</span>;
   }
+
+  useEffect(() => {
+    const storageItem = localStorage.getItem("portfolio");
+    if (storageItem) {
+      dispatch(addLocalStorage(JSON.parse(storageItem)));
+    }
+  }, [dispatch]);
 
   return (
     <div className="flex flex-col gap-[2vh] py-[4vh]">

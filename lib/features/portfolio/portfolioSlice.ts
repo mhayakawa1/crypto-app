@@ -21,12 +21,18 @@ const setLocalStorage = (newState: any) => {
   localStorage.setItem("portfolio", JSON.stringify(newState));
 };
 
+export const addLocalStorage = createAction<any>("portfolio/localStorage");
 export const addAsset = createAction<Asset>("portfolio/add");
 export const editAsset = createAction<UpdatedAsset>("portfolio/edit");
 export const deleteAsset = createAction<number>("portfolio/delete");
 
 export const portfolioReducer = createReducer(initialState, (builder) => {
   builder
+    .addCase(addLocalStorage, (state: any, action: any) => {
+      const portfolio = action.payload;
+      setLocalStorage(portfolio);
+      return portfolio;
+    })
     .addCase(addAsset, (state: any, action: any) => {
       const asset = action.payload;
       const newState = [...state, asset];
