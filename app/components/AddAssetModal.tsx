@@ -61,7 +61,6 @@ const AddAssetModal = (props: {
 
   function handleSubmit(event: any) {
     event.preventDefault();
-    console.log(coinData)
     if (Boolean(coinId.length)) {
       const newAsset: any = JSON.parse(JSON.stringify(asset));
       newAsset.initialPrice = coinData.market_data.current_price.usd;
