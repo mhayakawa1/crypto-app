@@ -10,7 +10,7 @@ import ChartContainer from "./ChartContainer";
 import TableComponent from "./TableComponent";
 import TimeRangeButtons from "./TimeRangeButtons";
 import CompareWhite from "../../src/icons/Compare_White.svg";
-import ExitWhite from "../../src/icons/Exit_White.svg";
+import XWhite from "../../src/icons/X_White.svg";
 
 const Coins = () => {
   const [compareData, setCompareData] = useState(false);
@@ -78,7 +78,7 @@ const Coins = () => {
   const CompareButton = () => {
     const buttonInfo = [
       { src: CompareWhite, text: "Compare" },
-      { src: ExitWhite, text: "Exit Comparison" },
+      { src: XWhite, text: "Exit Comparison" },
     ];
     const index = compareData ? 1 : 0;
     return (

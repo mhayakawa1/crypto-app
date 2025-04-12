@@ -1,10 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "./features/api/apiSlice";
+import todosReducer from "./features/todos/todosSlice";
+import portfolioReducer from "./features/portfolio/portfolioSlice";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       [apiSlice.reducerPath]: apiSlice.reducer,
+      todos: todosReducer,
+      portfolio: portfolioReducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({

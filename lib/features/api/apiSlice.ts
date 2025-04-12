@@ -7,8 +7,8 @@ export const apiSlice = createApi({
   }),
   endpoints: (builder) => ({
     coin: builder.query({
-      query: ({ coinId }: { coinId: string }) =>
-        `${coinId}?localization=false&tickers=false&market_data=true&community_data=true&developer_data=false&sparkline=false`,
+      query: ({ coinId, date }: { coinId: string, date: string }) =>
+        `${coinId}?localization=false&tickers=false&market_data=true&community_data=true&developer_data=false&sparkline=false${date}`,
     }),
     allCoins: builder.query<[], void>({
       query: () =>
