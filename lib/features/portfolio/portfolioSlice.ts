@@ -15,9 +15,12 @@ interface UpdatedAsset {
   index: number;
 }
 
-const initialState: any[] = JSON.parse(
-  localStorage.getItem("portfolio") || "[]"
-);
+const storageItem = localStorage.getItem("portfolio");
+let initialState: any[] = [];
+
+if (storageItem) {
+  initialState = JSON.parse(storageItem);
+}
 
 const setLocalStorage = (newState: any) => {
   localStorage.setItem("portfolio", JSON.stringify(newState));
@@ -50,7 +53,7 @@ export const portfolioReducer = createReducer(initialState, (builder) => {
       const newState = [...state.filter((element: any) => element.id !== id)];
       setLocalStorage(newState);
       return newState;
-    })
+    });
 });
 
 export default portfolioReducer;
