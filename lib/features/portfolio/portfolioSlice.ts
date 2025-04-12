@@ -15,12 +15,7 @@ interface UpdatedAsset {
   index: number;
 }
 
-const storageItem = localStorage.getItem("portfolio");
-let initialState: any[] = [];
-
-if (storageItem) {
-  initialState = JSON.parse(storageItem);
-}
+const initialState: any[] = [];
 
 const setLocalStorage = (newState: any) => {
   localStorage.setItem("portfolio", JSON.stringify(newState));
