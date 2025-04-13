@@ -16,15 +16,11 @@ export function formatAllCoins(apiData: any) {
       sparkline_in_7d,
     } = data;
 
-    const formatValue = (number: any, isPercent: boolean) => {
+    const formatValue = (number: any) => {
       const apiData = { value: number, rising: true };
-      if (isPercent) {
-        apiData.value = `${number.toFixed(2)}%`;
-        apiData.rising = Number(number) >= 0;
-        return apiData;
-      } else {
-        return `$${number.toLocaleString()}`;
-      }
+      apiData.value = Number(number.toFixed(2));
+      apiData.rising = Number(number) >= 0;
+      return apiData;
     };
 
     return {
@@ -35,9 +31,9 @@ export function formatAllCoins(apiData: any) {
       image: image,
       price: current_price,
       percents: [
-        formatValue(price_change_percentage_1h_in_currency, true),
-        formatValue(price_change_percentage_24h_in_currency, true),
-        formatValue(price_change_percentage_7d_in_currency, true),
+        formatValue(price_change_percentage_1h_in_currency),
+        formatValue(price_change_percentage_24h_in_currency),
+        formatValue(price_change_percentage_7d_in_currency),
       ],
       volumeMarketCap: {
         totalVolume: total_volume,

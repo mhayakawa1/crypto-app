@@ -102,6 +102,16 @@ const ProgressContainer = (props: { numbers: object; rising: boolean }) => {
 
 const TableComponent = () => {
   const [sortValue, setSortValue] = useState("#");
+  const [reverse, setReverse] = useState(false);
+
+  const updateValue = (value: any) => {
+    if (sortValue === value) {
+      setReverse((current) => !current);
+    } else {
+      setReverse(false);
+      setSortValue(value);
+    }
+  };
 
   const {
     data: data = [],
@@ -120,23 +130,48 @@ const TableComponent = () => {
       </TableRow>
     );
   } else if (isSuccess) {
-    const formattedData = formatAllCoins(data);
-    console.log(sortValue);
-    content = formattedData.map((data: any) => {
-      const {id, number, image, name, price, percents, volumeMarketCap, circulatingSupply, lastSevenDays} = data;
+    let formattedData = formatAllCoins(data);
+    if (sortValue === "#") {
+      formattedData = formatAllCoins(data);
+    } else if (sortValue === "Name") {
+      formattedData = formattedData.sort((a: any, b: any) =>
+        a.name.localeCompare(b.name)
+      );
+    } else if (sortValue === "Price") {
+      formattedData = formattedData.sort(function (a: any, b: any) {
+        return a.price - b.price;
+      });
+    } else if (typeof sortValue === "number") {
+      formattedData = formattedData.sort(function (a: any, b: any) {
+        return a.percents[sortValue].value - b.percents[sortValue].value;
+      });
+    }
+
+    if (reverse) {
+      formattedData = formattedData.reverse();
+    }
+
+    content = formattedData.map((data: any, index: number) => {
+      const {
+        id,
+        image,
+        name,
+        price,
+        percents,
+        volumeMarketCap,
+        circulatingSupply,
+        lastSevenDays,
+      } = data;
       return (
         <TableRow
           key={data.id}
           className="bg-white text-[--dark-gunmetal] dark:text-white dark:bg-[#191925] w-full h-[77px] border-none"
         >
           <TableCell className="rounded-l-xl">
-            <span className="px-[10px]">{number}</span>
+            <span className="px-[10px]">{index + 1}</span>
           </TableCell>
           <TableCell>
-            <Link
-              className="flex items-center gap-[16px]"
-              href={`/coin/${id}`}
-            >
+            <Link className="flex items-center gap-[16px]" href={`/coin/${id}`}>
               {image !== null && (
                 <Avatar>
                   <AvatarImage src={image} />
@@ -156,7 +191,7 @@ const TableComponent = () => {
                 } gap-[8px]`}
               >
                 <Arrow rising={percent.rising} />
-                {percent.value}
+                {percent.value}%
               </div>
             </TableCell>
           ))}
@@ -194,14 +229,14 @@ const TableComponent = () => {
     );
   }
 
-  const SortButton = (props: { value: string }) => {
-    const { value } = props;
+  const SortButton = (props: { name: string; sortValue: any }) => {
+    const { name, sortValue } = props;
     return (
       <button
-        onClick={() => setSortValue(value)}
+        onClick={() => updateValue(sortValue)}
         className="w-full h-full rounded-[4px] hover:bg-[--lavender] hover:text-[--soft-blue]"
       >
-        {value}
+        {name}
       </button>
     );
   };
@@ -231,40 +266,32 @@ const TableComponent = () => {
         <h3 style={{ textAlign: "center" }}>&#8593; Release to refresh</h3>
       }
     >
-    <Table className="rounded-xl border-separate border-spacing-y-[8px]">
-      <TableHeader>
-        <TableRow className="border-none hover:bg-transparent">
-          <TableHead>
-            <SortButton value="#" />
-          </TableHead>
-          <TableHead>
-            <SortButton value="Name" />
-          </TableHead>
-          <TableHead>
-            <SortButton value="Price" />
-          </TableHead>
-          <TableHead>
-            <SortButton value="1h%" />
-          </TableHead>
-          <TableHead>
-            <SortButton value="24h%" />
-          </TableHead>
-          <TableHead>
-            <SortButton value="7d%" />
-          </TableHead>
-          <TableHead>
-            <SortButton value="24h volume / Market Cap" />
-          </TableHead>
-          <TableHead>
-            <SortButton value="Circulating / Total supply" />
-          </TableHead>
-          <TableHead>
-            <SortButton value="Last 7d" />
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>{content}</TableBody>
-    </Table>
+      <Table className="rounded-xl border-separate border-spacing-y-[8px]">
+        <TableHeader>
+          <TableRow className="border-none hover:bg-transparent">
+            <TableHead>#</TableHead>
+            <TableHead>
+              <SortButton name="Name" sortValue="Name" />
+            </TableHead>
+            <TableHead>
+              <SortButton name="Price" sortValue="Price" />
+            </TableHead>
+            <TableHead>
+              <SortButton name="1h%" sortValue={0} />
+            </TableHead>
+            <TableHead>
+              <SortButton name="24h%" sortValue={1} />
+            </TableHead>
+            <TableHead>
+              <SortButton name="7d%" sortValue={2} />
+            </TableHead>
+            <TableHead>24h volume / Market Cap</TableHead>
+            <TableHead>Circulating / Total supply</TableHead>
+            <TableHead>Last 7d</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>{content}</TableBody>
+      </Table>
     </InfiniteScroll>
   );
 };
