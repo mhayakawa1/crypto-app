@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import InfiniteScroll from "react-infinite-scroll-component";
+import queryString from "query-string";
 import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
 import { formatAllCoins } from "@/lib/format/formatAllCoins";
 import { Progress } from "../../components/ui/progress";
@@ -104,13 +105,17 @@ const TableComponent = () => {
   const [sortValue, setSortValue] = useState("#");
   const [reverse, setReverse] = useState(false);
 
-  const updateValue = (value: any) => {
+  const updateValue = (name: string, value: any) => {
     if (sortValue === value) {
       setReverse((current) => !current);
     } else {
       setReverse(false);
       setSortValue(value);
     }
+    const parsed = queryString.parse(location.hash);
+    parsed.sort = `${name.toLowerCase()}`;
+    const stringified = queryString.stringify(parsed);
+    location.hash = stringified;
   };
 
   const {
@@ -122,7 +127,6 @@ const TableComponent = () => {
   } = useAllCoinsQuery();
 
   let content: React.ReactNode;
-
   if (isLoading) {
     content = (
       <TableRow>
@@ -165,7 +169,7 @@ const TableComponent = () => {
       return (
         <TableRow
           key={data.id}
-          className="bg-white text-[--dark-gunmetal] dark:text-white dark:bg-[#191925] w-full h-[77px] border-none"
+          className="bg-white hover:bg-[--lavender] text-[--dark-gunmetal] dark:text-white dark:bg-[#191925] w-full h-[77px] border-none"
         >
           <TableCell className="rounded-l-xl">
             <span className="px-[10px]">{index + 1}</span>
@@ -182,7 +186,6 @@ const TableComponent = () => {
             </Link>
           </TableCell>
           <TableCell>${price.toLocaleString()}</TableCell>
-
           {percents.map((percent: any) => (
             <TableCell key={Math.random()}>
               <div
@@ -195,7 +198,6 @@ const TableComponent = () => {
               </div>
             </TableCell>
           ))}
-
           <TableCell className="">
             <ProgressContainer
               numbers={volumeMarketCap}
@@ -214,8 +216,10 @@ const TableComponent = () => {
               height={"h-[37px]"}
               width={"w-[120px]"}
               data={lastSevenDays}
-              color={"white"}
-              fill={"url(#area-white)"}
+              color={percents[0].rising ? "var(--rising)" : "var(--falling)"}
+              fill={
+                percents[0].rising ? "url(#area-rising)" : "url(#area-falling)"
+              }
             />
           </TableCell>
         </TableRow>
@@ -233,7 +237,7 @@ const TableComponent = () => {
     const { name, sortValue } = props;
     return (
       <button
-        onClick={() => updateValue(sortValue)}
+        onClick={() => updateValue(name, sortValue)}
         className="w-full h-full rounded-[4px] hover:bg-[--lavender] hover:text-[--soft-blue]"
       >
         {name}
