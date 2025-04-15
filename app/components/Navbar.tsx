@@ -11,6 +11,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
+import { useAppSelector } from "@/lib/hooks";
 import { ThemeSwitchButton } from "./ThemeSwitchButton";
 import USD from "../../src/icons/USD.svg";
 import GBP from "../../src/icons/GBP.svg";
@@ -18,16 +20,20 @@ import EUR from "../../src/icons/EUR.svg";
 import BTC from "../../src/icons/BTC.svg";
 import ETH from "../../src/icons/ETH.svg";
 import LogoIcon from "../../src/icons/Logo.svg";
+import HomeBlue from "../../src/icons/Home_Blue.svg";
 import HomeWhite from "../../src/icons/Home_White.svg";
 import HomeWhiteOutline from "../../src/icons/Home_White_Outline.svg";
+import PortfolioBlue from "../../src/icons/Portfolio_Blue.svg";
 import PortfolioWhite from "../../src/icons/Portfolio_White.svg";
+import SearchBlue from "../../src/icons/Search_Blue.svg";
 import SearchWhite from "../../src/icons/Search_White.svg";
 
 const Navbar = () => {
+  const darkActive = useAppSelector((state) => state.theme)[0].darkActive;
   const [homeActive, setHomeActive] = useState(true);
+  const [homeIcon, setHomeIcon] = useState(HomeWhite);
   const [resultsVisible, setResultsVisible] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const searchResults = ["Bitcoin", "Ethereum", "Tether"];
   const selectItems = [
     { name: "usd", icon: USD },
     { name: "gbp", icon: GBP },
@@ -35,6 +41,48 @@ const Navbar = () => {
     { name: "btc", icon: BTC },
     { name: "eth", icon: ETH },
   ];
+
+  const {
+    data: data = [],
+    isLoading,
+    isSuccess,
+    isError,
+    error,
+  } = useAllCoinsQuery();
+
+  let content: React.ReactNode;
+
+  if (isLoading) {
+    content = <span>Loading...</span>;
+  } else if (isSuccess) {
+    const searchResults = data.map((element: any) => {
+      return { id: element.id, name: element.name };
+    });
+    content = (
+      <ul className="absolute z-10 pb-[8px] rounded-bl-[6px] rounded-br-[6px] w-full text-[--dark-slate-blue] dark:text-white bg-[--lavender] dark:border dark:border-[#242430] dark:border-t-0 dark:bg-[#191925]">
+        {searchResults
+          .filter((result: any) =>
+            result.name.toLowerCase().includes(searchValue)
+          )
+          .map((result: any) => (
+            <li key={result.id} className="px-[8px] py-[6px] hover:bg-white">
+              <Link
+                className="flex items-center gap-[16px]"
+                href={`/coin/${result.id}`}
+                onClick={() => {
+                  setSearchValue("");
+                  setResultsVisible(false);
+                }}
+              >
+                {result.name}
+              </Link>
+            </li>
+          ))}
+      </ul>
+    );
+  } else if (isError) {
+    <span>{error.toString()}</span>;
+  }
 
   const handleChange = (event: any) => {
     const value = event.target.value.toLowerCase();
@@ -44,6 +92,17 @@ const Navbar = () => {
 
   const toggleHomeActive = () => {
     setHomeActive((current) => !current);
+    if (!homeActive) {
+      setHomeIcon(HomeWhite);
+    } else {
+      setHomeIcon(HomeWhiteOutline);
+    }
+  };
+
+  const hideResults = (event: any) => {
+    if (!event.relatedTarget) {
+      setResultsVisible(false)
+    }
   };
 
   const LinkContainer = (props: { src: any; path: string; name: string }) => {
@@ -77,18 +136,19 @@ const Navbar = () => {
       </div>
       <div className="flex justify-between gap-[24px]">
         <LinkContainer
-          src={homeActive ? HomeWhite : HomeWhiteOutline}
+          src={darkActive ? homeIcon : HomeBlue}
           path=""
           name="Home"
         ></LinkContainer>
         <LinkContainer
-          src={PortfolioWhite}
+          src={darkActive ? PortfolioWhite : PortfolioBlue}
           path="portfolio"
           name="Portfolio"
         ></LinkContainer>
       </div>
       <div className="flex justify-between gap-[16px]">
         <div
+          onBlur={hideResults}
           className={`relative gap-[12px] m-0 w-auto h-auto ${
             resultsVisible
               ? "rounded-tl-[6px] rounded-tr-[6px] rounded-bl-none rounded-br-none"
@@ -96,7 +156,7 @@ const Navbar = () => {
           } bg-[--lavender] dark:bg-[#191925]`}
         >
           <Image
-            src={SearchWhite}
+            src={darkActive ? SearchWhite : SearchBlue}
             alt=""
             className="absolute top-[16px] left-[16px]"
           />
@@ -107,21 +167,9 @@ const Navbar = () => {
               resultsVisible
                 ? "rounded-bl-none rounded-br-none"
                 : "rounded-bl-[6px] rounded-br-[6px]"
-            } h-[48px] pl-[44px] flex justify-center items-center bg-transparent text-sm outline-none text-[--dark-slate-blue] dark:twxt-white dark:border dark:border-[#242430]`}
+            } h-[48px] pl-[44px] flex justify-center items-center bg-transparent text-sm outline-none text-[--dark-slate-blue] dark:text-white dark:border dark:border-[#242430]`}
           />
-          {resultsVisible && (
-            <ul className="absolute rounded-bl-[6px] rounded-br-[6px] w-full text-[--dark-slate-blue] bg-[--lavender] dark:border dark:border-[#242430] dark:border-t-0 dark:bg-[#191925]">
-              {searchResults
-                .filter((result: any) =>
-                  result.toLowerCase().includes(searchValue)
-                )
-                .map((result: any) => (
-                  <li key={result} className="pl-[16px] py-[6px]">
-                    {result}
-                  </li>
-                ))}
-            </ul>
-          )}
+          {resultsVisible ? content : null}
         </div>
         <Select defaultValue="usd">
           <SelectTrigger className="w-[108px] h-[48px] px-[16px] bg-[--lavender] text-[--dark-slate-blue] dark:text-white dark:border dark:border-[#242430] dark:bg-[#191925]">
