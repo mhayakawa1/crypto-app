@@ -50,40 +50,6 @@ export default function Portfolio() {
     setDeleteAssetVisible((current) => !current);
   };
 
-  let content: React.ReactNode;
-
-  if (isLoading) {
-    <span>Loading...</span>;
-  } else if (isSuccess) {
-    content = (
-      <div className="w-full flex flex-col gap-[2vh]">
-        {portfolio.length ? (
-          portfolio.map((assetData: any, index: number) => {
-            const apiData = formatPortfolioCoin(
-              data.find((element: any) => element.id === assetData.coinId)
-            );
-            return (
-              <PortfolioAsset
-                key={assetData.id}
-                toggleAddModal={toggleAddModal}
-                toggleDeleteModal={toggleDeleteModal}
-                assetData={assetData}
-                apiData={apiData}
-                index={index}
-              ></PortfolioAsset>
-            );
-          })
-        ) : (
-          <h3 className="text-center mt-[16vh] text-[--dark-slate-blue] dark:text-white">
-            Your portfolio is empty.
-          </h3>
-        )}
-      </div>
-    );
-  } else if (isError) {
-    <span>{error.toString()}</span>;
-  }
-
   useEffect(() => {
     const storageItem = localStorage.getItem("portfolio");
     if (storageItem) {
@@ -99,7 +65,33 @@ export default function Portfolio() {
         </h2>
         <AddAssetButton toggleAddModal={toggleAddModal} assetData={assetData} />
       </div>
-      {content}
+      {isLoading && <span className="text-center mt-[16vh] text-[--dark-slate-blue] dark:text-white">Loading...</span>}
+      {isSuccess &&
+        <div className="w-full flex flex-col gap-[2vh]">
+          {portfolio.length ? (
+            portfolio.map((assetData: any, index: number) => {
+              const apiData = formatPortfolioCoin(
+                data.find((element: any) => element.id === assetData.coinId)
+              );
+              return (
+                <PortfolioAsset
+                  key={assetData.id}
+                  toggleAddModal={toggleAddModal}
+                  toggleDeleteModal={toggleDeleteModal}
+                  assetData={assetData}
+                  apiData={apiData}
+                  index={index}
+                ></PortfolioAsset>
+              );
+            })
+          ) : (
+            <h3 className="text-center mt-[16vh] text-[--dark-slate-blue] dark:text-white">
+              Your portfolio is empty.
+            </h3>
+          )}
+        </div>
+      }
+      {isError && <span className="text-center mt-[16vh] text-[--dark-slate-blue] dark:text-white">Error: {error.toString()}</span>}
       {addAssetVisible && (
         <AddAssetModal
           toggleAddModal={toggleAddModal}

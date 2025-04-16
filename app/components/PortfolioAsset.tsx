@@ -49,7 +49,7 @@ const PortfolioAsset = (props: {
     },
     {
       name: "Price Change 24h",
-      value: Number(priceChange.toFixed(2)),
+      value: `${Number(priceChange.toFixed(2))}%`,
       arrow: true,
       colors: defaultColors,
     },

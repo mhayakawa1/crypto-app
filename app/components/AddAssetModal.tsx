@@ -108,23 +108,6 @@ const AddAssetModal = (props: {
     }
   }, [assetData, asset, defaultValue, updated]);
 
-  let content: React.ReactNode;
-
-  if (isLoading) {
-    content = <span>Loading...</span>;
-  } else if (isSuccess) {
-    const formattedData = formatAllCoins(data);
-    content = formattedData.map((coin: any) => {
-      return (
-        <SelectItem key={coin.id} value={coin.id}>
-          {coin.name}
-        </SelectItem>
-      );
-    });
-  } else if (isError) {
-    content = <span>{error.toString()}</span>;
-  }
-
   return (
     <div className="fixed top-0 left-0 flex justify-center items-center w-[100vw] h-[100vh] bg-black/5 dark:bg-white/5 backdrop-blur-sm">
       <div className="w-fit flex flex-col gap-[32px] rounded-[20px] p-[48px] bg-white text-[--dark-slate-blue] dark:text-white dark:bg-[#13121a]">
@@ -163,7 +146,18 @@ const AddAssetModal = (props: {
               <SelectTrigger className="w-full h-[44px] rounded-[4px] p-[8px] bg-white dark:bg-[#191925]">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>{content}</SelectContent>
+              <SelectContent>
+                {isLoading && <SelectItem value="">Loading...</SelectItem>}
+                {isSuccess &&
+                  formatAllCoins(data).map((coin: any) => {
+                    return (
+                      <SelectItem key={coin.id} value={coin.id}>
+                        {coin.name}
+                      </SelectItem>
+                    );
+                  })}
+                {isError && <SelectItem value="">Error: {error.toString()}</SelectItem>}
+              </SelectContent>
             </Select>
             <input
               onChange={(event) => handleChange(event, "coinAmount")}

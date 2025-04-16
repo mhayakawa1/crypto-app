@@ -53,7 +53,7 @@ export const portfolioReducer = createReducer(initialState, (builder) => {
     })
     .addCase(deleteAsset, (state: any, action: any) => {
       const id = action.payload;
-      const newState = [...state.filter((element: any) => element.id !== id)];
+      const newState = state.filter((element: any) => element.id !== id)
       setLocalStorage(newState);
       return newState;
     });

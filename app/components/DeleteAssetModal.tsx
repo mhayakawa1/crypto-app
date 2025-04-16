@@ -7,7 +7,7 @@ const DeleteAssetModal = (props: { toggleDeleteModal: any; assetData: any }) => 
   const dispatch = useAppDispatch();
 
   return (
-    <div className="absolute top-0 left-0 flex justify-center items-center w-[100vw] h-[100vh] bg-black/5 dark:bg-white/5 backdrop-blur-sm">
+    <div className="fixed top-0 left-0 flex justify-center items-center w-[100vw] h-[100vh] bg-black/5 dark:bg-white/5 backdrop-blur-sm">
       <div className="w-[50%] flex flex-col gap-[32px] rounded-[20px] p-[48px] bg-white text-[--dark-slate-blue] dark:text-white dark:bg-[#13121a]">
         <h2 className="text-center">
           Are you sure you want to delete this asset?
