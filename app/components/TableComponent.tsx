@@ -105,6 +105,14 @@ const TableComponent = () => {
   const [sortValue, setSortValue] = useState("#");
   const [reverse, setReverse] = useState(false);
 
+  const {
+    data: data = [],
+    isLoading,
+    isSuccess,
+    isError,
+    error,
+  } = useAllCoinsQuery();
+
   const updateValue = (name: string, value: any) => {
     if (sortValue === value) {
       setReverse((current) => !current);
@@ -118,22 +126,59 @@ const TableComponent = () => {
     location.hash = stringified;
   };
 
-  const {
-    data: data = [],
-    isLoading,
-    isSuccess,
-    isError,
-    error,
-  } = useAllCoinsQuery();
+  const SortButton = (props: { name: string; sortValue: any }) => {
+    const { name, sortValue } = props;
+    return (
+      <button
+        onClick={() => updateValue(name, sortValue)}
+        className="w-full h-full rounded-[4px] hover:bg-[--lavender] hover:text-[--soft-blue]"
+      >
+        {name}
+      </button>
+    );
+  };
 
-  let content: React.ReactNode;
-  if (isLoading) {
-    content = (
-      <TableRow>
-        <TableCell>Loading...</TableCell>
+  const TableHeaderContent = () => {
+    const headerInfo = [
+      { name: "#", sortValue: "#" },
+      { name: "Name", sortValue: "Name" },
+      { name: "Price", sortValue: "Price" },
+      { name: "1h%", sortValue: 0 },
+      { name: "24h%", sortValue: 1 },
+      { name: "7d%", sortValue: 2 },
+      { name: "24h volume / Market Cap", sortValue: null },
+      { name: "Circulating / Total Supply", sortValue: null },
+      { name: "Last 7d", sortValue: null },
+    ];
+    return (
+      <TableRow className="border-none hover:bg-transparent">
+        {headerInfo.map((element: any) => {
+          const { name, sortValue } = element;
+          return (
+            <TableHead key={name}>
+              {sortValue ? (
+                <SortButton name={name} sortValue={sortValue} />
+              ) : (
+                name
+              )}
+            </TableHead>
+          );
+        })}
       </TableRow>
     );
-  } else if (isSuccess) {
+  };
+
+  const RowContentEmpty = (props: {message: any}) => {
+    return (
+      <TableBody>
+        <TableRow>
+          <TableCell>{props.message}</TableCell>
+        </TableRow>
+      </TableBody>
+    );
+  };
+
+  const RowContent = () => {
     let formattedData = formatAllCoins(data);
     if (sortValue === "#") {
       formattedData = formatAllCoins(data);
@@ -155,93 +200,86 @@ const TableComponent = () => {
       formattedData = formattedData.reverse();
     }
 
-    content = formattedData.map((data: any, index: number) => {
-      const {
-        id,
-        image,
-        name,
-        price,
-        percents,
-        volumeMarketCap,
-        circulatingSupply,
-        lastSevenDays,
-      } = data;
-      return (
-        <TableRow
-          key={data.id}
-          className="bg-white hover:bg-[--lavender] text-[--dark-gunmetal] dark:text-white dark:bg-[#191925] w-full h-[77px] border-none"
-        >
-          <TableCell className="rounded-l-xl">
-            <span className="px-[10px]">{index + 1}</span>
-          </TableCell>
-          <TableCell>
-            <Link className="flex items-center gap-[16px]" href={`/coin/${id}`}>
-              {image !== null && (
-                <Avatar>
-                  <AvatarImage src={image} />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-              )}
-              {name}
-            </Link>
-          </TableCell>
-          <TableCell>${price.toLocaleString()}</TableCell>
-          {percents.map((percent: any) => (
-            <TableCell key={Math.random()}>
-              <div
-                className={`flex text-sm ${
-                  percent.rising ? "text-[--rising]" : "text-[--falling]"
-                } gap-[8px]`}
-              >
-                <Arrow rising={percent.rising} />
-                {percent.value}%
-              </div>
-            </TableCell>
-          ))}
-          <TableCell className="">
-            <ProgressContainer
-              numbers={volumeMarketCap}
-              rising={percents[0].rising}
-            />
-          </TableCell>
-          <TableCell className="">
-            <ProgressContainer
-              numbers={circulatingSupply}
-              rising={percents[0].rising}
-            />
-          </TableCell>
-          <TableCell className="rounded-r-xl w-fit p-0">
-            <AreaChartComponent
-              xAxis={false}
-              height={"h-[37px]"}
-              width={"w-[120px]"}
-              data={lastSevenDays}
-              color={percents[0].rising ? "var(--rising)" : "var(--falling)"}
-              fill={
-                percents[0].rising ? "url(#area-rising)" : "url(#area-falling)"
-              }
-            />
-          </TableCell>
-        </TableRow>
-      );
-    });
-  } else if (isError) {
-    content = (
-      <TableRow>
-        <TableCell>{error.toString()}</TableCell>
-      </TableRow>
-    );
-  }
-
-  const SortButton = (props: { name: string; sortValue: any }) => {
-    const { name, sortValue } = props;
     return (
-      <button
-        onClick={() => updateValue(name, sortValue)}
-        className="w-full h-full rounded-[4px] hover:bg-[--lavender] hover:text-[--soft-blue]"
-      >
-        {name}
-      </button>
+      <TableBody>
+        {formattedData.map((data: any, index: number) => {
+          const {
+            id,
+            image,
+            name,
+            price,
+            percents,
+            volumeMarketCap,
+            circulatingSupply,
+            lastSevenDays,
+          } = data;
+          return (
+            <TableRow
+              key={data.id}
+              className="bg-white hover:bg-[--lavender] text-[--dark-gunmetal] dark:text-white dark:bg-[#191925] w-full h-[77px] border-none"
+            >
+              <TableCell className="rounded-l-xl">
+                <span className="px-[10px]">{index + 1}</span>
+              </TableCell>
+              <TableCell>
+                <Link
+                  className="flex items-center gap-[16px]"
+                  href={`/coin/${id}`}
+                >
+                  {image !== null && (
+                    <Avatar>
+                      <AvatarImage src={image} />
+                      <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                  )}
+                  {name}
+                </Link>
+              </TableCell>
+              <TableCell>${price.toLocaleString()}</TableCell>
+              {percents.map((percent: any) => (
+                <TableCell key={Math.random()}>
+                  <div
+                    className={`flex text-sm ${
+                      percent.rising ? "text-[--rising]" : "text-[--falling]"
+                    } gap-[8px]`}
+                  >
+                    <Arrow rising={percent.rising} />
+                    {percent.value}%
+                  </div>
+                </TableCell>
+              ))}
+              <TableCell className="">
+                <ProgressContainer
+                  numbers={volumeMarketCap}
+                  rising={percents[0].rising}
+                />
+              </TableCell>
+              <TableCell className="">
+                <ProgressContainer
+                  numbers={circulatingSupply}
+                  rising={percents[0].rising}
+                />
+              </TableCell>
+              <TableCell className="rounded-r-xl w-fit p-0">
+                <AreaChartComponent
+                  xAxis={false}
+                  height={"h-[37px]"}
+                  width={"w-[120px]"}
+                  data={lastSevenDays}
+                  color={
+                    percents[0].rising ? "var(--rising)" : "var(--falling)"
+                  }
+                  fill={
+                    percents[0].rising
+                      ? "url(#area-rising)"
+                      : "url(#area-falling)"
+                  }
+                />
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </TableBody>
     );
   };
 
@@ -272,29 +310,11 @@ const TableComponent = () => {
     >
       <Table className="rounded-xl border-separate border-spacing-y-[8px]">
         <TableHeader>
-          <TableRow className="border-none hover:bg-transparent">
-            <TableHead>#</TableHead>
-            <TableHead>
-              <SortButton name="Name" sortValue="Name" />
-            </TableHead>
-            <TableHead>
-              <SortButton name="Price" sortValue="Price" />
-            </TableHead>
-            <TableHead>
-              <SortButton name="1h%" sortValue={0} />
-            </TableHead>
-            <TableHead>
-              <SortButton name="24h%" sortValue={1} />
-            </TableHead>
-            <TableHead>
-              <SortButton name="7d%" sortValue={2} />
-            </TableHead>
-            <TableHead>24h volume / Market Cap</TableHead>
-            <TableHead>Circulating / Total supply</TableHead>
-            <TableHead>Last 7d</TableHead>
-          </TableRow>
+          <TableHeaderContent />
         </TableHeader>
-        <TableBody>{content}</TableBody>
+        {isLoading && <RowContentEmpty message="Loading..." />}
+        {isSuccess && <RowContent />}
+        {isError && <RowContentEmpty message={error.toString()} />}
       </Table>
     </InfiniteScroll>
   );
