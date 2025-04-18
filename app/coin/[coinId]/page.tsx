@@ -88,7 +88,7 @@ export default function CoinPage(props: { params: Params }) {
     isSuccess,
     isError,
     error,
-  } = useCoinQuery({ coinId: coinId });
+  } = useCoinQuery({ coinId: coinId, date: "" });
 
   let content: React.ReactNode;
 
