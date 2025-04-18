@@ -32,8 +32,8 @@ import SearchWhite from "../../src/icons/Search_White.svg";
 const Navbar = () => {
   const darkActive = useAppSelector((state) => state.theme)[0].darkActive;
   const dispatch = useAppDispatch();
+  const currency = useAppSelector((state) => state.currency);
   const [currencyUpdated, setCurrencyUpdated] = useState(false);
-
   const storageItem = localStorage.getItem("currency");
   const [homeActive, setHomeActive] = useState(true);
   const [homeIcon, setHomeIcon] = useState(HomeWhite);
@@ -53,7 +53,7 @@ const Navbar = () => {
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery();
+  } = useAllCoinsQuery({ currency: currency });
 
   const ResultsEmpty = (props: { message: string }) => {
     return (

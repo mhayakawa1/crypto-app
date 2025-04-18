@@ -9,6 +9,7 @@ import {
 import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
 import { formatAllCoins } from "@/lib/format/formatAllCoins";
 import { Progress } from "../../components/ui/progress";
+import { useAppSelector } from "@/lib/hooks";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AreaChartComponent from "./AreaChartComponent";
@@ -99,13 +100,14 @@ const ProgressContainer = (props: { numbers: object; rising: boolean }) => {
 };
 
 const TableComponent = () => {
+  const currency = useAppSelector((state) => state.currency)
   const {
     data: data = [],
     isLoading,
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery();
+  } = useAllCoinsQuery({currency: currency});
 
   let content: React.ReactNode;
 

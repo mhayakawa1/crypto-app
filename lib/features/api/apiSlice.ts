@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-const currency = localStorage.getItem("currency") || "usd";
 
 export const apiSlice = createApi({
   reducerPath: "api",
@@ -14,8 +13,8 @@ export const apiSlice = createApi({
       query: ({ coinId, date }: { coinId: string; date: string }) =>
         `coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=true&developer_data=false&sparkline=false${date}`,
     }),
-    allCoins: builder.query<[], void>({
-      query: () =>
+    allCoins: builder.query({
+      query: ({ currency }: {currency: string}) =>
         `coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=50&page=1&sparkline=true&price_change_percentage=1h%2C24h%2C7d`,
     }),
     compareCoins: builder.query({
