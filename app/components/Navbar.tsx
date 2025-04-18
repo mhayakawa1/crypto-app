@@ -50,42 +50,15 @@ const Navbar = () => {
     error,
   } = useAllCoinsQuery();
 
-  let content: React.ReactNode;
-
-  if (isLoading) {
-    content = <span>Loading...</span>;
-  } else if (isSuccess) {
-    const searchResults = data.map((element: any) => {
-      return { id: element.id, name: element.name };
-    });
-    content = (
+  const ResultsEmpty = (props: { message: string }) => {
+    return (
       <ul className="absolute z-10 pb-[8px] rounded-bl-[6px] rounded-br-[6px] w-full text-[--dark-slate-blue] dark:text-white bg-[--lavender] dark:border dark:border-[#242430] dark:border-t-0 dark:bg-[#191925]">
-        {searchResults
-          .filter((result: any) =>
-            result.name.toLowerCase().includes(searchValue)
-          )
-          .map((result: any) => (
-            <li key={result.id} className="px-[8px] py-[6px] hover:bg-white">
-              <Link
-                className="flex items-center gap-[16px]"
-                href={`/coin/${result.id}`}
-                onClick={() => {
-                  setSearchValue("");
-                  setResultsVisible(false);
-                }}
-              >
-                {result.name}
-              </Link>
-            </li>
-          ))}
+        <li>{props.message}</li>
       </ul>
     );
-  } else if (isError) {
-    <span>{error.toString()}</span>;
-  }
+  };
 
-  const handleChange = (event: any) => {
-    const value = event.target.value.toLowerCase();
+  const handleChange = (value: any) => {
     setSearchValue(value);
     setResultsVisible(Boolean(value.length));
   };
@@ -101,7 +74,7 @@ const Navbar = () => {
 
   const hideResults = (event: any) => {
     if (!event.relatedTarget) {
-      setResultsVisible(false)
+      setResultsVisible(false);
     }
   };
 
@@ -161,21 +134,49 @@ const Navbar = () => {
             className="absolute top-[16px] left-[16px]"
           />
           <Input
-            onChange={handleChange}
+            onChange={(event) => handleChange(event.target.value.toLowerCase())}
+            value={searchValue}
             placeholder="Search..."
             className={`rounded-tl-[6px] rounded-tr-[6px] ${
               resultsVisible
                 ? "rounded-bl-none rounded-br-none"
                 : "rounded-bl-[6px] rounded-br-[6px]"
-            } h-[48px] pl-[44px] flex justify-center items-center bg-transparent text-sm outline-none text-[--dark-slate-blue] dark:text-white dark:border dark:border-[#242430]`}
+            } h-[48px] pl-[44px] flex justify-center items-center bg-transparent text-sm outline-none text-[--dark-slate-blue] border-none dark:text-white dark:border dark:border-[#242430]`}
           />
-          {resultsVisible ? content : null}
+          {resultsVisible &&
+            ((isLoading && <ResultsEmpty message="Loading..." />) ||
+              (isError && <ResultsEmpty message={error.toString()} />) ||
+              (resultsVisible && isSuccess ? (
+                <ul className="absolute z-10 pb-[8px] rounded-bl-[6px] rounded-br-[6px] w-full text-[--dark-slate-blue] dark:text-white bg-[--lavender] dark:border dark:border-[#242430] dark:border-t-0 dark:bg-[#191925]">
+                  {data
+                    .map((element: any) => {
+                      return { id: element.id, name: element.name };
+                    })
+                    .filter((result: any) =>
+                      result.name.toLowerCase().includes(searchValue)
+                    )
+                    .map((result: any) => (
+                      <li
+                        key={result.id}
+                        className="px-[8px] py-[6px] hover:bg-white"
+                      >
+                        <Link
+                          className="flex items-center gap-[16px]"
+                          href={`/coin/${result.id}`}
+                          onClick={() => handleChange("")}
+                        >
+                          {result.name}
+                        </Link>
+                      </li>
+                    ))}
+                </ul>
+              ) : null))}
         </div>
         <Select defaultValue="usd">
-          <SelectTrigger className="w-[108px] h-[48px] px-[16px] bg-[--lavender] text-[--dark-slate-blue] dark:text-white dark:border dark:border-[#242430] dark:bg-[#191925]">
+          <SelectTrigger className="w-[108px] h-[48px] px-[16px] bg-[--lavender] text-[--dark-slate-blue] border-none dark:text-white dark:border dark:border-[#242430] dark:bg-[#191925]">
             <SelectValue className="flex justify-center items-center" />
           </SelectTrigger>
-          <SelectContent className="w-[108px] bg-[--lavender] dark:border dark:border-[#242430] dark:bg-[#191925]">
+          <SelectContent className="w-[108px] bg-[--lavender] border-none dark:border dark:border-[#242430] dark:bg-[#191925]">
             <SelectGroup className="bg-none text-[--dark-slate-blue] dark:text-white">
               {selectItems.map((item: any) => (
                 <SelectItem

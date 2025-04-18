@@ -1,7 +1,8 @@
 "use client";
+import { useState, useEffect } from "react";
 import { Progress } from "../../components/ui/progress";
+import { formatNumber } from "@/lib/format/formatNumber";
 import FlashCircle from "../../src/icons/Flash_Circle.svg";
-import Exchange from "../../src/icons/Exchange.svg";
 import ArrowUpGreen from "../../src/icons/Arrow_Up_Green.svg";
 import Image from "next/image";
 
@@ -11,52 +12,71 @@ const BannerItem = (props: { children: any }) => {
 };
 
 const Banner = () => {
-  const data = {
-    coins: 7884,
-    exchange: 622,
-    t: 1.69,
-    price: 21,
-    btc: 44,
-    eth: 21,
+  const [apiData, setApiData] = useState({
+    coins: 0,
+    marketCap: 0,
+    totalVolume: 0,
+    btc: 0,
+    eth: 0,
+  });
+
+  const callAPI = () => {
+    fetch("https://api.coingecko.com/api/v3/global")
+      .then((res) => res.json())
+      .then((result) => {
+        const {
+          active_cryptocurrencies,
+          total_market_cap,
+          total_volume,
+          market_cap_percentage,
+        } = result.data;
+        setApiData({
+          coins: active_cryptocurrencies.toLocaleString(),
+          marketCap: total_market_cap.usd,
+          totalVolume: total_volume.usd,
+          btc: market_cap_percentage.btc,
+          eth: market_cap_percentage.eth,
+        });
+      })
+      .catch((err) => console.log(err));
   };
-  
+
+  useEffect(() => {
+    callAPI();
+  }, []);
+
   return (
     <div className="flex justify-center gap-[4vw] text-xs bg-[--dark-slate-blue] dark:bg-[--haiti] w-full py-[16px] border-y border-[#343046]">
       <BannerItem>
         <Image src={FlashCircle} alt="" />
         <span className="text-[#D1D1D1]">Coins</span>
-        <span>7884</span>
-      </BannerItem>
-      <BannerItem>
-        <Image src={Exchange} alt="" />
-        <span className="text-[#D1D1D1]">Exchange</span>
-        <span>622</span>
+        <span>{apiData.coins}</span>
       </BannerItem>
       <BannerItem>
         <Image src={ArrowUpGreen} alt="" />
-        <span>1.69 T</span>
+        <span>{formatNumber(apiData.marketCap, false)}</span>
       </BannerItem>
       <BannerItem>
-        <span>$124.45B</span>
+        <span>{formatNumber(apiData.totalVolume, true)}</span>
         <Progress
           className={"bg-[rgb(255,255,255,.4)] w-[53px] h-[6px]"}
-          value={data.price}
+          value={apiData.totalVolume}
           color={"bg-[--background]"}
         ></Progress>
       </BannerItem>
       <BannerItem>
-        <span>44%</span>
+        <span>{Number(apiData.btc.toFixed(2))}%</span>
         <Progress
           className={"bg-[rgb(255,255,255,.4)] w-[53px] h-[6px]"}
-          value={data.btc}
+          value={apiData.btc}
           color={"bg-[#F7931A]"}
         ></Progress>
       </BannerItem>
       <BannerItem>
-        <span>21%</span>
+        <span>{Number(apiData.eth.toFixed(2))}%</span>
         <Progress
           className={"bg-[rgb(255,255,255,.4)] w-[53px] h-[6px]"}
-          value={data.eth}
+          value={apiData.eth}
           color={"bg-[#849DFF]"}
         ></Progress>
       </BannerItem>
