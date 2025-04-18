@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -11,8 +11,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { switchCurrency } from "@/lib/features/currency/currencySlice";
 import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
-import { useAppSelector } from "@/lib/hooks";
+import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 import { ThemeSwitchButton } from "./ThemeSwitchButton";
 import USD from "../../src/icons/USD.svg";
 import GBP from "../../src/icons/GBP.svg";
@@ -30,6 +31,10 @@ import SearchWhite from "../../src/icons/Search_White.svg";
 
 const Navbar = () => {
   const darkActive = useAppSelector((state) => state.theme)[0].darkActive;
+  const dispatch = useAppDispatch();
+  const [currencyUpdated, setCurrencyUpdated] = useState(false);
+
+  const storageItem = localStorage.getItem("currency");
   const [homeActive, setHomeActive] = useState(true);
   const [homeIcon, setHomeIcon] = useState(HomeWhite);
   const [resultsVisible, setResultsVisible] = useState(false);
@@ -58,7 +63,7 @@ const Navbar = () => {
     );
   };
 
-  const handleChange = (value: any) => {
+  const searchCoins = (value: any) => {
     setSearchValue(value);
     setResultsVisible(Boolean(value.length));
   };
@@ -94,6 +99,18 @@ const Navbar = () => {
       </button>
     );
   };
+
+  const handleChange = (value: string) => {
+    localStorage.setItem("currency", value);
+    dispatch(switchCurrency(value));
+  };
+
+  useEffect(() => {
+    if (!currencyUpdated && storageItem) {
+      dispatch(switchCurrency(storageItem));
+      setCurrencyUpdated(true);
+    }
+  }, [currencyUpdated, dispatch, storageItem]);
 
   return (
     <nav className="flex justify-between items-center px-[4vw]">
@@ -134,7 +151,7 @@ const Navbar = () => {
             className="absolute top-[16px] left-[16px]"
           />
           <Input
-            onChange={(event) => handleChange(event.target.value.toLowerCase())}
+            onChange={(event) => searchCoins(event.target.value.toLowerCase())}
             value={searchValue}
             placeholder="Search..."
             className={`rounded-tl-[6px] rounded-tr-[6px] ${
@@ -163,7 +180,7 @@ const Navbar = () => {
                         <Link
                           className="flex items-center gap-[16px]"
                           href={`/coin/${result.id}`}
-                          onClick={() => handleChange("")}
+                          onClick={() => searchCoins("")}
                         >
                           {result.name}
                         </Link>
@@ -172,7 +189,10 @@ const Navbar = () => {
                 </ul>
               ) : null))}
         </div>
-        <Select defaultValue="usd">
+        <Select
+          defaultValue={storageItem || "btc"}
+          onValueChange={handleChange}
+        >
           <SelectTrigger className="w-[108px] h-[48px] px-[16px] bg-[--lavender] text-[--dark-slate-blue] border-none dark:text-white dark:border dark:border-[#242430] dark:bg-[#191925]">
             <SelectValue className="flex justify-center items-center" />
           </SelectTrigger>
