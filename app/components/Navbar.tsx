@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Select,
   SelectContent,
@@ -33,8 +33,7 @@ const Navbar = () => {
   const darkActive = useAppSelector((state) => state.theme)[0].darkActive;
   const dispatch = useAppDispatch();
   const currency = useAppSelector((state) => state.currency);
-  const [currencyUpdated, setCurrencyUpdated] = useState(false);
-  const storageItem = localStorage.getItem("currency");
+  const [changeCurrency, setChangeCurrency] = useState(true);
   const [homeActive, setHomeActive] = useState(true);
   const [homeIcon, setHomeIcon] = useState(HomeWhite);
   const [resultsVisible, setResultsVisible] = useState(false);
@@ -100,17 +99,19 @@ const Navbar = () => {
     );
   };
 
-  const handleChange = (value: string) => {
+  const handleChange = useCallback((value: string) => {
     localStorage.setItem("currency", value);
     dispatch(switchCurrency(value));
-  };
+  }, [dispatch]);
 
   useEffect(() => {
-    if (!currencyUpdated && storageItem) {
+    const storageItem = localStorage.getItem("currency");
+    if (changeCurrency && storageItem) {
       dispatch(switchCurrency(storageItem));
-      setCurrencyUpdated(true);
+      handleChange(storageItem);
     }
-  }, [currencyUpdated, dispatch, storageItem]);
+    setChangeCurrency(false);
+  }, [changeCurrency, dispatch, handleChange]);
 
   return (
     <nav className="flex justify-between items-center px-[4vw]">
@@ -189,38 +190,37 @@ const Navbar = () => {
                 </ul>
               ) : null))}
         </div>
-        <Select
-          defaultValue={storageItem || "btc"}
-          onValueChange={handleChange}
-        >
-          <SelectTrigger className="w-[108px] h-[48px] px-[16px] bg-[--lavender] text-[--dark-slate-blue] border-none dark:text-white dark:border dark:border-[#242430] dark:bg-[#191925]">
-            <SelectValue className="flex justify-center items-center" />
-          </SelectTrigger>
-          <SelectContent className="w-[108px] bg-[--lavender] border-none dark:border dark:border-[#242430] dark:bg-[#191925]">
-            <SelectGroup className="bg-none text-[--dark-slate-blue] dark:text-white">
-              {selectItems.map((item: any) => (
-                <SelectItem
-                  key={item.name}
-                  value={item.name}
-                  className="hover:bg-white dark:hover:bg-[--dark-gunmetal]"
-                >
-                  <span className="flex justify-center items-center gap-[8px]">
-                    <span className="flex justify-center items-center w-[20px] h-[20px] border bg-[--dark-slate-blue] dark:bg-transparent dark:border-white rounded-full">
-                      <Image
-                        src={item.icon}
-                        alt=""
-                        className="w-auto h-[12px]"
-                      />
+        {!changeCurrency && (
+          <Select defaultValue={currency} onValueChange={handleChange}>
+            <SelectTrigger className="w-[108px] h-[48px] px-[16px] bg-[--lavender] text-[--dark-slate-blue] border-none dark:text-white dark:border dark:border-[#242430] dark:bg-[#191925]">
+              <SelectValue className="flex justify-center items-center" />
+            </SelectTrigger>
+            <SelectContent className="w-[108px] bg-[--lavender] border-none dark:border dark:border-[#242430] dark:bg-[#191925]">
+              <SelectGroup className="bg-none text-[--dark-slate-blue] dark:text-white">
+                {selectItems.map((item: any) => (
+                  <SelectItem
+                    key={item.name}
+                    value={item.name}
+                    className="hover:bg-white dark:hover:bg-[--dark-gunmetal]"
+                  >
+                    <span className="flex justify-center items-center gap-[8px]">
+                      <span className="flex justify-center items-center w-[20px] h-[20px] border bg-[--dark-slate-blue] dark:bg-transparent dark:border-white rounded-full">
+                        <Image
+                          src={item.icon}
+                          alt=""
+                          className="w-auto h-[12px]"
+                        />
+                      </span>
+                      <span className="font-medium">
+                        {item.name.toUpperCase()}
+                      </span>
                     </span>
-                    <span className="font-medium">
-                      {item.name.toUpperCase()}
-                    </span>
-                  </span>
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        )}
         <ThemeSwitchButton />
       </div>
     </nav>
