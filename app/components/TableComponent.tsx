@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -104,6 +104,7 @@ const ProgressContainer = (props: { numbers: object; rising: boolean }) => {
 const TableComponent = () => {
   const [sortValue, setSortValue] = useState("#");
   const [reverse, setReverse] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const {
     data: data = [],
@@ -131,7 +132,7 @@ const TableComponent = () => {
     return (
       <button
         onClick={() => updateValue(name, sortValue)}
-        className="w-full h-full rounded-[4px] hover:bg-[--lavender] hover:text-[--soft-blue]"
+        className="w-full h-full rounded-[4px] hover:bg-[--lavender] hover:text-[--soft-blue] dark:hover:bg-[--mirage] dark:hover:text-white"
       >
         {name}
       </button>
@@ -156,7 +157,7 @@ const TableComponent = () => {
           const { name, sortValue } = element;
           return (
             <TableHead key={name}>
-              {sortValue ? (
+              {sortValue !== null ? (
                 <SortButton name={name} sortValue={sortValue} />
               ) : (
                 name
@@ -165,16 +166,6 @@ const TableComponent = () => {
           );
         })}
       </TableRow>
-    );
-  };
-
-  const RowContentEmpty = (props: {message: any}) => {
-    return (
-      <TableBody>
-        <TableRow>
-          <TableCell>{props.message}</TableCell>
-        </TableRow>
-      </TableBody>
     );
   };
 
@@ -216,14 +207,14 @@ const TableComponent = () => {
           return (
             <TableRow
               key={data.id}
-              className="bg-white hover:bg-[--lavender] text-[--dark-gunmetal] dark:text-white dark:bg-[#191925] w-full h-[77px] border-none"
+              className="bg-white hover:bg-[--lavender] text-[--dark-gunmetal] dark:text-white dark:bg-[--mirage] w-full h-[77px] border-none"
             >
               <TableCell className="rounded-l-xl">
                 <span className="px-[10px]">{index + 1}</span>
               </TableCell>
               <TableCell>
                 <Link
-                  className="flex items-center gap-[16px]"
+                  className="flex items-center gap-[16px] truncate"
                   href={`/coin/${id}`}
                 >
                   {image !== null && (
@@ -236,8 +227,8 @@ const TableComponent = () => {
                 </Link>
               </TableCell>
               <TableCell>${price.toLocaleString()}</TableCell>
-              {percents.map((percent: any) => (
-                <TableCell key={Math.random()}>
+              {percents.map((percent: any, index: number) => (
+                <TableCell key={index}>
                   <div
                     className={`flex text-sm ${
                       percent.rising ? "text-[--rising]" : "text-[--falling]"
@@ -283,6 +274,37 @@ const TableComponent = () => {
     );
   };
 
+  const RowDataEmpty = (props: { message: any }) => {
+    const { message } = props;
+    return (
+      <TableBody>
+        {[...Array(10).keys()].map((key) => (
+          <TableRow
+            key={key}
+            className="bg-white hover:bg-[--lavender] text-[--dark-gunmetal] dark:text-white dark:bg-[--mirage] w-full h-[77px] border-none"
+          >
+            {[...Array(9).keys()].map((key, index) => (
+              <TableCell
+                key={key}
+                className={`${index === 0 && "rounded-l-xl"} ${
+                  index === 8 && "rounded-r-xl w-fit p-0"
+                }`}
+              >
+                {message && index === 1 && message}
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    );
+  };
+
+  useEffect(() => {
+    if (isError && "error" in error) {
+      setErrorMessage(error.error);
+    }
+  }, [isError, error]);
+
   const refresh = () => {};
 
   const updateQuery = () => {};
@@ -312,9 +334,9 @@ const TableComponent = () => {
         <TableHeader>
           <TableHeaderContent />
         </TableHeader>
-        {isLoading && <RowContentEmpty message="Loading..." />}
+        {isLoading && <RowDataEmpty message={null} />}
         {isSuccess && <RowContent />}
-        {isError && <RowContentEmpty message={error.toString()} />}
+        {isError && <RowDataEmpty message={errorMessage} />}
       </Table>
     </InfiniteScroll>
   );
