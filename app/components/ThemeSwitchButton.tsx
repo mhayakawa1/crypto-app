@@ -38,7 +38,7 @@ export function ThemeSwitchButton() {
       onClick={switchTheme}
       variant="outline"
       size="icon"
-      className="flex justify-center items-center w-[48px] h-[48px] rounded-[12px] bg-[--lavender] dark:border dark:border-[#242430] dark:bg-[#191925]"
+      className="flex justify-center items-center w-[48px] h-[48px] rounded-[12px] bg-[--lavender] border-none dark:border dark:border-[#242430] dark:bg-[#191925]"
     >
       <Image alt="" src={darkActive ? Sun : Moon} />
     </Button>

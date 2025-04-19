@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAllCoinsQuery, useCoinQuery } from "@/lib/features/api/apiSlice";
-import { useAppDispatch } from "@/lib/hooks";
+import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 import { addAsset, editAsset } from "@/lib/features/portfolio/portfolioSlice";
 import { formatAllCoins } from "@/lib/format/formatAllCoins";
 import Exit from "../../src/icons/Close_Circle.svg";
@@ -20,6 +20,7 @@ const AddAssetModal = (props: {
   assetData: any;
   index: number;
 }) => {
+  const currency = useAppSelector((state) => state.currency);
   const { toggleAddModal, assetData, index } = props;
   const [asset, setAsset] = useState({
     id: Math.random(),
@@ -51,7 +52,7 @@ const AddAssetModal = (props: {
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery();
+  } = useAllCoinsQuery({currency: currency});
 
   function handleSubmit(event: any) {
     event.preventDefault();

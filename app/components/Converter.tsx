@@ -2,11 +2,13 @@
 import { useState, useCallback } from "react";
 import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
 import { formatAllCoins } from "@/lib/format/formatAllCoins";
+import { useAppSelector } from "@/lib/hooks";
 import ConverterChart from "./ConverterChart";
 import ConverterInputs from "./ConverterInputs";
 import TimeRangeButtons from "./TimeRangeButtons";
 
 const Converter = () => {
+  const currency = useAppSelector((state) => state.currency);
   const [amountCoinA, setAmountCoinA] = useState(1);
   const [amountCoinB, setAmountCoinB] = useState(1);
   const [coinA, setCoinA] = useState({ name: "", price: 0, symbol: "" });
@@ -48,7 +50,7 @@ const Converter = () => {
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery();
+  } = useAllCoinsQuery({currency: currency});
 
   let content: React.ReactNode;
 

@@ -10,11 +10,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
 import { formatAllCoins } from "@/lib/format/formatAllCoins";
+import { useAppSelector } from "@/lib/hooks";
 import Image from "next/image";
 import ArrowUpGreen from "../../src/icons/Arrow_Up_Green.svg";
 import ArrowDownRed from "../../src/icons/Arrow_Down_Red.svg";
 
 const CarouselComponent = () => {
+  const currency = useAppSelector((state) => state.currency);
   const [activeCoins, setActiveCoins]: any[] = useState([]);
   const [twoCoinsActive, setTwoCoinsActive] = useState(false);
 
@@ -105,7 +107,7 @@ const CarouselComponent = () => {
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery();
+  } = useAllCoinsQuery({currency: currency});
 
   let content: React.ReactNode;
   

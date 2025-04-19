@@ -3,16 +3,19 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://api.coingecko.com/api/v3/coins/",
+    baseUrl: "https://api.coingecko.com/api/v3/",
   }),
   endpoints: (builder) => ({
-    coin: builder.query({
-      query: ({ coinId, date }: { coinId: string, date: string }) =>
-        `${coinId}?localization=false&tickers=false&market_data=true&community_data=true&developer_data=false&sparkline=false${date}`,
+    global: builder.query<any, void>({
+      query: () => "global",
     }),
-    allCoins: builder.query<[], void>({
-      query: () =>
-        "markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=true&price_change_percentage=1h%2C24h%2C7d",
+    coin: builder.query({
+      query: ({ coinId, date }: { coinId: string; date: string }) =>
+        `coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=true&developer_data=false&sparkline=false${date}`,
+    }),
+    allCoins: builder.query({
+      query: ({ currency }: {currency: string}) =>
+        `coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=50&page=1&sparkline=true&price_change_percentage=1h%2C24h%2C7d`,
     }),
     compareCoins: builder.query({
       query: ({
@@ -26,11 +29,16 @@ export const apiSlice = createApi({
         days: number;
         intervalDaily: boolean;
       }) =>
-        `${coin}/market_chart?vs_currency=${vsCurrency}&days=${days}${
+        `coins/${coin}/market_chart?vs_currency=${vsCurrency}&days=${days}${
           intervalDaily && "&interval=daily"
         }`,
     }),
   }),
 });
 
-export const { useCoinQuery, useAllCoinsQuery, useCompareCoinsQuery } = apiSlice;
+export const {
+  useGlobalQuery,
+  useCoinQuery,
+  useAllCoinsQuery,
+  useCompareCoinsQuery,
+} = apiSlice;

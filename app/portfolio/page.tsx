@@ -23,6 +23,7 @@ const AddAssetButton = (props: { toggleAddModal: any; assetData: any }) => {
 };
 
 export default function Portfolio() {
+  const currency = useAppSelector((state) => state.currency);
   const [addAssetVisible, setAddAssetVisible] = useState(false);
   const [deleteAssetVisible, setDeleteAssetVisible] = useState(false);
   const [assetData, setAssetData] = useState(null);
@@ -36,7 +37,7 @@ export default function Portfolio() {
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery();
+  } = useAllCoinsQuery({currency: currency});
 
   const toggleAddModal = (assetData: any, index: number) => {
     setAssetData(assetData);
@@ -65,8 +66,12 @@ export default function Portfolio() {
         </h2>
         <AddAssetButton toggleAddModal={toggleAddModal} assetData={assetData} />
       </div>
-      {isLoading && <span className="text-center mt-[16vh] text-[--dark-slate-blue] dark:text-white">Loading...</span>}
-      {isSuccess &&
+      {isLoading && (
+        <span className="text-center mt-[16vh] text-[--dark-slate-blue] dark:text-white">
+          Loading...
+        </span>
+      )}
+      {isSuccess && (
         <div className="w-full flex flex-col gap-[2vh]">
           {portfolio.length ? (
             portfolio.map((assetData: any, index: number) => {
@@ -90,8 +95,12 @@ export default function Portfolio() {
             </h3>
           )}
         </div>
-      }
-      {isError && <span className="text-center mt-[16vh] text-[--dark-slate-blue] dark:text-white">Error: {error.toString()}</span>}
+      )}
+      {isError && (
+        <span className="text-center mt-[16vh] text-[--dark-slate-blue] dark:text-white">
+          Error: {error.toString()}
+        </span>
+      )}
       {addAssetVisible && (
         <AddAssetModal
           toggleAddModal={toggleAddModal}
