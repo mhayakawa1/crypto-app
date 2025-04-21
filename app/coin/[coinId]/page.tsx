@@ -52,8 +52,13 @@ const HighLow = (props: { price: string; time: string; high: boolean }) => {
       <Image
         width={16}
         height={16}
-        style={{ width: "auto", height: "auto" }}
-        className="mt-[8px]"
+        style={{
+          width: "auto",
+          height: "auto",
+          maxHeight: "8px",
+          maxWidth: "16px",
+        }}
+        className="mt-[20px]"
         src={high ? ArrowUpGreen.src : ArrowDownRed.src}
         alt=""
       />
@@ -252,12 +257,12 @@ export default function CoinPage(props: { params: Params }) {
   return (
     <div>
       <div className="mt-[6vh] mb-[4vh]">
-        <Link href="/portfolio">Portfolio / Your {coinName} summary</Link>
+        <Link href="/portfolio" className="text-[--dark-slate-blue] dark:text-white">Portfolio / Your {coinName} summary</Link>
       </div>
       {isLoading && <h2>Loading...</h2>}
       {isSuccess && (
         <div className="flex flex-col gap-[8vh] w-full justify-between">
-          <div className="w-full flex md:max-xl:flex-col justify-between gap-[4vw] md:max-xl:gap-[4vh]">
+          <div className="w-full flex flex-col md:xl:flex-row justify-between gap-[4vw] md:max-xl:gap-[4vh]">
             <div className="flex justify-between gap-[4vw]">
               <div className="flex justify-between flex-col gap-[16px] w-[44%]">
                 <Panel className="flex justify-center items-center flex-col grow gap-[24px]">
@@ -352,20 +357,20 @@ export default function CoinPage(props: { params: Params }) {
           </div>
           <div className="w-full flex justify-between">
             <div className="flex flex-col gap-[24px] w-[50%]">
-              <h4 className="text-xl font-medium">Description</h4>
+              <h4 className="text-xl font-medium text-[--dark-slate-blue] dark:text-white">Description</h4>
               <p
                 className={`${
                   textHidden
                     ? "overflow-hidden text-ellipsis h-[210px]"
                     : "flex flex-col h-auto"
-                } relative text-sm/[21px] w-100`}
+                } relative text-sm/[21px] w-full text-[--dark-slate-blue] dark:text-white`}
               >
                 {coinData.description}
                 <button
                   onClick={toggleDescription}
                   className={`${
                     textHidden ? "absolute bottom-0 right-0" : "self-end"
-                  } pl-[16px] text-[#6060ff] text-sm/[21px] h-[21px] bg-gradient-to-r from-transparent from-0% to-[#13121A] to-20%`}
+                  } pl-[16px] text-[#6060ff] text-sm/[21px] h-[21px] bg-gradient-to-r from-transparent from-0% to-[#f3f5f9] dark:to-[#13121A] to-20%`}
                 >
                   {textHidden ? "...read more" : "read less"}
                 </button>
