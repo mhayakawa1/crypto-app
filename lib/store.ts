@@ -3,6 +3,7 @@ import { apiSlice } from "./features/api/apiSlice";
 import portfolioReducer from "./features/portfolio/portfolioSlice";
 import todosReducer from "./features/todos/todosSlice";
 import themeReducer from "./features/theme/themeSlice";
+import currencyReducer from "./features/currency/currencySlice";
 
 export const makeStore = () => {
   return configureStore({
@@ -11,6 +12,7 @@ export const makeStore = () => {
       portfolio: portfolioReducer,
       todos: todosReducer,
       theme: themeReducer,
+      currency: currencyReducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({

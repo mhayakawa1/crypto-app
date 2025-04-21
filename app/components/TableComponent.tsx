@@ -12,6 +12,7 @@ import queryString from "query-string";
 import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
 import { formatAllCoins } from "@/lib/format/formatAllCoins";
 import { Progress } from "../../components/ui/progress";
+import { useAppSelector } from "@/lib/hooks";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AreaChartComponent from "./AreaChartComponent";
@@ -106,13 +107,14 @@ const TableComponent = () => {
   const [reverse, setReverse] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const currency = useAppSelector((state) => state.currency)
   const {
     data: data = [],
     isLoading,
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery();
+  } = useAllCoinsQuery({currency: currency});
 
   const updateValue = (name: string, value: any) => {
     if (sortValue === value) {
