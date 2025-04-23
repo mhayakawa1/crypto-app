@@ -14,8 +14,8 @@ export const apiSlice = createApi({
         `coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=true&developer_data=false&sparkline=false${date}`,
     }),
     allCoins: builder.query({
-      query: ({ currency }: {currency: string}) =>
-        `coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=50&page=1&sparkline=true&price_change_percentage=1h%2C24h%2C7d`,
+      query: ({ currency, page }: {currency: string, page: number}) =>
+        `coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=50&page=${page}&sparkline=true&price_change_percentage=1h%2C24h%2C7d`,
     }),
     compareCoins: builder.query({
       query: ({

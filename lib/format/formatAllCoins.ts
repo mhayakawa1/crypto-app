@@ -18,8 +18,12 @@ export function formatAllCoins(apiData: any) {
 
     const formatValue = (number: any) => {
       const apiData = { value: number, rising: true };
-      apiData.value = Number(number.toFixed(2));
-      apiData.rising = Number(number) >= 0;
+      if (number) {
+        apiData.value = Number(number.toFixed(2));
+        apiData.rising = Number(number) >= 0;
+      } else {
+        apiData.rising = false;
+      }
       return apiData;
     };
 

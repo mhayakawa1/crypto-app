@@ -84,13 +84,13 @@ const ProgressContainer = (props: { numbers: object; rising: boolean }) => {
           <span
             className={`w-[6px] h-[6px] rounded-full ${classes.progressColorBG}]`}
           ></span>
-          {formatNumber(values[0])}
+          {values[0] ? formatNumber(values[0]) : "--"}
         </div>
         <div className="flex content-between items-center gap-[4px]">
           <span
             className={`w-[6px] h-[6px] rounded-full ${classes.barColor}`}
           ></span>
-          {formatNumber(values[1])}
+          {values[1] ? formatNumber(values[1]) : "--"}
         </div>
       </div>
       <Progress
@@ -106,15 +106,20 @@ const TableComponent = () => {
   const [sortValue, setSortValue] = useState("#");
   const [reverse, setReverse] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
-  const currency = useAppSelector((state) => state.currency)
+  const [page, setPage] = useState(1);
+  const [coinList, setCoinList] = useState([]);
+  const currency = useAppSelector((state) => state.currency);
   const {
     data: data = [],
     isLoading,
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery({currency: currency});
+  } = useAllCoinsQuery({ currency: currency, page: page });
+
+  const updateQuery = () => {
+    setPage(page + 1);
+  };
 
   const updateValue = (name: string, value: any) => {
     if (sortValue === value) {
@@ -154,11 +159,11 @@ const TableComponent = () => {
       { name: "Last 7d", sortValue: null },
     ];
     return (
-      <TableRow className="border-none hover:bg-transparent">
+      <TableRow className="border-none hover:bg-transparent w-[80vw]">
         {headerInfo.map((element: any) => {
           const { name, sortValue } = element;
           return (
-            <TableHead key={name}>
+            <TableHead key={name} className="w-auto">
               {sortValue !== null ? (
                 <SortButton name={name} sortValue={sortValue} />
               ) : (
@@ -172,30 +177,30 @@ const TableComponent = () => {
   };
 
   const RowContent = () => {
-    let formattedData = formatAllCoins(data);
+    let sortedList = coinList;
     if (sortValue === "#") {
-      formattedData = formatAllCoins(data);
+      sortedList = coinList;
     } else if (sortValue === "Name") {
-      formattedData = formattedData.sort((a: any, b: any) =>
+      sortedList = sortedList.sort((a: any, b: any) =>
         a.name.localeCompare(b.name)
       );
     } else if (sortValue === "Price") {
-      formattedData = formattedData.sort(function (a: any, b: any) {
+      sortedList = sortedList.sort(function (a: any, b: any) {
         return a.price - b.price;
       });
     } else if (typeof sortValue === "number") {
-      formattedData = formattedData.sort(function (a: any, b: any) {
+      sortedList = sortedList.sort(function (a: any, b: any) {
         return a.percents[sortValue].value - b.percents[sortValue].value;
       });
     }
 
     if (reverse) {
-      formattedData = formattedData.reverse();
+      sortedList = sortedList.reverse();
     }
 
     return (
       <TableBody>
-        {formattedData.map((data: any, index: number) => {
+        {sortedList.map((data: any, index: number) => {
           const {
             id,
             image,
@@ -206,10 +211,11 @@ const TableComponent = () => {
             circulatingSupply,
             lastSevenDays,
           } = data;
+
           return (
             <TableRow
-              key={data.id}
-              className="bg-white hover:bg-[--lavender] text-[--dark-gunmetal] dark:text-white dark:bg-[--mirage] w-full h-[77px] border-none"
+              key={data.id + price}
+              className="bg-white hover:bg-[--lavender] text-[--dark-slate-blue] dark:text-white dark:bg-[--mirage] w-auto h-[77px] border-none"
             >
               <TableCell className="rounded-l-xl">
                 <span className="px-[10px]">{index + 1}</span>
@@ -228,17 +234,24 @@ const TableComponent = () => {
                   {name}
                 </Link>
               </TableCell>
-              <TableCell>${price.toLocaleString()}</TableCell>
+              <TableCell>
+                {price ? `$${price.toLocaleString()}` : "--"}
+              </TableCell>
               {percents.map((percent: any, index: number) => (
-                <TableCell key={index}>
-                  <div
-                    className={`flex text-sm ${
-                      percent.rising ? "text-[--rising]" : "text-[--falling]"
-                    } gap-[8px]`}
-                  >
-                    <Arrow rising={percent.rising} />
-                    {percent.value}%
-                  </div>
+                <TableCell
+                  key={index}
+                  className={`text-sm ${
+                    percent.rising ? "text-[--rising]" : "text-[--falling]"
+                  }`}
+                >
+                  {percent.value ? (
+                    <div className="flex gap-[8px]">
+                      <Arrow rising={percent.rising} />
+                      {percent.value}%
+                    </div>
+                  ) : (
+                    <span>--</span>
+                  )}
                 </TableCell>
               ))}
               <TableCell className="">
@@ -276,70 +289,50 @@ const TableComponent = () => {
     );
   };
 
-  const RowDataEmpty = (props: { message: any }) => {
-    const { message } = props;
+  const LoadingSkeleton = () => {
     return (
-      <TableBody>
-        {[...Array(10).keys()].map((key) => (
-          <TableRow
+      <div className="flex flex-col gap-[8px] w-full">
+        {[...Array(5).keys()].map((key, index) => (
+          <div
             key={key}
-            className="bg-white hover:bg-[--lavender] text-[--dark-gunmetal] dark:text-white dark:bg-[--mirage] w-full h-[77px] border-none"
+            className="flex items-center pl-[20px] w-full bg-white hover:bg-[--lavender] text-[--dark-gunmetal] dark:text-white dark:bg-[--mirage] h-[77px] border-none  rounded-xl"
           >
-            {[...Array(9).keys()].map((key, index) => (
-              <TableCell
-                key={key}
-                className={`${index === 0 && "rounded-l-xl"} ${
-                  index === 8 && "rounded-r-xl w-fit p-0"
-                }`}
-              >
-                {message && index === 1 && message}
-              </TableCell>
-            ))}
-          </TableRow>
+            {isError && index === 0 && errorMessage}
+          </div>
         ))}
-      </TableBody>
+      </div>
     );
   };
 
   useEffect(() => {
-    if (isError && "error" in error) {
+    if (isSuccess && data) {
+      const newCoinList = coinList.concat(formatAllCoins(data));
+      setCoinList(newCoinList);
+    } else if (isError && "error" in error) {
       setErrorMessage(error.error);
     }
-  }, [isError, error]);
-
-  const refresh = () => {};
-
-  const updateQuery = () => {};
+  }, [isLoading, isError, error, isSuccess, data, coinList]);
 
   return (
     <InfiniteScroll
-      dataLength={10}
-      next={updateQuery}
+      dataLength={coinList.length}
+      next={() => updateQuery()}
       hasMore={true}
-      loader={<h4>Loading...</h4>}
+      loader={<LoadingSkeleton></LoadingSkeleton>}
       endMessage={
         <p style={{ textAlign: "center" }}>
           <b>Yay! You have seen it all</b>
         </p>
       }
-      refreshFunction={refresh}
-      pullDownToRefresh
-      pullDownToRefreshThreshold={50}
-      pullDownToRefreshContent={
-        <h3 style={{ textAlign: "center" }}>&#8595; Pull down to refresh</h3>
-      }
-      releaseToRefreshContent={
-        <h3 style={{ textAlign: "center" }}>&#8593; Release to refresh</h3>
-      }
     >
-      <Table className="rounded-xl border-separate border-spacing-y-[8px]">
-        <TableHeader>
-          <TableHeaderContent />
-        </TableHeader>
-        {isLoading && <RowDataEmpty message={null} />}
-        {isSuccess && <RowContent />}
-        {isError && <RowDataEmpty message={errorMessage} />}
-      </Table>
+      <div className="w-[80vw]">
+        <Table className="border-separate border-spacing-y-[8px] w-auto">
+          <TableHeader>
+            <TableHeaderContent />
+          </TableHeader>
+          {coinList.length > 0 && <RowContent />}
+        </Table>
+      </div>
     </InfiniteScroll>
   );
 };
