@@ -37,7 +37,7 @@ export default function Portfolio() {
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery({currency: currency});
+  } = useAllCoinsQuery({currency: currency, page: 1});
 
   const toggleAddModal = (assetData: any, index: number) => {
     setAssetData(assetData);

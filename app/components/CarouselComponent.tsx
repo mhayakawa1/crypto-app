@@ -107,7 +107,7 @@ const CarouselComponent = () => {
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery({currency: currency});
+  } = useAllCoinsQuery({currency: currency, page: 1});
 
   let content: React.ReactNode;
   
