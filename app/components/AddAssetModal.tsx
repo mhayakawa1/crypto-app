@@ -52,7 +52,7 @@ const AddAssetModal = (props: {
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery({currency: currency});
+  } = useAllCoinsQuery({currency: currency, page: 1});
 
   function handleSubmit(event: any) {
     event.preventDefault();
