@@ -52,7 +52,7 @@ const Navbar = () => {
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery({ currency: currency });
+  } = useAllCoinsQuery({ currency: currency, page: 1 });
 
   const ResultsEmpty = (props: { message: string }) => {
     return (
