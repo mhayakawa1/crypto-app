@@ -257,11 +257,16 @@ export default function CoinPage(props: { params: Params }) {
   return (
     <div>
       <div className="mt-[6vh] mb-[4vh]">
-        <Link href="/portfolio" className="text-[--dark-slate-blue] dark:text-white">Portfolio / Your {coinName} summary</Link>
+        <Link
+          href="/portfolio"
+          className="text-[--dark-slate-blue] dark:text-white"
+        >
+          Portfolio / Your {coinName} summary
+        </Link>
       </div>
       {isLoading && <h2>Loading...</h2>}
       {isSuccess && (
-        <div className="flex flex-col gap-[8vh] w-full justify-between">
+        <div className="flex flex-col gap-[8vh] w-full max-md:gap-[4vh] justify-between">
           <div className="w-full flex flex-col md:xl:flex-row justify-between gap-[4vw] md:max-xl:gap-[4vh]">
             <div className="flex justify-between gap-[4vw]">
               <div className="flex justify-between flex-col gap-[16px] w-[44%]">
@@ -274,7 +279,10 @@ export default function CoinPage(props: { params: Params }) {
                   </div>
                   <h2>{coinName}</h2>
                 </Panel>
-                <LinkContainer link={coinData.homeLink} sliceIndex={7} />
+                <LinkContainer
+                  link={coinData.homeLink}
+                  sliceIndex={coinData.homeLink.indexOf("www.") + 4}
+                />
               </div>
               <Panel className="flex justify-center items-center grow p-[40px]">
                 <ul className="self-center flex flex-col justify-center gap-[20px] h-fit">
@@ -293,7 +301,7 @@ export default function CoinPage(props: { params: Params }) {
                         }
                         width={9}
                         height={5}
-                        className="self-start w-[9px] h-[5px] mx-[5px]"
+                        className="self-start w-[9px] h-[5px] mx-[5px] my-auto"
                         alt=""
                       />
                       <span className="text-xl/[14px]">
@@ -355,9 +363,11 @@ export default function CoinPage(props: { params: Params }) {
               </ul>
             </Panel>
           </div>
-          <div className="w-full flex justify-between">
-            <div className="flex flex-col gap-[24px] w-[50%]">
-              <h4 className="text-xl font-medium text-[--dark-slate-blue] dark:text-white">Description</h4>
+          <div className="w-full flex justify-between max-md:flex-col-reverse max-md:gap-[4vh]">{/**/}
+            <div className="flex flex-col gap-[24px] w-[50%] max-md:w-full">
+              <h4 className="text-xl font-medium text-[--dark-slate-blue] dark:text-white">
+                Description
+              </h4>
               <p
                 className={`${
                   textHidden
@@ -376,7 +386,7 @@ export default function CoinPage(props: { params: Params }) {
                 </button>
               </p>
             </div>
-            <div className="flex flex-col gap-[24px] w-[40%]">
+            <div className="flex flex-col gap-[24px] w-[40%] max-md:w-full">
               {coinData.blockchainLinks.map((link: string, index: number) => (
                 <LinkContainer key={index} link={link} sliceIndex={8} />
               ))}
