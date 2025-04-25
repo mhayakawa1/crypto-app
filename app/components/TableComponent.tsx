@@ -28,7 +28,7 @@ const Arrow = (props: { rising: boolean }) => {
       alt=""
       width="0"
       height="0"
-      className="w-[7px] h-auto"
+      className="w-[7px] h-auto mx-[2px]"
     />
   );
 };
@@ -109,6 +109,7 @@ const TableComponent = () => {
   const [page, setPage] = useState(1);
   const [coinList, setCoinList] = useState([]);
   const currency = useAppSelector((state) => state.currency);
+
   const {
     data: data = [],
     isLoading,
@@ -118,7 +119,7 @@ const TableComponent = () => {
   } = useAllCoinsQuery({ currency: currency, page: page });
 
   const updateQuery = () => {
-    setPage(page + 1);
+      setPage(page + 1);
   };
 
   const updateValue = (name: string, value: any) => {
@@ -148,22 +149,25 @@ const TableComponent = () => {
 
   const TableHeaderContent = () => {
     const headerInfo = [
-      { name: "#", sortValue: "#" },
-      { name: "Name", sortValue: "Name" },
-      { name: "Price", sortValue: "Price" },
-      { name: "1h%", sortValue: 0 },
-      { name: "24h%", sortValue: 1 },
-      { name: "7d%", sortValue: 2 },
-      { name: "24h volume / Market Cap", sortValue: null },
-      { name: "Circulating / Total Supply", sortValue: null },
-      { name: "Last 7d", sortValue: null },
+      { name: "#", sortValue: "#", width: "w-[4%]" },
+      { name: "Name", sortValue: "Name", width: "w-[16%]" },
+      { name: "Price", sortValue: "Price", width: "w-[8%]" },
+      { name: "1h%", sortValue: 0, width: "w-[6%]" },
+      { name: "24h%", sortValue: 1, width: "w-[6%]" },
+      { name: "7d%", sortValue: 2, width: "w-[6%]" },
+      { name: "24h Vol. / Market Cap", sortValue: null, width: "grow" },
+      { name: "Circulating / Total Supply", sortValue: null, width: "grow" },
+      { name: "Last 7d", sortValue: null, width: "w-[120px]" },
     ];
     return (
-      <TableRow className="border-none hover:bg-transparent w-[80vw]">
+      <TableRow className="h-[50px] hover:bg-transparent flex items-center justify-start gap-[8px] p-0 border-none">
         {headerInfo.map((element: any) => {
-          const { name, sortValue } = element;
+          const { name, sortValue, width } = element;
           return (
-            <TableHead key={name} className="w-auto">
+            <TableHead
+              key={name}
+              className={`${width} h-full flex items-center justify-center p-0`}
+            >
               {sortValue !== null ? (
                 <SortButton name={name} sortValue={sortValue} />
               ) : (
@@ -199,7 +203,7 @@ const TableComponent = () => {
     }
 
     return (
-      <TableBody>
+      <TableBody className="flex flex-col gap-[8px]">
         {sortedList.map((data: any, index: number) => {
           const {
             id,
@@ -215,14 +219,14 @@ const TableComponent = () => {
           return (
             <TableRow
               key={data.id + price}
-              className="bg-white hover:bg-[--lavender] text-[--dark-slate-blue] dark:text-white dark:bg-[--mirage] w-auto h-[77px] border-none"
+              className="flex justify-between items-center gap-[8px] rounded-xl bg-white hover:bg-[--lavender] text-[--dark-slate-blue] dark:text-white dark:bg-[--mirage] w-full h-[77px] border-none"
             >
-              <TableCell className="rounded-l-xl">
-                <span className="px-[10px]">{index + 1}</span>
+              <TableCell className="flex justify-between items-center gap-[8px] p-0 w-[4%]">
+                <span className="px-[10px] grow text-center">{index + 1}</span>
               </TableCell>
-              <TableCell>
+              <TableCell className="w-[16%] flex items-center p-0">
                 <Link
-                  className="flex items-center gap-[16px] truncate"
+                  className="flex items-center gap-[16px] w-full"
                   href={`/coin/${id}`}
                 >
                   {image !== null && (
@@ -231,10 +235,10 @@ const TableComponent = () => {
                       <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                   )}
-                  {name}
+                  <p className="truncate">{name}</p>
                 </Link>
               </TableCell>
-              <TableCell>
+              <TableCell className="w-[8%] truncate">
                 {price ? `$${price.toLocaleString()}` : "--"}
               </TableCell>
               {percents.map((percent: any, index: number) => (
@@ -242,10 +246,10 @@ const TableComponent = () => {
                   key={index}
                   className={`text-sm ${
                     percent.rising ? "text-[--rising]" : "text-[--falling]"
-                  }`}
+                  } w-[6%] p-0`}
                 >
                   {percent.value ? (
-                    <div className="flex gap-[8px]">
+                    <div className="flex gap-[8px] w-full m-0">
                       <Arrow rising={percent.rising} />
                       {percent.value}%
                     </div>
@@ -254,19 +258,19 @@ const TableComponent = () => {
                   )}
                 </TableCell>
               ))}
-              <TableCell className="">
+              <TableCell className="grow">
                 <ProgressContainer
                   numbers={volumeMarketCap}
                   rising={percents[0].rising}
                 />
               </TableCell>
-              <TableCell className="">
+              <TableCell className="grow">
                 <ProgressContainer
                   numbers={circulatingSupply}
                   rising={percents[0].rising}
                 />
               </TableCell>
-              <TableCell className="rounded-r-xl w-fit p-0">
+              <TableCell className="rounded-r-xl p-0 w-grow h-full flex items-center">
                 <AreaChartComponent
                   xAxis={false}
                   height={"h-[37px]"}
@@ -291,11 +295,11 @@ const TableComponent = () => {
 
   const LoadingSkeleton = () => {
     return (
-      <div className="flex flex-col gap-[8px] w-full">
+      <div className="flex flex-col gap-[8px] w-full mt-[8px]">
         {[...Array(5).keys()].map((key, index) => (
           <div
             key={key}
-            className="flex items-center pl-[20px] w-full bg-white hover:bg-[--lavender] text-[--dark-gunmetal] dark:text-white dark:bg-[--mirage] h-[77px] border-none  rounded-xl"
+            className="flex items-center pl-[20px] w-full bg-white hover:bg-[--lavender] text-[--dark-gunmetal] dark:text-white dark:bg-[--mirage] h-[77px] border-none rounded-xl"
           >
             {isError && index === 0 && errorMessage}
           </div>
@@ -305,7 +309,7 @@ const TableComponent = () => {
   };
 
   useEffect(() => {
-    if (isSuccess && data) {
+    if (isSuccess && !coinList.find((coin: any) => coin.id === data[0].id)) {
       const newCoinList = coinList.concat(formatAllCoins(data));
       setCoinList(newCoinList);
     } else if (isError && "error" in error) {
@@ -325,9 +329,9 @@ const TableComponent = () => {
         </p>
       }
     >
-      <div className="w-[80vw]">
-        <Table className="border-separate border-spacing-y-[8px] w-auto">
-          <TableHeader>
+      <div className="w-full mt-[8px]">
+        <Table className="flex flex-col gap-[8px] border-separate border-spacing-y-[8px] w-full">
+          <TableHeader className="p-0">
             <TableHeaderContent />
           </TableHeader>
           {coinList.length > 0 && <RowContent />}
