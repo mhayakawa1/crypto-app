@@ -108,6 +108,8 @@ const TableComponent = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [page, setPage] = useState(1);
   const [coinList, setCoinList] = useState([]);
+  const [shortenedList, setShortenedList] = useState([]);
+  //const [listCounter, setListCounter] = useState(50);
   const currency = useAppSelector((state) => state.currency);
 
   const {
@@ -119,7 +121,11 @@ const TableComponent = () => {
   } = useAllCoinsQuery({ currency: currency, page: page });
 
   const updateQuery = () => {
+    const newLength = shortenedList.length + 50;
+    setShortenedList(coinList.slice(0, newLength));
+    if (shortenedList.length % 250 === 0) {
       setPage(page + 1);
+    }
   };
 
   const updateValue = (name: string, value: any) => {
@@ -181,9 +187,9 @@ const TableComponent = () => {
   };
 
   const RowContent = () => {
-    let sortedList = coinList;
+    let sortedList = shortenedList;
     if (sortValue === "#") {
-      sortedList = coinList;
+      sortedList = shortenedList;
     } else if (sortValue === "Name") {
       sortedList = sortedList.sort((a: any, b: any) =>
         a.name.localeCompare(b.name)
@@ -312,15 +318,16 @@ const TableComponent = () => {
     if (isSuccess && !coinList.find((coin: any) => coin.id === data[0].id)) {
       const newCoinList = coinList.concat(formatAllCoins(data));
       setCoinList(newCoinList);
+      setShortenedList(newCoinList.slice(0, shortenedList.length+50));
     } else if (isError && "error" in error) {
       setErrorMessage(error.error);
     }
-  }, [isLoading, isError, error, isSuccess, data, coinList]);
+  }, [shortenedList.length, isLoading, isError, error, isSuccess, data, coinList]);
 
   return (
     <InfiniteScroll
-      dataLength={coinList.length}
-      next={() => updateQuery()}
+      dataLength={shortenedList.length}
+      next={updateQuery}
       hasMore={true}
       loader={<LoadingSkeleton></LoadingSkeleton>}
       endMessage={

@@ -15,7 +15,7 @@ export const apiSlice = createApi({
     }),
     allCoins: builder.query({
       query: ({ currency, page }: {currency: string, page: number}) =>
-        `coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=50&page=${page}&sparkline=true&price_change_percentage=1h%2C24h%2C7d`,
+        `coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=250&page=${page}&sparkline=true&price_change_percentage=1h%2C24h%2C7d`,
     }),
     compareCoins: builder.query({
       query: ({
