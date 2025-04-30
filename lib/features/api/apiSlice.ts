@@ -5,6 +5,7 @@ export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "https://api.coingecko.com/api/v3/",
   }),
+  tagTypes: ["AllCoinsResult", "FETCH_ERROR", "UNKNOWN_ERROR"],
   endpoints: (builder) => ({
     global: builder.query<any, void>({
       query: () => "global",
@@ -14,8 +15,16 @@ export const apiSlice = createApi({
         `coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=true&developer_data=false&sparkline=false${date}`,
     }),
     allCoins: builder.query({
-      query: ({ currency, page }: {currency: string, page: number}) =>
-        `coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=250&page=${page}&sparkline=true&price_change_percentage=1h%2C24h%2C7d`,
+      query: ({
+        currency,
+        page,
+      }: {
+        currency: string;
+        page: any;
+      }) => {
+        const url = `coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=50&page=${page}&sparkline=true&price_change_percentage=1h%2C24h%2C7d`;
+        return url;
+      },
     }),
     compareCoins: builder.query({
       query: ({

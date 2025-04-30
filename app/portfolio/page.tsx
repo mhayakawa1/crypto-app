@@ -56,7 +56,8 @@ export default function Portfolio() {
     if (storageItem) {
       dispatch(addLocalStorage(JSON.parse(storageItem)));
     }
-  }, [dispatch]);
+    console.log(currency)
+  }, [currency, dispatch]);
 
   return (
     <div className="flex flex-col gap-[2vh] py-[4vh]">

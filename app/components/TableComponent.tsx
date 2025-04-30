@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { v4 as uuidv4 } from "uuid";
 import InfiniteScroll from "react-infinite-scroll-component";
 import queryString from "query-string";
 import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
@@ -106,10 +107,8 @@ const TableComponent = () => {
   const [sortValue, setSortValue] = useState("#");
   const [reverse, setReverse] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState<any>(1);
   const [coinList, setCoinList] = useState([]);
-  const [shortenedList, setShortenedList] = useState([]);
-  //const [listCounter, setListCounter] = useState(50);
   const currency = useAppSelector((state) => state.currency);
 
   const {
@@ -121,11 +120,7 @@ const TableComponent = () => {
   } = useAllCoinsQuery({ currency: currency, page: page });
 
   const updateQuery = () => {
-    const newLength = shortenedList.length + 50;
-    setShortenedList(coinList.slice(0, newLength));
-    if (shortenedList.length % 250 === 0) {
-      setPage(page + 1);
-    }
+    setPage(Number(page) + 1);
   };
 
   const updateValue = (name: string, value: any) => {
@@ -187,9 +182,9 @@ const TableComponent = () => {
   };
 
   const RowContent = () => {
-    let sortedList = shortenedList;
+    let sortedList = coinList;
     if (sortValue === "#") {
-      sortedList = shortenedList;
+      sortedList = coinList;
     } else if (sortValue === "Name") {
       sortedList = sortedList.sort((a: any, b: any) =>
         a.name.localeCompare(b.name)
@@ -221,10 +216,9 @@ const TableComponent = () => {
             circulatingSupply,
             lastSevenDays,
           } = data;
-
           return (
             <TableRow
-              key={data.id + price}
+              key={uuidv4()}
               className="flex justify-between items-center gap-[8px] rounded-xl bg-white hover:bg-[--lavender] text-[--dark-slate-blue] dark:text-white dark:bg-[--mirage] w-full h-[77px] border-none"
             >
               <TableCell className="flex justify-between items-center gap-[8px] p-0 w-[4%]">
@@ -302,12 +296,12 @@ const TableComponent = () => {
   const LoadingSkeleton = () => {
     return (
       <div className="flex flex-col gap-[8px] w-full mt-[8px]">
-        {[...Array(5).keys()].map((key, index) => (
+        {[...Array(5).keys()].map((key) => (
           <div
             key={key}
             className="flex items-center pl-[20px] w-full bg-white hover:bg-[--lavender] text-[--dark-gunmetal] dark:text-white dark:bg-[--mirage] h-[77px] border-none rounded-xl"
           >
-            {isError && index === 0 && errorMessage}
+            {isError ? errorMessage : "Loading..."}
           </div>
         ))}
       </div>
@@ -318,15 +312,24 @@ const TableComponent = () => {
     if (isSuccess && !coinList.find((coin: any) => coin.id === data[0].id)) {
       const newCoinList = coinList.concat(formatAllCoins(data));
       setCoinList(newCoinList);
-      setShortenedList(newCoinList.slice(0, shortenedList.length+50));
     } else if (isError && "error" in error) {
-      setErrorMessage(error.error);
+      if (error.status === "FETCH_ERROR") {
+        const newPage =
+          typeof page === "number" ? page.toString() : Number(page);
+        setTimeout(() => {
+          setPage(newPage);
+        }, 10000);
+        setErrorMessage(`${error.error}. Retrying...`);
+      } else {
+        setErrorMessage(error.error);
+      }
     }
-  }, [shortenedList.length, isLoading, isError, error, isSuccess, data, coinList]);
+    console.log(currency)
+  }, [currency, page, isLoading, isError, error, isSuccess, data, coinList]);
 
   return (
     <InfiniteScroll
-      dataLength={shortenedList.length}
+      dataLength={coinList.length}
       next={updateQuery}
       hasMore={true}
       loader={<LoadingSkeleton></LoadingSkeleton>}
