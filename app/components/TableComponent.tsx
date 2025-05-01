@@ -13,7 +13,6 @@ import queryString from "query-string";
 import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
 import { formatAllCoins } from "@/lib/format/formatAllCoins";
 import { Progress } from "../../components/ui/progress";
-import { useAppSelector } from "@/lib/hooks";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AreaChartComponent from "./AreaChartComponent";
@@ -34,8 +33,8 @@ const Arrow = (props: { rising: boolean }) => {
   );
 };
 
-const ProgressContainer = (props: { numbers: object; rising: boolean }) => {
-  const { numbers, rising } = props;
+const ProgressContainer = (props: { numbers: object; rising: boolean, symbol: string }) => {
+  const { numbers, rising, symbol } = props;
   const values = Object.values(numbers);
   const allClasses = [
     {
@@ -68,9 +67,9 @@ const ProgressContainer = (props: { numbers: object; rising: boolean }) => {
     const numberValues = number.toLocaleString().split(",");
 
     if (numberValues.length === 1) {
-      return `$${numberValues[0]}`;
+      return `${symbol}${numberValues[0]}`;
     } else {
-      return `$${numberValues[0]}.${numberValues[1].slice(0, 2)}${
+      return `${symbol}${numberValues[0]}.${numberValues[1].slice(0, 2)}${
         placeValue.letter
       }`;
     }
@@ -103,13 +102,13 @@ const ProgressContainer = (props: { numbers: object; rising: boolean }) => {
   );
 };
 
-const TableComponent = () => {
+const TableComponent = (props: { currency: any }) => {
+  const { currency: {currency, symbol} } = props;
   const [sortValue, setSortValue] = useState("#");
   const [reverse, setReverse] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [page, setPage] = useState<any>(1);
   const [coinList, setCoinList] = useState([]);
-  const currency = useAppSelector((state) => state.currency);
 
   const {
     data: data = [],
@@ -239,7 +238,7 @@ const TableComponent = () => {
                 </Link>
               </TableCell>
               <TableCell className="w-[8%] truncate">
-                {price ? `$${price.toLocaleString()}` : "--"}
+                {price ? `${symbol}${price.toLocaleString()}` : "--"}
               </TableCell>
               {percents.map((percent: any, index: number) => (
                 <TableCell
@@ -262,12 +261,14 @@ const TableComponent = () => {
                 <ProgressContainer
                   numbers={volumeMarketCap}
                   rising={percents[0].rising}
+                  symbol={symbol}
                 />
               </TableCell>
               <TableCell className="grow">
                 <ProgressContainer
                   numbers={circulatingSupply}
                   rising={percents[0].rising}
+                  symbol={symbol}
                 />
               </TableCell>
               <TableCell className="rounded-r-xl p-0 w-grow h-full flex items-center">
@@ -324,7 +325,6 @@ const TableComponent = () => {
         setErrorMessage(error.error);
       }
     }
-    console.log(currency)
   }, [currency, page, isLoading, isError, error, isSuccess, data, coinList]);
 
   return (
