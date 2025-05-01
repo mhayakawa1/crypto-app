@@ -23,7 +23,7 @@ const AddAssetButton = (props: { toggleAddModal: any; assetData: any }) => {
 };
 
 export default function Portfolio() {
-  const currency = useAppSelector((state) => state.currency);
+  const { currency } = useAppSelector((state) => state.currency);
   const [addAssetVisible, setAddAssetVisible] = useState(false);
   const [deleteAssetVisible, setDeleteAssetVisible] = useState(false);
   const [assetData, setAssetData] = useState(null);
@@ -37,7 +37,7 @@ export default function Portfolio() {
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery({currency: currency.currency, page: 1});
+  } = useAllCoinsQuery({ currency: currency, page: 1 });
 
   const toggleAddModal = (assetData: any, index: number) => {
     setAssetData(assetData);

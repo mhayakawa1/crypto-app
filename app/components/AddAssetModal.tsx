@@ -20,7 +20,7 @@ const AddAssetModal = (props: {
   assetData: any;
   index: number;
 }) => {
-  const currency = useAppSelector((state) => state.currency);
+  const { currency } = useAppSelector((state) => state.currency);
   const { toggleAddModal, assetData, index } = props;
   const [asset, setAsset] = useState({
     id: Math.random(),
@@ -52,7 +52,7 @@ const AddAssetModal = (props: {
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery({currency: currency, page: 1});
+  } = useAllCoinsQuery({ currency: currency, page: 1 });
 
   function handleSubmit(event: any) {
     event.preventDefault();
@@ -157,7 +157,9 @@ const AddAssetModal = (props: {
                       </SelectItem>
                     );
                   })}
-                {isError && <SelectItem value="">Error: {error.toString()}</SelectItem>}
+                {isError && (
+                  <SelectItem value="">Error: {error.toString()}</SelectItem>
+                )}
               </SelectContent>
             </Select>
             <input

@@ -8,7 +8,7 @@ import ConverterInputs from "./ConverterInputs";
 import TimeRangeButtons from "./TimeRangeButtons";
 
 const Converter = () => {
-  const currency = useAppSelector((state) => state.currency);
+  const { currency } = useAppSelector((state) => state.currency);
   const [amountCoinA, setAmountCoinA] = useState(1);
   const [amountCoinB, setAmountCoinB] = useState(1);
   const [coinA, setCoinA] = useState({ name: "", price: 0, symbol: "" });
@@ -50,7 +50,7 @@ const Converter = () => {
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery({currency: currency, page: 1});
+  } = useAllCoinsQuery({ currency: currency, page: 1 });
 
   let content: React.ReactNode;
 
