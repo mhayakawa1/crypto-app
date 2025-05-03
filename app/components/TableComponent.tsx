@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -33,7 +33,11 @@ const Arrow = (props: { rising: boolean }) => {
   );
 };
 
-const ProgressContainer = (props: { numbers: object; rising: boolean, symbol: string }) => {
+const ProgressContainer = (props: {
+  numbers: object;
+  rising: boolean;
+  symbol: string;
+}) => {
   const { numbers, rising, symbol } = props;
   const values = Object.values(numbers);
   const allClasses = [
@@ -103,12 +107,19 @@ const ProgressContainer = (props: { numbers: object; rising: boolean, symbol: st
 };
 
 const TableComponent = (props: { currency: any }) => {
-  const { currency: {currency, symbol} } = props;
+  const {
+    currency: { currency, symbol },
+  } = props;
+  const prevCurrency = useRef<string>(null);
+  const prevFirstPrice = useRef<any>(null);
+  const [firstPrice, setFirstPrice] = useState(null);
+  const [fetchData, setFetchData] = useState(false);
   const [sortValue, setSortValue] = useState("#");
   const [reverse, setReverse] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [page, setPage] = useState<any>(1);
-  const [coinList, setCoinList] = useState([]);
+  const [coinList, setCoinList] = useState<any[]>([]);
+  const [initialRender, setInitialRender] = useState(true);
 
   const {
     data: data = [],
@@ -120,6 +131,7 @@ const TableComponent = (props: { currency: any }) => {
 
   const updateQuery = () => {
     setPage(Number(page) + 1);
+    setFetchData(true);
   };
 
   const updateValue = (name: string, value: any) => {
@@ -309,10 +321,38 @@ const TableComponent = (props: { currency: any }) => {
     );
   };
 
+  const updateCoinList = (newCurrency: boolean) => {
+    const formattedData = formatAllCoins(data);
+    let newCoinList;
+    if (newCurrency || !coinList[0]) {
+      newCoinList = formattedData;
+    } else {
+      coinList.concat(formattedData);
+    }
+    setCoinList(newCoinList);
+    prevFirstPrice.current = firstPrice;
+    setFirstPrice(newCoinList[0].price);
+  };
+
   useEffect(() => {
-    if (isSuccess && !coinList.find((coin: any) => coin.id === data[0].id)) {
-      const newCoinList = coinList.concat(formatAllCoins(data));
-      setCoinList(newCoinList);
+    if (!initialRender && prevCurrency.current !== currency) {
+      const newPage = typeof page === "number" ? "1" : 1;
+      setPage(newPage);
+      setCoinList([]);
+      setFetchData(true);
+      prevCurrency.current = currency;
+    }
+
+    if (isLoading) {
+      setFetchData(true);
+    } else if (isSuccess && fetchData) {
+      if (firstPrice !== data[0].current_price) {
+        updateCoinList(true);
+      } else {
+        updateCoinList(false);
+      }
+      setInitialRender(false);
+      setFetchData(false);
     } else if (isError && "error" in error) {
       if (error.status === "FETCH_ERROR") {
         const newPage =
@@ -325,7 +365,20 @@ const TableComponent = (props: { currency: any }) => {
         setErrorMessage(error.error);
       }
     }
-  }, [currency, page, isLoading, isError, error, isSuccess, data, coinList]);
+  }, [
+    fetchData,
+    initialRender,
+    updateCoinList,
+    prevFirstPrice.current,
+    currency,
+    page,
+    isLoading,
+    isError,
+    error,
+    isSuccess,
+    data,
+    coinList,
+  ]);
 
   return (
     <InfiniteScroll
