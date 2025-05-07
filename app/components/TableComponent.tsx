@@ -12,9 +12,7 @@ const TableComponent = (props: { currency: any }) => {
   const {
     currency: { currency, symbol },
   } = props;
-  const prevCurrency = useRef<string>(
-    localStorage.getItem("currency") || "btc"
-  );
+  const prevCurrency = useRef<any>(currency);
   const [firstPrice, setFirstPrice] = useState(null);
   const [currencyUpdated, setCurrencyUpdated] = useState(false);
   const [sortValue, setSortValue] = useState("#");
@@ -49,17 +47,20 @@ const TableComponent = (props: { currency: any }) => {
     location.hash = stringified;
   };
 
-  const updateCoinList = useCallback((newCurrency: boolean) => {
-    const formattedData = formatAllCoins(data);
-    let newCoinList;
-    if (newCurrency || coinList.length === 1) {
-      newCoinList = formattedData;
-    } else {
-      newCoinList = coinList.concat(formattedData);
-    }
-    setCoinList(newCoinList);
-    setFirstPrice(newCoinList[0].price);
-  }, [coinList, data]);
+  const updateCoinList = useCallback(
+    (newCurrency: boolean) => {
+      const formattedData = formatAllCoins(data);
+      let newCoinList;
+      if (newCurrency || coinList.length === 1) {
+        newCoinList = formattedData;
+      } else {
+        newCoinList = coinList.concat(formattedData);
+      }
+      setCoinList(newCoinList);
+      setFirstPrice(newCoinList[0].price);
+    },
+    [coinList, data]
+  );
 
   useEffect(() => {
     if (
