@@ -12,7 +12,8 @@ import TimeRangeButtons from "./TimeRangeButtons";
 import CompareWhite from "../../src/icons/Compare_White.svg";
 import XWhite from "../../src/icons/X_White.svg";
 
-const Coins = () => {
+const Coins = (props: {currency: any}) => {
+  const {currency} = props;
   const [compareData, setCompareData] = useState(false);
   const [days, setDays] = useState(1);
   const [intervalDaily, setIntervalDaily] = useState(false);
@@ -120,7 +121,7 @@ const Coins = () => {
         </div>
         <TimeRangeButtons updateChart={updateCharts} />
       </div>
-      <TableComponent />
+      <TableComponent currency={currency} />
     </div>
   );
 };

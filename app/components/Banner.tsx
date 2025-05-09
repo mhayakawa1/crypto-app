@@ -14,7 +14,7 @@ const BannerItem = (props: { children: any }) => {
 };
 
 const Banner = () => {
-  const currency = useAppSelector((state) => state.currency);
+  const { currency: currency } = useAppSelector((state) => state.currency);
   const [errorMessage, setErrorMessage] = useState("");
   const [bannerData, setBannerData] = useState({
     coins: 0,

@@ -3,9 +3,11 @@ import StoreProvider from "./StoreProvider";
 import { useState } from "react";
 import Coins from "./components/Coins";
 import Converter from "./components/Converter";
+import { useAppSelector } from "@/lib/hooks";
 
 export default function Home() {
   const [coinsVisible, setCoinsVisible] = useState(true);
+  const currency = useAppSelector((state) => state.currency);
 
   const toggleDisplay = () => {
     setCoinsVisible((current) => !current);
@@ -47,7 +49,9 @@ export default function Home() {
           </span>
         </button>
       </div>
-      <div className='pt-[4vh] overflow-x-hidden'>{coinsVisible ? <Coins /> : <Converter />}</div>
+      <div className="pt-[4vh] overflow-x-hidden">
+        {coinsVisible ? <Coins currency={currency} /> : <Converter />}
+      </div>
     </StoreProvider>
   );
 }

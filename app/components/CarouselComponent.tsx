@@ -16,7 +16,7 @@ import ArrowUpGreen from "../../src/icons/Arrow_Up_Green.svg";
 import ArrowDownRed from "../../src/icons/Arrow_Down_Red.svg";
 
 const CarouselComponent = () => {
-  const currency = useAppSelector((state) => state.currency);
+  const { currency } = useAppSelector((state) => state.currency);
   const [activeCoins, setActiveCoins]: any[] = useState([]);
   const [twoCoinsActive, setTwoCoinsActive] = useState(false);
 
@@ -107,10 +107,10 @@ const CarouselComponent = () => {
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery({currency: currency});
+  } = useAllCoinsQuery({ currency: currency, page: 1 });
 
   let content: React.ReactNode;
-  
+
   if (isLoading) {
     content = <p>Loading...</p>;
   } else if (isSuccess) {
@@ -124,7 +124,7 @@ const CarouselComponent = () => {
   } else if (isError) {
     content = <p>{error.toString()}</p>;
   }
-  
+
   return (
     <Carousel className="absolute w-[91vw]">
       <CarouselContent className="-ml-2 mt-3 mb-5">{content}</CarouselContent>

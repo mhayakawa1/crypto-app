@@ -1,213 +1,152 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Table, TableHeader } from "@/components/ui/table";
+import InfiniteScroll from "react-infinite-scroll-component";
+import queryString from "query-string";
 import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
 import { formatAllCoins } from "@/lib/format/formatAllCoins";
-import { Progress } from "../../components/ui/progress";
-import { useAppSelector } from "@/lib/hooks";
-import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import AreaChartComponent from "./AreaChartComponent";
-import ArrowUpGreen from "../../src/icons/Arrow_Up_Green.svg";
-import ArrowDownRed from "../../src/icons/Arrow_Down_Red.svg";
-import Image from "next/image";
+import TableHeaderContent from "./TableHeaderContent";
+import LoadingSkeleton from "./LoadingSkeleton";
+import RowContent from "./RowContent";
 
-const Arrow = (props: { rising: boolean }) => {
-  const { rising } = props;
-  return (
-    <Image
-      src={rising ? ArrowUpGreen : ArrowDownRed}
-      alt=""
-      width="0"
-      height="0"
-      className="w-[7px] h-auto"
-    />
-  );
-};
+const TableComponent = (props: { currency: any }) => {
+  const {
+    currency: { currency, symbol },
+  } = props;
+  const prevCurrency = useRef<any>(currency);
+  const [firstPrice, setFirstPrice] = useState(null);
+  const [currencyUpdated, setCurrencyUpdated] = useState(false);
+  const [sortValue, setSortValue] = useState("#");
+  const [reverse, setReverse] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [page, setPage] = useState<any>(1);
+  const [coinList, setCoinList] = useState<any[]>([{ price: null }]);
+  const [initialRender, setInitialRender] = useState(true);
 
-const ProgressContainer = (props: { numbers: object; rising: boolean }) => {
-  const { numbers, rising } = props;
-  const values = Object.values(numbers);
-  const allClasses = [
-    {
-      barColor: "bg-[--bg-rising]",
-      progressColor: "--rising",
-      progressColorBG: "bg-[--rising]",
-    },
-    {
-      barColor: "bg-[--bg-falling]",
-      progressColor: "--falling",
-      progressColorBG: "bg-[--falling]",
-    },
-  ];
-
-  const classes = allClasses[Number(!rising)];
-
-  const formatNumber = (number: number) => {
-    const placeValues = [
-      { letter: "Q", value: 1000000000000000 },
-      { letter: "T", value: 1000000000000 },
-      { letter: "B", value: 1000000000 },
-      { letter: "M", value: 1000000 },
-      { letter: "K", value: 1000 },
-    ];
-    const placeValue = placeValues.find(
-      (element) => element.value <= number
-    ) || {
-      letter: "",
-    };
-    const numberValues = number.toLocaleString().split(",");
-
-    if (numberValues.length === 1) {
-      return `$${numberValues[0]}`;
-    } else {
-      return `$${numberValues[0]}.${numberValues[1].slice(0, 2)}${
-        placeValue.letter
-      }`;
-    }
-  };
-
-  return (
-    <div>
-      <div className="w-full flex justify-between items-center h-[16px]">
-        <div
-          className={`flex justify-between items-center gap-[4px] text-[${classes.progressColor}]`}
-        >
-          <span
-            className={`w-[6px] h-[6px] rounded-full ${classes.progressColorBG}]`}
-          ></span>
-          {formatNumber(values[0])}
-        </div>
-        <div className="flex content-between items-center gap-[4px]">
-          <span
-            className={`w-[6px] h-[6px] rounded-full ${classes.barColor}`}
-          ></span>
-          {formatNumber(values[1])}
-        </div>
-      </div>
-      <Progress
-        className={classes.barColor}
-        value={(values[0] / (values[0] + values[1])) * 100}
-        color={classes.progressColorBG}
-      ></Progress>
-    </div>
-  );
-};
-
-const TableComponent = () => {
-  const currency = useAppSelector((state) => state.currency)
   const {
     data: data = [],
-    isLoading,
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery({currency: currency});
+    refetch,
+  } = useAllCoinsQuery({ currency: currency, page: page });
 
-  let content: React.ReactNode;
+  const updateQuery = () => {
+    setPage(Number(page) + 1);
+  };
 
-  if (isLoading) {
-    content = (
-      <TableRow>
-        <TableCell>Loading...</TableCell>
-      </TableRow>
-    );
-  } else if (isSuccess) {
-    const formattedData = formatAllCoins(data);
+  const updateValue = (name: string, value: any) => {
+    if (sortValue === value) {
+      setReverse((current) => !current);
+    } else {
+      setReverse(false);
+      setSortValue(value);
+    }
+    const parsed = queryString.parse(location.hash);
+    parsed.sort = `${name.toLowerCase()}`;
+    const stringified =
+      sortValue === "#" ? sortValue : queryString.stringify(parsed);
+    location.hash = stringified;
+  };
 
-    content = formattedData.map((data: any) => {
-      return (
-        <TableRow
-          key={data.id}
-          className="bg-[#191925] w-full h-[77px] border-none"
-        >
-          <TableCell className="rounded-l-xl">
-            <span className="px-[10px]">{data.number}</span>
-          </TableCell>
-          <TableCell>
-            <Link
-              className="flex items-center gap-[16px]"
-              href={`/coin/${data.id}`}
-            >
-              {data.image !== null && (
-                <Avatar>
-                  <AvatarImage src={data.image} />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-              )}
-              {data.name}
-            </Link>
-          </TableCell>
-          <TableCell>${data.price.toLocaleString()}</TableCell>
+  const updateCoinList = useCallback(
+    (newCurrency: boolean) => {
+      const formattedData = formatAllCoins(data);
+      let newCoinList;
+      if (newCurrency || coinList.length === 1) {
+        newCoinList = formattedData;
+      } else {
+        newCoinList = coinList.concat(formattedData);
+      }
+      setCoinList(newCoinList);
+      setFirstPrice(newCoinList[0].price);
+    },
+    [coinList, data]
+  );
 
-          {data.percents.map((percent: any) => (
-            <TableCell key={Math.random()}>
-              <div
-                className={`flex text-sm ${
-                  percent.rising ? "text-[--rising]" : "text-[--falling]"
-                } gap-[8px]`}
-              >
-                <Arrow rising={percent.rising} />
-                {percent.value}
-              </div>
-            </TableCell>
-          ))}
-
-          <TableCell className="">
-            <ProgressContainer
-              numbers={data.volumeMarketCap}
-              rising={data.percents[0].rising}
-            />
-          </TableCell>
-          <TableCell className="">
-            <ProgressContainer
-              numbers={data.circulatingSupply}
-              rising={data.percents[0].rising}
-            />
-          </TableCell>
-          <TableCell className="rounded-r-xl w-fit p-0">
-            <AreaChartComponent
-              xAxis={false}
-              height={"h-[37px]"}
-              width={"w-[120px]"}
-              data={data.lastSevenDays}
-              color={"white"}
-              fill={"url(#area-white)"}
-            />
-          </TableCell>
-        </TableRow>
-      );
-    });
-  } else if (isError) {
-    content = (
-      <TableRow>
-        <TableCell>{error.toString()}</TableCell>
-      </TableRow>
-    );
-  }
+  useEffect(() => {
+    if (
+      !initialRender &&
+      prevCurrency.current &&
+      prevCurrency.current !== currency
+    ) {
+      setPage(1);
+      setCoinList([{ price: null }]);
+      prevCurrency.current = currency;
+      setCurrencyUpdated(true);
+    }
+    if (
+      currencyUpdated &&
+      firstPrice &&
+      data[0].current_price &&
+      firstPrice !== data[0].current_price
+    ) {
+      updateCoinList(true);
+      setCurrencyUpdated(false);
+    } else if (
+      isSuccess &&
+      !currencyUpdated &&
+      !coinList.find((coin: any) => coin.id === data[0].id)
+    ) {
+      updateCoinList(false);
+      setInitialRender(false);
+    } else if (isError && "error" in error) {
+      if (error.status === "FETCH_ERROR") {
+        setTimeout(() => {
+          refetch();
+        }, 10000);
+        setErrorMessage(`${error.error}. Refetching...`);
+      } else {
+        setErrorMessage(error.error);
+      }
+    }
+  }, [
+    currencyUpdated,
+    firstPrice,
+    initialRender,
+    updateCoinList,
+    currency,
+    page,
+    isError,
+    error,
+    isSuccess,
+    data,
+    coinList,
+    refetch
+  ]);
 
   return (
-    <Table className="rounded-xl border-separate border-spacing-y-[8px]">
-      <TableHeader>
-        <TableRow className="border-none">
-          <TableHead>#</TableHead>
-          <TableHead>Name</TableHead>
-          <TableHead>Price</TableHead>
-          <TableHead>1h%</TableHead>
-          <TableHead>24h%</TableHead>
-          <TableHead>7d%</TableHead>
-          <TableHead>24h volume / Market Cap</TableHead>
-          <TableHead>Circulating / Total supply</TableHead>
-          <TableHead>Last 7d</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>{content}</TableBody>
-    </Table>
+    <InfiniteScroll
+      dataLength={coinList.length}
+      next={updateQuery}
+      hasMore={true}
+      loader={
+        <LoadingSkeleton
+          isError={isError}
+          errorMessage={errorMessage}
+        ></LoadingSkeleton>
+      }
+      endMessage={
+        <p style={{ textAlign: "center" }}>
+          <b>Yay! You have seen it all</b>
+        </p>
+      }
+    >
+      <div className="w-full mt-[8px]">
+        <Table className="flex flex-col gap-[8px] border-separate border-spacing-y-[8px] w-full">
+          <TableHeader className="p-0">
+            <TableHeaderContent updateValue={updateValue} />
+          </TableHeader>
+          {coinList.length > 1 && (
+            <RowContent
+              coinList={coinList}
+              sortValue={sortValue}
+              reverse={reverse}
+              symbol={symbol}
+            />
+          )}
+        </Table>
+      </div>
+    </InfiniteScroll>
   );
 };
 export default TableComponent;

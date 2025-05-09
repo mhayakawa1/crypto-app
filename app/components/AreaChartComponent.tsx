@@ -29,9 +29,13 @@ const AreaChartComponent = (props: {
             <stop offset="5%" stopColor="var(--soft-blue)" stopOpacity={0.8} />
             <stop offset="95%" stopColor="var(--soft-blue)" stopOpacity={0} />
           </linearGradient>
-          <linearGradient id="area-white" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="white" stopOpacity={0.8} />
-            <stop offset="95%" stopColor="white" stopOpacity={0} />
+          <linearGradient id="area-rising" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="var(--rising)" stopOpacity={0.8} />
+            <stop offset="95%" stopColor="var(--rising)" stopOpacity={0} />
+          </linearGradient>
+          <linearGradient id="area-falling" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="var(--falling)" stopOpacity={0.8} />
+            <stop offset="95%" stopColor="var(--falling)" stopOpacity={0} />
           </linearGradient>
         </defs>
         <Line type="monotone" dataKey="uv" stroke={color} dot={false} />
