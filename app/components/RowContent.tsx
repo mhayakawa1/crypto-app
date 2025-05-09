@@ -1,6 +1,5 @@
 import { TableBody, TableCell, TableRow } from "@/components/ui/table";
 import Link from "next/link";
-import { v4 as uuidv4 } from "uuid";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AreaChartComponent from "./AreaChartComponent";
 import Arrow from "./Arrow";
@@ -49,7 +48,7 @@ const RowContent = (props: {
         } = data;
         return (
           <TableRow
-            key={uuidv4()}
+            key={id}
             className="flex justify-between items-center gap-[8px] rounded-xl bg-white hover:bg-[--lavender] text-[--dark-slate-blue] dark:text-white dark:bg-[--mirage] w-full h-[77px] border-none"
           >
             <TableCell className="flex justify-between items-center gap-[8px] p-0 w-[4%]">
