@@ -52,27 +52,6 @@ const Converter = () => {
     error,
   } = useAllCoinsQuery({ currency: currency, page: 1 });
 
-  let content: React.ReactNode;
-
-  if (isLoading) {
-    content = <p>Loading...</p>;
-  } else if (isSuccess) {
-    const formattedData = formatAllCoins(data);
-    content = (
-      <ConverterInputs
-        data={formattedData}
-        updateCoins={updateCoins}
-        convert={convert}
-        coinA={coinA}
-        coinB={coinB}
-        amountCoinA={amountCoinA}
-        amountCoinB={amountCoinB}
-      />
-    );
-  } else if (isError) {
-    content = <p>{error.toString()}</p>;
-  }
-
   const updateChart = (range: any) => {
     const { days, intervalDaily } = range;
     setDays(days);
@@ -82,10 +61,24 @@ const Converter = () => {
   return (
     <div>
       <div className="flex flex-col justify-between items-start pb-[4vh]">
-        <h2>Online currency converter</h2>
-        <p className="text-[#9E9E9E]">{formattedDate}</p>
+        <h2 className="text-[--dark-slate-blue] dark:text-white">
+          Online currency converter
+        </h2>
+        <p className="text-[--dark-slate-blue] opacity-80 dark:opacity-100 dark:text-[#9E9E9E]">{formattedDate}</p>
       </div>
-      {content}
+      {isLoading && <p>Loading...</p>}
+      {isSuccess && (
+        <ConverterInputs
+          data={formatAllCoins(data)}
+          updateCoins={updateCoins}
+          convert={convert}
+          coinA={coinA}
+          coinB={coinB}
+          amountCoinA={amountCoinA}
+          amountCoinB={amountCoinB}
+        />
+      )}
+      {isError && <p>{error.toString()}</p>}
       <div className="w-full flex justify-between gap-[32px] aspect-[1296/293]">
         {coinA.price ? (
           <ConverterChart

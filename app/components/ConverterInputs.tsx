@@ -8,8 +8,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
+import { useAppSelector } from "@/lib/hooks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import VerticalSwitchBlue from "../../src/icons/Vertical_Switch_Blue.svg";
+import VerticalSwitchWhite from "../../src/icons/Vertical_Switch_White.svg";
 
 const InputContainer = (props: {
   name: string;
@@ -39,7 +41,7 @@ const InputContainer = (props: {
   );
 
   return (
-    <div className="bg-[#191932] rounded-[16px] p-[24px] w-[49%] h-auto aspect-[16 / 5]">
+    <div className="bg-white dark:bg-[#191932] text-[--space-cadet] dark:text-white rounded-[16px] p-[24px] w-[49%] h-auto aspect-[16 / 5]">
       <ul>
         <li className="text-sm/[24px] mb-[40px]">
           You {sell ? "Sell" : "Buy"}
@@ -94,6 +96,7 @@ const ConverterInputs = (props: {
   amountCoinA: any;
   amountCoinB: any;
 }) => {
+  const { darkActive } = useAppSelector((state) => state.theme)[0];
   const { data, updateCoins, convert, coinA, coinB, amountCoinA, amountCoinB } =
     props;
 
@@ -129,9 +132,14 @@ const ConverterInputs = (props: {
           />
           <button
             onClick={() => convert(coinA.price, coinB.price)}
-            className="absolute flex justify-center items-center w-[48px] h-[48px] rounded-[50%] bg-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+            className="absolute flex justify-center items-center w-[48px] h-[48px] rounded-[50%] bg-[--space-cadet] dark:bg-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
           >
-            <Image src={VerticalSwitchBlue.src} alt="" width={24} height={24} />
+            <Image
+              src={darkActive ? VerticalSwitchWhite : VerticalSwitchBlue}
+              alt=""
+              width={24}
+              height={24}
+            />
           </button>
         </>
       ) : null}

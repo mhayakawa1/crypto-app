@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import GradientBorderButton from "./GradientBorderButton";
 
 const TimeRangeButtons = (props: { updateChart: any }) => {
   const { updateChart } = props;
@@ -24,29 +25,24 @@ const TimeRangeButtons = (props: { updateChart: any }) => {
     setTimeRanges(newTimeRanges);
   };
 
+  const handleClick = (element: any) => {
+    toggleTimeButton(element.time);
+    updateChart(element);
+  };
+
   return (
-    <div className="w-fit h-[42px] p-[4px] mt-[56px] flex gap-[8px] rounded-[6px] bg-[--dark-gunmetal]">
-      {timeRanges.map((element, index) => (
-        <button
-          key={index}
-          onClick={() => {
-            toggleTimeButton(element.time);
-            updateChart(element);
-          }}
-          className={`${
-            element.active
-              ? "p-[1px] bg-gradient-to-b from-[--soft-blue] to-[--american-blue] shadow-[4px_4px_15px_2px_#7878fa26]"
-              : "bg-none"
-          } flex items-center justify-center w-[56px] h-[34px] rounded-[6px] text-sm font-medium`}
-        >
-          <span
-            className={`${
-              element.active && "bg-[--american-blue]"
-            } flex items-center justify-center w-full h-full rounded-[5px]`}
-          >
-            {element.time}
-          </span>
-        </button>
+    <div className="w-fit h-[42px] p-[4px] mt-[56px] flex gap-[8px] rounded-[6px] bg-[--lavender] dark:bg-[--dark-gunmetal]">
+      {timeRanges.map((element) => (
+        <GradientBorderButton
+          key={element.time}
+          handleClick={handleClick}
+          argumentList={[element]}
+          background="bg-transparent"
+          buttonClasses="w-[56px] h-[34px]"
+          spanClasses="text-[--dark-slate-blue] dark:text-white"
+          text={element.time}
+          active={element.active}
+        />
       ))}
     </div>
   );
