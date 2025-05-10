@@ -41,7 +41,7 @@ const InputContainer = (props: {
   );
 
   return (
-    <div className="bg-white dark:bg-[#191932] text-[--space-cadet] dark:text-white rounded-[16px] p-[24px] w-[49%] h-auto aspect-[16 / 5]">
+    <div className="bg-white dark:bg-[#191932] text-[--space-cadet] dark:text-white rounded-[16px] p-[24px] w-[49%] max-md:max-xl:w-full h-auto aspect-[16 / 5]">
       <ul>
         <li className="text-sm/[24px] mb-[40px]">
           You {sell ? "Sell" : "Buy"}
@@ -109,9 +109,9 @@ const ConverterInputs = (props: {
   }, [convert, data, updateCoins, coinA.name]);
 
   return (
-    <div className="flex justify-center gap-[24px] relative mb-[72px]">
+    <div className="relative">
       {data.length ? (
-        <>
+        <div className="w-full flex max-md:max-xl:flex-col justify-center gap-[24px]">
           <InputContainer
             name="Bitcoin"
             sell={true}
@@ -141,7 +141,7 @@ const ConverterInputs = (props: {
               height={24}
             />
           </button>
-        </>
+        </div>
       ) : null}
     </div>
   );

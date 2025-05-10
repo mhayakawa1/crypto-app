@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import ChartContainer from "./ChartContainer";
 import AreaChartComponent from "./AreaChartComponent";
 import { useCompareCoinsQuery } from "@/lib/features/api/apiSlice";
@@ -10,6 +11,7 @@ const ConverterChart = (props: {
   intervalDaily: boolean;
 }) => {
   const { coinA, coinB, days, intervalDaily } = props;
+  const [errorMessage, setErrorMessage] = useState("");
   const {
     data: data = [],
     isLoading,
@@ -23,34 +25,31 @@ const ConverterChart = (props: {
     intervalDaily: intervalDaily,
   });
 
-  let chartContent: React.ReactNode;
-
-  if (isLoading) {
-    chartContent = <p>Loading...</p>;
-  } else if (isSuccess) {
-    const formattedData = formatCompareCoins(data, days, intervalDaily);
-    chartContent = (
-      <AreaChartComponent
-        xAxis={true}
-        height={"h-[165px]"}
-        width={"w-full"}
-        data={formattedData.pricesData}
-        color={"var(--soft-blue"}
-        fill={"url(#area-blue)"}
-      />
-    );
-  } else if (isError) {
-    chartContent = <p>{error.toString()}</p>;
-  }
+  useEffect(() => {
+    if (isError && "error" in error) {
+      setErrorMessage(error.error);
+    }
+  }, []);
 
   return (
-    <ChartContainer className="h-auto flex justify-between">
+    <ChartContainer className="h-fit flex justify-between m-0">
       <h3>
         {`${coinA.name} (${coinA.symbol.toUpperCase()}) to ${
           coinB.name
         } (${coinB.symbol.toUpperCase()})`}
       </h3>
-      {chartContent}
+      {isLoading && <h4>Loading</h4>}
+      {isSuccess && (
+        <AreaChartComponent
+          xAxis={true}
+          height={"h-[165px]"}
+          width={"w-full"}
+          data={formatCompareCoins(data, days, intervalDaily).pricesData}
+          color={"var(--soft-blue"}
+          fill={"url(#area-blue)"}
+        />
+      )}
+      {isError && <h4>{errorMessage}</h4>}
     </ChartContainer>
   );
 };
