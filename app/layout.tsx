@@ -1,7 +1,9 @@
 "use client";
+import { useState, useEffect } from "react";
 import StoreProvider from "./StoreProvider";
 import Navbar from "./components/Navbar";
 import Banner from "./components/Banner";
+import MobileNavbar from "./components/MobileNavbar";
 import { ThemeProvider } from "../components/ui/theme-provider";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
@@ -17,6 +19,25 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [initialRender, setInitialRender] = useState(true);
+  const [mobileView, setMobileView] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640 && !mobileView) {
+        setMobileView(true);
+      } else if (window.innerWidth >= 640 && mobileView) {
+        setMobileView(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+
+    if (initialRender) {
+      handleResize();
+      setInitialRender(false);
+    }
+  }, [initialRender, mobileView, window.innerWidth]);
+
   return (
     <Html lang="en" suppressHydrationWarning>
       <StoreProvider>
@@ -29,11 +50,14 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <header className="flex flex-col gap-[2vh] pb-[2vh] bg-white dark:bg-transparent">
-              <Banner />
-              <Navbar />
-            </header>
-            <main className="py-[4vh] px-[8vh]">{children}</main>
+            <div className="">
+              <header className="flex flex-col gap-[2vh] pb-[2vh] bg-white dark:bg-transparent">
+                <Banner />
+                <Navbar />
+              </header>
+              <main className="py-[4vh] px-[8vh]">{children}</main>
+              {mobileView && <MobileNavbar />}
+            </div>
           </ThemeProvider>
         </body>
       </StoreProvider>
