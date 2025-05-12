@@ -29,7 +29,7 @@ const ConverterChart = (props: {
     if (isError && "error" in error) {
       setErrorMessage(error.error);
     }
-  }, []);
+  }, [error, isError]);
 
   return (
     <ChartContainer className="h-fit flex justify-between m-0">
