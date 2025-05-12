@@ -5,7 +5,6 @@ import Banner from "./components/Banner";
 import { ThemeProvider } from "../components/ui/theme-provider";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { Html } from "./globalStyles";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -18,10 +17,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Html lang="en" suppressHydrationWarning>
+    <html className="h-full w-full" lang="en" suppressHydrationWarning>
       <StoreProvider>
         <body
-          className={`${spaceGrotesk.className} antialiased bg-[#13121a] text-white`}
+          className={`${spaceGrotesk.className} w-full antialiased bg-[#f3f5f9] dark:bg-[#13121a] text-white`}
         >
           <ThemeProvider
             attribute="class"
@@ -37,6 +36,6 @@ export default function RootLayout({
           </ThemeProvider>
         </body>
       </StoreProvider>
-    </Html>
+    </html>
   );
 }
