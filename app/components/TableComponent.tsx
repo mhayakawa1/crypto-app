@@ -27,6 +27,7 @@ const TableComponent = (props: { currency: any }) => {
     isSuccess,
     isError,
     error,
+    refetch,
   } = useAllCoinsQuery({ currency: currency, page: page });
 
   const updateQuery = () => {
@@ -90,10 +91,8 @@ const TableComponent = (props: { currency: any }) => {
       setInitialRender(false);
     } else if (isError && "error" in error) {
       if (error.status === "FETCH_ERROR") {
-        const newPage =
-          typeof page === "number" ? page.toString() : Number(page);
         setTimeout(() => {
-          setPage(newPage);
+          refetch();
         }, 10000);
         setErrorMessage(`${error.error}. Refetching...`);
       } else {
@@ -112,6 +111,7 @@ const TableComponent = (props: { currency: any }) => {
     isSuccess,
     data,
     coinList,
+    refetch
   ]);
 
   return (
