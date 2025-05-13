@@ -37,25 +37,25 @@ const InputContainer = (props: {
   );
 
   return (
-    <div className="bg-white dark:bg-[#191932] text-[--space-cadet] dark:text-white rounded-[16px] p-[24px] w-[49%] max-md:max-xl:w-full h-auto aspect-[16 / 5]">
+    <div className="bg-white dark:bg-[#191932] text-[--space-cadet] dark:text-white rounded-[16px] lg:2xl:rounded-[32px] p-[24px] lg:2xl:p-[48px] w-[50%] max-md:max-xl:w-full h-auto aspect-[16 / 5]">
       <ul>
-        <li className="text-sm/[24px] mb-[40px]">
+        <li className="text-sm lg:2xl:text-2xl mb-[4vh]">
           You {sell ? "Sell" : "Buy"}
         </li>
-        <li className="w-full flex justify-between items-start pb-[24px] border-b">
+        <li className="w-full flex justify-between items-start pb-[2vh] border-b">
           <Select onValueChange={handleChange} defaultValue={defaultValue}>
-            <SelectTrigger className="flex items-center gap-[8px] w-fit h-[24px] rounded-[6px] p-0 border-none">
-              <Avatar className="w-[24px] h-[24px]">
+            <SelectTrigger className="flex items-center gap-[1vw] w-fit h-[24px] lg:2xl:h-[48px] rounded-[6px] p-0 border-none">
+              <Avatar className="w-[24px] h-[24px] lg:2xl:w-[48px] lg:2xl:h-[48px]">
                 <AvatarImage src={image} />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="border-none shadow-[4px 0px 10px 16px] shadow-[#7878fa26] bg-[#191932] text-white">
+            <SelectContent className="border-none shadow-[4px 0px 10px 16px] shadow-[#7878fa26] bg-white dark:bg-[#191932] text-[--space-cadet] dark:text-white">
               {coinsData.map((element: any) => {
                 return (
                   <SelectItem value={element.name} key={element.name}>
-                    <span className="text-xl">
+                    <span className="text-2xl lg:2xl:text-4xl">
                       {element.name} ({element.symbol.toUpperCase()})
                     </span>
                   </SelectItem>
@@ -64,14 +64,14 @@ const InputContainer = (props: {
             </SelectContent>
           </Select>
           <input
-            className="text-2xl bg-transparent outline-none w-full text-right"
+            className="text-2xl lg:2xl:text-4xl bg-transparent outline-none w-full text-right"
             type="number"
             value={amount === 0 ? "" : parseFloat(amount.toString()).toFixed(2)}
             onChange={changeAmount}
             disabled={!sell}
           />
         </li>
-        <li className="m-[8px] text-sm/[24px]">
+        <li className="m-[8px] text-sm lg:2xl:text-2xl">
           1 {name} = {price.toLocaleString() || ""}
         </li>
       </ul>

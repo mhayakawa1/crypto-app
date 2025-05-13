@@ -28,9 +28,9 @@ const ConverterInputs = (props: {
   }, [convert, data, updateCoins, coinA.name]);
 
   return (
-    <div className="relative">
+    <div className="w-full relative">
       {data.length ? (
-        <div className="w-full flex max-md:max-xl:flex-col justify-center gap-[24px]">
+        <div className="w-full flex max-md:max-xl:flex-col justify-center gap-[1vw] p-0">
           <InputContainer
             name="Bitcoin"
             sell={true}
@@ -51,13 +51,14 @@ const ConverterInputs = (props: {
           />
           <button
             onClick={() => convert(coinA.price, coinB.price)}
-            className="absolute flex justify-center items-center w-[48px] h-[48px] rounded-[50%] border-[4px] border-[--dark-slate-blue] dark:border-[#13121a] bg-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+            className="absolute flex justify-center items-center w-[48px] lg:2xl:w-[96] h-[48px] lg:2xl:h-[96] rounded-[50%] border-[4px] lg:2xl:border-[8px] border-[--dark-slate-blue] dark:border-[#13121a] bg-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
           >
             <Image
               src={darkActive ? VerticalSwitchWhite : VerticalSwitchBlue}
               alt=""
               width={24}
               height={24}
+              className="lg:2xl:w-[48] lg:2xl:h-[48]"
             />
           </button>
         </div>

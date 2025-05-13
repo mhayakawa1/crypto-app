@@ -32,8 +32,8 @@ const ConverterChart = (props: {
   }, [error, isError]);
 
   return (
-    <ChartContainer className="h-fit flex justify-between m-0">
-      <h3>
+    <ChartContainer className="h-fit flex justify-between text-xl">
+      <h3 className="lg:2xl:text-2xl">
         {`${coinA.name} (${coinA.symbol.toUpperCase()}) to ${
           coinB.name
         } (${coinB.symbol.toUpperCase()})`}
@@ -42,7 +42,7 @@ const ConverterChart = (props: {
       {isSuccess && (
         <AreaChartComponent
           xAxis={true}
-          height={"h-[165px]"}
+          height={"h-[16vh]"}
           width={"w-full"}
           data={formatCompareCoins(data, days, intervalDaily).pricesData}
           color={"var(--soft-blue"}
