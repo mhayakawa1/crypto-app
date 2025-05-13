@@ -20,7 +20,7 @@ export default function RootLayout({
     <html className="h-full w-full" lang="en" suppressHydrationWarning>
       <StoreProvider>
         <body
-          className={`${spaceGrotesk.className} w-full antialiased bg-[#f3f5f9] dark:bg-[#13121a] text-white`}
+          className={`${spaceGrotesk.className} w-full antialiased bg-[--light-gray] dark:bg-[--black-russian] text-white`}
         >
           <ThemeProvider
             attribute="class"

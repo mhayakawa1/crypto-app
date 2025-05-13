@@ -5,22 +5,23 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --black-russian: #13121a;
   --mirage: #191925;
-  --haiti: #1E1932;
-  --haiti: #1E1932;
+  --haiti: #1e1932;
   --dark-gunmetal: #232336;
-  --space-cadet: #2C2C4A;
-  --american-blue: #3A3978;
+  --space-cadet: #2c2c4a;
+  --american-blue: #3a3978;
   --dark-slate-blue: #424286;
   --soft-blue: #7878fa;
   --perano: #aaabe8;
   --lavender: #ebebfd;
-  --rising-dark: #00B1A7;
-  --bg-rising: rgba(1, 241, 227, .5);
+  --light-gray: #f3f5f9;
+  --rising-dark: #00b1a7;
+  --bg-rising: rgba(1, 241, 227, 0.5);
   --rising: #01f1e3;
-  --rising-light: #AFE5E5;
+  --rising-light: #afe5e5;
   --falling: #fe2264;
-  --bg-falling: rgba(254, 34, 100, .5);
+  --bg-falling: rgba(254, 34, 100, 0.5);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -35,7 +36,6 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
-
 
 @layer base {
   :root {
@@ -92,8 +92,6 @@ body {
     --chart-5: 340 75% 55%;
   }
 }
-
-
 
 @layer base {
   * {
