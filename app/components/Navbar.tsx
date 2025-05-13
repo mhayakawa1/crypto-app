@@ -32,7 +32,7 @@ import SearchWhite from "../../src/icons/Search_White.svg";
 const Navbar = () => {
   const darkActive = useAppSelector((state) => state.theme)[0].darkActive;
   const dispatch = useAppDispatch();
-  const currency = useAppSelector((state) => state.currency);
+  const { currency } = useAppSelector((state) => state.currency);
   const [changeCurrency, setChangeCurrency] = useState(true);
   const [homeActive, setHomeActive] = useState(true);
   const [homeIcon, setHomeIcon] = useState(HomeWhite);
@@ -52,7 +52,7 @@ const Navbar = () => {
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery({ currency: currency });
+  } = useAllCoinsQuery({ currency: currency, page: 1 });
 
   const ResultsEmpty = (props: { message: string }) => {
     return (
@@ -99,10 +99,13 @@ const Navbar = () => {
     );
   };
 
-  const handleChange = useCallback((value: string) => {
-    localStorage.setItem("currency", value);
-    dispatch(switchCurrency(value));
-  }, [dispatch]);
+  const handleChange = useCallback(
+    (value: string) => {
+      localStorage.setItem("currency", value);
+      dispatch(switchCurrency(value));
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
     const storageItem = localStorage.getItem("currency");
