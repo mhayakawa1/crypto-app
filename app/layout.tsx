@@ -7,7 +7,6 @@ import MobileNavbar from "./components/MobileNavbar";
 import { ThemeProvider } from "../components/ui/theme-provider";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { Html } from "./globalStyles";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -39,10 +38,10 @@ export default function RootLayout({
   }, [initialRender, mobileView]);
 
   return (
-    <Html lang="en" suppressHydrationWarning>
+    <html className="h-full w-full" lang="en" suppressHydrationWarning>
       <StoreProvider>
         <body
-          className={`${spaceGrotesk.className} antialiased bg-[#13121a] text-white`}
+          className={`${spaceGrotesk.className} w-full antialiased bg-[--light-gray] dark:bg-[--black-russian] text-white`}
         >
           <ThemeProvider
             attribute="class"
@@ -61,6 +60,6 @@ export default function RootLayout({
           </ThemeProvider>
         </body>
       </StoreProvider>
-    </Html>
+    </html>
   );
 }
