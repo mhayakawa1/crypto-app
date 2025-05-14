@@ -36,7 +36,7 @@ export default function RootLayout({
       handleResize();
       setInitialRender(false);
     }
-  }, [initialRender, mobileView, window.innerWidth]);
+  }, [initialRender, mobileView]);
 
   return (
     <Html lang="en" suppressHydrationWarning>
