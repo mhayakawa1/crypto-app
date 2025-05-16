@@ -31,7 +31,7 @@ const TimeRangeButtons = (props: { updateChart: any }) => {
   };
 
   return (
-    <div className="w-fit h-[42px] lg:2xl:h-[84px] p-[4px] lg:2xl:p-[8px] mt-[4vh] flex gap-[8px] lg:2xl:gap-[16px] rounded-[6px] lg:2xl:rounded-[12px] bg-[--lavender] dark:bg-[--dark-gunmetal]">
+    <div className="w-fit h-[42px] lg:2xl:h-[84px] p-[4px] lg:2xl:p-[8px] mt-[2vh] flex gap-[8px] lg:2xl:gap-[16px] rounded-[6px] lg:2xl:rounded-[12px] bg-[--lavender] dark:bg-[--dark-gunmetal]">
       {timeRanges.map((element) => (
         <GradientBorderButton
           key={element.time}

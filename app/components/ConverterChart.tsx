@@ -42,7 +42,7 @@ const ConverterChart = (props: {
       {isSuccess && (
         <AreaChartComponent
           xAxis={true}
-          height={"h-[16vh]"}
+          height={"h-[32vh] max-md:max-xl:h-[16vh]"}
           width={"w-full"}
           data={formatCompareCoins(data, days, intervalDaily).pricesData}
           color={"var(--soft-blue"}
