@@ -17,16 +17,24 @@ const InputContainer = (props: {
   amount: number;
   updateCoins: any;
   defaultValue: string;
+  currency: any;
 }) => {
-  const { sell, priceData, coinsData, amount, updateCoins, defaultValue } =
-    props;
+  const {
+    sell,
+    priceData,
+    coinsData,
+    amount,
+    updateCoins,
+    defaultValue,
+    currency,
+  } = props;
   const { name, price, image } = priceData;
 
   const changeAmount = (event: any) => {
     const {
       target: { value },
     } = event;
-    updateCoins(Number(value), null, null);
+    updateCoins(null, Number(value), null);
   };
 
   const handleChange = useCallback(
@@ -55,7 +63,7 @@ const InputContainer = (props: {
               {coinsData.map((element: any) => {
                 return (
                   <SelectItem value={element.name} key={element.name}>
-                    <span className="text-2xl lg:2xl:text-4xl">
+                    <span className="text-2xl max-lg:max-xl:text-xl lg:2xl:text-4xl">
                       {element.name} ({element.symbol.toUpperCase()})
                     </span>
                   </SelectItem>
@@ -63,16 +71,23 @@ const InputContainer = (props: {
               })}
             </SelectContent>
           </Select>
-          <input
-            className="text-2xl lg:2xl:text-4xl bg-transparent outline-none w-full text-right"
-            type="number"
-            value={amount === 0 ? "" : parseFloat(amount.toString()).toFixed(2)}
-            onChange={changeAmount}
-            disabled={!sell}
-          />
+          {defaultValue === "Bitcoin" ? (
+            <input
+              className="text-2xl max-lg:max-xl:text-xl lg:2xl:text-4xl bg-transparent outline-none w-full text-right"
+              type="number"
+              value={amount}
+              onChange={changeAmount}
+              disabled={!sell}
+              min="1"
+            />
+          ) : (
+            <span className="text-2xl max-lg:max-xl:text-xl lg:2xl:text-4xl">
+              {Number(amount.toFixed(2))}
+            </span>
+          )}
         </li>
         <li className="m-[8px] text-sm lg:2xl:text-2xl">
-          1 {name} = {price.toLocaleString() || ""}
+          1 {name} = {`${currency.symbol}${price.toLocaleString()}` || ""}
         </li>
       </ul>
     </div>
