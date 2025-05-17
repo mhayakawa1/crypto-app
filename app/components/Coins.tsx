@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useCompareCoinsQuery } from "@/lib/features/api/apiSlice";
 import { formatCompareCoins } from "@/lib/format/formatCompareCoins";
@@ -12,15 +12,18 @@ import TimeRangeButtons from "./TimeRangeButtons";
 import CompareWhite from "../../src/icons/Compare_White.svg";
 import XWhite from "../../src/icons/X_White.svg";
 
-const Coins = (props: {currency: any}) => {
-  const {currency} = props;
+const Coins = (props: { currency: any }) => {
+  const { currency } = props;
   const [compareData, setCompareData] = useState(false);
   const [days, setDays] = useState(1);
   const [intervalDaily, setIntervalDaily] = useState(false);
+  const [pricesData, setPricesData]: any[] = useState([]);
+  const [volumesData, setVolumesData]: any[] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  let areaChartContent: React.ReactNode;
-  let barChartContent: React.ReactNode;
-  const loading = <p>Loading...</p>;
+  const loading = (
+    <h4 className="text-[--dark-slate-blue] dark:text-white">Loading...</h4>
+  );
 
   const {
     data: data = [],
@@ -34,37 +37,17 @@ const Coins = (props: {currency: any}) => {
     days: days,
     intervalDaily: intervalDaily,
   });
-  if (isLoading) {
-    areaChartContent = loading;
-    barChartContent = loading;
-  } else if (isSuccess) {
-    const formattedData = formatCompareCoins(data, days, intervalDaily);
-    const { pricesData, volumesData } = formattedData;
-    areaChartContent = (
-      <AreaChartComponent
-        xAxis={true}
-        height={"h-[165px]"}
-        width={"w-full"}
-        data={pricesData}
-        color={"var(--soft-blue)"}
-        fill={"url(#area-blue)"}
-      />
-    );
-    barChartContent = (
-      <BarChartComponent
-        xAxis={true}
-        height={"h-[165px]"}
-        width={"w-full"}
-        data={volumesData}
-        color={"#B374F2"}
-        fill={"url(#area-purple)"}
-      />
-    );
-  } else if (isError) {
-    const errorMessage = <p>{error.toString()}</p>;
-    areaChartContent = errorMessage;
-    areaChartContent = errorMessage;
-  }
+
+  useEffect(() => {
+    if (isSuccess) {
+      const formattedData = formatCompareCoins(data, days, intervalDaily);
+      const { pricesData, volumesData } = formattedData;
+      setPricesData(pricesData);
+      setVolumesData(volumesData);
+    } else if (isError && "error" in error) {
+      setErrorMessage(error.error);
+    }
+  }, [isError, data, days, error, intervalDaily, isSuccess]);
 
   const updateCharts = (element: any) => {
     const { days, intervalDaily } = element;
@@ -93,30 +76,58 @@ const Coins = (props: {currency: any}) => {
     );
   };
 
+  const updateActiveCoins = (newCoins: any) => {
+    console.log(newCoins);
+  };
+
   return (
     <div>
       <div>
         <div className="flex justify-between items-end pb-[4vh]">
-          <h2>Select the currency to view statistics</h2>
+          <h2 className="text-[--dark-slate-blue] dark:text-white">
+            Select the currency to view statistics
+          </h2>
           <CompareButton />
         </div>
-        <CarouselComponent />
+        <CarouselComponent updateActiveCoins={updateActiveCoins} />
         <div className="w-full h-auto flex justify-between gap-[1vw] pt-[120px]">
           <ChartContainer className="h-auto flex justify-between">
-            <ul className="text-[#d1d1d1]">
+            <ul className="text-[--mirage] dark:text-[--light-gray]">
               <li className="text-xl">Bitcoin (BTC)</li>
-              <li className="text-[28px]/[24px] text-white pt-[24px] pb-[16px]">{`$${13.431} mln`}</li>
+              <li className="text-[28px]/[24px] dark:text-white pt-[24px] pb-[16px] font-bold">{`$${13.431} mln`}</li>
               <li className="text-base">September 29, 2023</li>
             </ul>
-            {areaChartContent}
+            {isLoading && loading}
+            {isSuccess && pricesData.length && (
+              <AreaChartComponent
+                xAxis={true}
+                height={"h-[165px]"}
+                width={"w-full"}
+                data={pricesData}
+                color={"var(--soft-blue)"}
+                fill={"url(#area-blue)"}
+              />
+            )}
+            {isError && errorMessage}
           </ChartContainer>
           <ChartContainer className="h-auto flex flex-col justify-between">
-            <ul className="text-[#d1d1d1]">
+            <ul className="text-[--mirage] dark:text-[--light-gray]">
               <li className="text-xl">Volume 24h</li>
-              <li className="text-[28px]/[24px] text-white pt-[24px] pb-[16px]">{`$${807.243} bln`}</li>
+              <li className="text-[28px]/[24px] dark:text-white pt-[24px] pb-[16px] font-bold">{`$${807.243} bln`}</li>
               <li className="text-base">September 29, 2023</li>
             </ul>
-            {barChartContent}
+            {isLoading && loading}
+            {isSuccess && volumesData.length && (
+              <BarChartComponent
+                xAxis={true}
+                height={"h-[165px]"}
+                width={"w-full"}
+                data={volumesData}
+                color={"#B374F2"}
+                fill={"url(#area-purple)"}
+              />
+            )}
+            {isError && errorMessage}
           </ChartContainer>
         </div>
         <TimeRangeButtons updateChart={updateCharts} />

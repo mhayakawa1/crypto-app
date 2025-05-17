@@ -2,8 +2,8 @@ import * as React from "react";
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-
+import Image from "next/image";
+import Chevron from "../../src/icons/Chevron_Right.svg";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -203,7 +203,7 @@ const CarouselPrevious = React.forwardRef<
       ref={ref}
       size={size}
       className={cn(
-        "absolute h-[40px] w-[40px] rounded-full p-px bg-gradient-to-b from-[--soft-blue] to-[--american-blue] shadow-[4px_4px_15px_2px_#7878fa26] flex items-center justify-center",
+        "absolute h-[40px] w-[40px] rounded-full p-px bg-gradient-to-b from-[--soft-blue] to-[--perano] dark:to-[--american-blue] shadow-[4px_4px_15px_2px_#7878fa26] flex items-center justify-center",
         orientation === "horizontal"
           ? "-left-11 top-1/2 -translate-y-1/2"
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
@@ -213,8 +213,14 @@ const CarouselPrevious = React.forwardRef<
       onClick={scrollPrev}
       {...props}
     >
-      <span className="bg-[--american-blue] flex items-center justify-center w-full h-full rounded-full">
-        <ArrowLeft className="h-4 w-4" />
+      <span className="bg-[--perano] dark:bg-[--american-blue] flex items-center justify-center w-full h-full rounded-full">
+        <Image
+          src={Chevron}
+          alt=""
+          width={16}
+          height={16}
+          className="rotate-180"
+        />
         <span className="sr-only">Previous slide</span>
       </span>
     </Button>
@@ -233,7 +239,7 @@ const CarouselNext = React.forwardRef<
       ref={ref}
       size={size}
       className={cn(
-        "absolute h-[40px] w-[40px] rounded-full p-px bg-gradient-to-b from-[--soft-blue] to-[--american-blue] shadow-[4px_4px_15px_2px_#7878fa26] flex items-center justify-center",
+        "absolute h-[40px] w-[40px] rounded-full p-px bg-gradient-to-b from-[--soft-blue] to-[--perano] dark:to-[--american-blue] shadow-[4px_4px_15px_2px_#7878fa26] flex items-center justify-center",
         orientation === "horizontal"
           ? "-right-11 top-1/2 -translate-y-1/2"
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
@@ -243,8 +249,13 @@ const CarouselNext = React.forwardRef<
       onClick={scrollNext}
       {...props}
     >
-      <span className="bg-[--american-blue] flex items-center justify-center w-full h-full rounded-full">
-        <ArrowRight className="h-4 w-4" />
+      <span className="bg-[--perano] dark:bg-[--american-blue] flex items-center justify-center w-full h-full rounded-full">
+        <Image
+          src={Chevron}
+          alt=""
+          width={16}
+          height={16}
+        />
         <span className="sr-only">Previous slide</span>
       </span>
     </Button>

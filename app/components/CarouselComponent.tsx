@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
 import { formatAllCoins } from "@/lib/format/formatAllCoins";
 import { useAppSelector } from "@/lib/hooks";
@@ -15,10 +15,12 @@ import Image from "next/image";
 import ArrowUpGreen from "../../src/icons/Arrow_Up_Green.svg";
 import ArrowDownRed from "../../src/icons/Arrow_Down_Red.svg";
 
-const CarouselComponent = () => {
+const CarouselComponent = (props: { updateActiveCoins: any }) => {
+  const { updateActiveCoins } = props;
   const { currency } = useAppSelector((state) => state.currency);
   const [activeCoins, setActiveCoins]: any[] = useState([]);
   const [twoCoinsActive, setTwoCoinsActive] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const CoinButton = (data: any) => {
     const {
@@ -45,6 +47,8 @@ const CarouselComponent = () => {
       }
       setActiveCoins(newActiveCoins);
       setTwoCoinsActive(newActiveCoins.length === 2);
+
+      updateActiveCoins(newActiveCoins);
     };
 
     return (
@@ -109,27 +113,33 @@ const CarouselComponent = () => {
     error,
   } = useAllCoinsQuery({ currency: currency, page: 1 });
 
-  let content: React.ReactNode;
-
-  if (isLoading) {
-    content = <p>Loading...</p>;
-  } else if (isSuccess) {
-    const formattedData = formatAllCoins(data);
-    content = formattedData.map((coin: any) => (
-      <CoinButton key={coin.id} data={coin} />
-    ));
-    if (!activeCoins.length) {
-      setActiveCoins(formattedData.slice(0, 1));
+  useEffect(() => {
+    if (isSuccess) {
+      const formattedData = formatAllCoins(data);
+      if (!activeCoins.length) {
+        setActiveCoins(formattedData.slice(0, 1));
+      }
+    } else if (isError && "error" in error) {
+      setErrorMessage(error.error);
     }
-  } else if (isError) {
-    content = <p>{error.toString()}</p>;
-  }
+  }, [isSuccess, activeCoins.length, data, error, isError]);
 
   return (
-    <Carousel className="absolute w-[91vw]">
-      <CarouselContent className="-ml-2 mt-3 mb-5">{content}</CarouselContent>
-      <CarouselPrevious className="ml-[1vw] -mt-1" />
-      <CarouselNext className="mr-[1vw] -mt-1" />
+    <Carousel className="absolute w-[90vw] left-1/2 -translate-x-1/2">
+      <CarouselContent className="mt-3 mb-5">
+        {isLoading && (
+          <h4 className="text-[--dark-slate-blue] dark:text-white">
+            Loading...
+          </h4>
+        )}
+        {isSuccess &&
+          formatAllCoins(data).map((coin: any) => (
+            <CoinButton key={coin.id} data={coin} />
+          ))}
+        {isError && <h4>{errorMessage}</h4>}
+      </CarouselContent>
+      <CarouselPrevious className="ml-[20px] -mt-1 overflow" />
+      <CarouselNext className="mr-[20px] -mt-1" />
     </Carousel>
   );
 };
