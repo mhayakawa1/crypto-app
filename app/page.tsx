@@ -50,7 +50,11 @@ export default function Home() {
         </button>
       </div>
       <div className="pt-[4vh] overflow-x-hidden">
-        {coinsVisible ? <Coins currency={currency} /> : <Converter />}
+        {coinsVisible ? (
+          <Coins currency={currency} />
+        ) : (
+          <Converter currency={currency} />
+        )}
       </div>
     </StoreProvider>
   );
