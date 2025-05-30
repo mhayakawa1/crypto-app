@@ -118,6 +118,11 @@ const RowContent = (props: {
                     ? "url(#area-rising)"
                     : "url(#area-falling)"
                 }
+                dataB={null}
+                activeCoins={null}
+                compareData={false}
+                shouldUpdateChart={true}
+                toggleUpdateCharts={null}
               />
             </TableCell>
           </TableRow>

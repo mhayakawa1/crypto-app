@@ -217,7 +217,7 @@ const CarouselPrevious = React.forwardRef<
         <Image
           src={Chevron}
           alt=""
-          width={16}
+          width={17}
           height={16}
           className="rotate-180"
         />
@@ -253,8 +253,9 @@ const CarouselNext = React.forwardRef<
         <Image
           src={Chevron}
           alt=""
-          width={16}
+          width={17}
           height={16}
+          style={{ height: "auto" }}
         />
         <span className="sr-only">Previous slide</span>
       </span>

@@ -7,20 +7,26 @@ import {
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
 import { formatAllCoins } from "@/lib/format/formatAllCoins";
-import { useAppSelector } from "@/lib/hooks";
+import GradientBorderButton from "./GradientBorderButton";
 import Image from "next/image";
 import ArrowUpGreen from "../../src/icons/Arrow_Up_Green.svg";
 import ArrowDownRed from "../../src/icons/Arrow_Down_Red.svg";
 
-const CarouselComponent = (props: { updateActiveCoins: any }) => {
-  const { updateActiveCoins } = props;
-  const { currency } = useAppSelector((state) => state.currency);
-  const [activeCoins, setActiveCoins]: any[] = useState([]);
+const CarouselComponent = (props: {
+  updateActiveCoins: any;
+  activeCoins: any;
+  currency: any;
+  compareData: any;
+}) => {
+  const { updateActiveCoins, activeCoins, currency, compareData } = props;
+  const prevFirstPrice = useRef<any>(null);
   const [twoCoinsActive, setTwoCoinsActive] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [initialRender, setInitialRender] = useState(true);
+  const [mobileView, setMobileView] = useState(false);
 
   const CoinButton = (data: any) => {
     const {
@@ -34,7 +40,7 @@ const CarouselComponent = (props: { updateActiveCoins: any }) => {
     const toggleActive = () => {
       let newActiveCoins: any[] = activeCoins;
       if (!active) {
-        if (twoCoinsActive) {
+        if (twoCoinsActive || !compareData) {
           newActiveCoins = newActiveCoins.slice(1);
         }
         newActiveCoins.push(data.data);
@@ -45,43 +51,40 @@ const CarouselComponent = (props: { updateActiveCoins: any }) => {
         );
         setActive(false);
       }
-      setActiveCoins(newActiveCoins);
       setTwoCoinsActive(newActiveCoins.length === 2);
-
       updateActiveCoins(newActiveCoins);
     };
 
     return (
       <CarouselItem key={id} className="pl-2 overflow-visible">
-        <Card
-          className={`${
-            active
-              ? "p-px bg-gradient-to-b from-[--soft-blue] to-[--american-blue] shadow-[4px_4px_15px_2px_#7878fa26]"
-              : "bg-[--dark-gunmetal]"
-          } flex items-center justify-center w-[252px] h-[78px] rounded-[6px] border-none text-white`}
-        >
-          <CardContent
-            className={`${
-              active ? "bg-[--american-blue]" : "bg-none"
-            }  flex items-center justify-center p-0 w-full h-full rounded-[6px]`}
-          >
-            <button
-              className="w-full h-full flex items-center gap-[16px] px-[16px]"
-              value={id}
-              onClick={toggleActive}
+        <Card className="p-0">
+          <CardContent className="p-0 w-[252px] max-sm:w-[168px] h-[78px] max-sm:h-[51px] rounded-[6px]">
+            <GradientBorderButton
+              handleClick={toggleActive}
+              argumentList={[]}
+              background="bg-[white] dark:bg-[--mirage]"
+              buttonClasses="w-full h-full flex items-center gap-[16px] m-0"
+              spanClasses="px-[16px] max-sm:px-[10px] gap-[8px]"
+              text=""
+              active={active}
             >
-              <Avatar>
+              <Avatar className="max-sm:w-[24px] max-sm:h-[24px]">
                 <AvatarImage src={image} />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
-              <ul className="w-full text-left">
+              <ul className="w-full text-left max-sm:flex items-center justify-between">
                 <li className="font-medium">
-                  {name} ({symbol.toUpperCase()})
+                  {mobileView
+                    ? symbol.toUpperCase()
+                    : `
+                  ${name} (${symbol.toUpperCase()})`}
                 </li>
-                <li className="flex justify-between grow w-full text-sm">
-                  <span className="text-[#D1D1D1]">
-                    {price.toLocaleString()} USD
-                  </span>{" "}
+                <li className="flex justify-between max-sm:flex-col max-sm:items-end grow w-full text-sm max-sm:text-xs">
+                  <span className="text-[--dark-slate-blue] dark:text-[--light-gray]">
+                    {currency.symbol}
+                    {currency.symbol.length > 1 ? " " : ""}
+                    {price.toLocaleString()}
+                  </span>
                   <span
                     className={`flex ${
                       rising ? "text-[--rising]" : "text-[--falling]"
@@ -90,15 +93,16 @@ const CarouselComponent = (props: { updateActiveCoins: any }) => {
                     <Image
                       alt=""
                       src={rising ? ArrowUpGreen : ArrowDownRed}
-                      width={8}
-                      height={4}
-                      className="m-[5px]"
+                      width={6.67}
+                      height={3.33}
+                      className="m-[5px] h-auto"
                     />
-                    {percents[0].value}
+                    <span></span>
+                    {percents[0].value}%
                   </span>
                 </li>
               </ul>
-            </button>
+            </GradientBorderButton>
           </CardContent>
         </Card>
       </CarouselItem>
@@ -111,21 +115,64 @@ const CarouselComponent = (props: { updateActiveCoins: any }) => {
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery({ currency: currency, page: 1 });
+    refetch,
+  } = useAllCoinsQuery({ currency: currency.currency, page: 1 });
 
   useEffect(() => {
     if (isSuccess) {
+      setInitialRender(false);
       const formattedData = formatAllCoins(data);
-      if (!activeCoins.length) {
-        setActiveCoins(formattedData.slice(0, 1));
+      if (!activeCoins[0].name.length) {
+        updateActiveCoins(formattedData.slice(0, 1));
+      }
+      if (!initialRender && prevFirstPrice.current !== formattedData[0].price) {
+        const newActiveCoins = activeCoins;
+        newActiveCoins.map((coinData: any) => {
+          const newData = formattedData.find(
+            (element: any) => element.id === coinData.id
+          );
+          coinData.price = newData.price;
+          coinData.volumeMarketCap.totalVolume =
+            newData.volumeMarketCap.totalVolume;
+          return coinData;
+        });
+        updateActiveCoins(newActiveCoins);
+        prevFirstPrice.current = formattedData[0].price;
       }
     } else if (isError && "error" in error) {
-      setErrorMessage(error.error);
+      setTimeout(() => {
+        refetch();
+      }, 10000);
+      setErrorMessage(`${error.error}. Refetching...`);
     }
-  }, [isSuccess, activeCoins.length, data, error, isError]);
+    const handleResize = () => {
+      if (window.innerWidth < 640 && !mobileView) {
+        setMobileView(true);
+      } else if (window.innerWidth >= 640 && mobileView) {
+        setMobileView(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+
+    if (initialRender) {
+      handleResize();
+      setInitialRender(false);
+    }
+  }, [
+    isSuccess,
+    activeCoins.length,
+    data,
+    error,
+    isError,
+    activeCoins,
+    initialRender,
+    refetch,
+    updateActiveCoins,
+    mobileView,
+  ]);
 
   return (
-    <Carousel className="absolute w-[90vw] left-1/2 -translate-x-1/2">
+    <Carousel className="absolute w-[90vw] max-sm:w-full left-1/2 max-sm:left-100 max-sm:pl-[4vw] -translate-x-1/2">
       <CarouselContent className="mt-3 mb-5">
         {isLoading && (
           <h4 className="text-[--dark-slate-blue] dark:text-white">
@@ -138,8 +185,8 @@ const CarouselComponent = (props: { updateActiveCoins: any }) => {
           ))}
         {isError && <h4>{errorMessage}</h4>}
       </CarouselContent>
-      <CarouselPrevious className="ml-[20px] -mt-1 overflow" />
-      <CarouselNext className="mr-[20px] -mt-1" />
+      <CarouselPrevious className="ml-[20px] -mt-1 overflow max-sm:hidden" />
+      <CarouselNext className="mr-[20px] -mt-1 max-sm:hidden" />
     </Carousel>
   );
 };
