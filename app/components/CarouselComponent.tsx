@@ -56,30 +56,30 @@ const CarouselComponent = (props: {
     };
 
     return (
-      <CarouselItem key={id} className="pl-2 overflow-visible">
+      <CarouselItem key={id} className="pl-2 lg:2xl:pl-4 overflow-visible">
         <Card className="p-0">
-          <CardContent className="p-0 w-[252px] max-sm:w-[168px] h-[78px] max-sm:h-[51px] rounded-[6px]">
+          <CardContent className="p-0 w-[252px] lg:2xl:w-[504px] max-sm:w-[168px] h-[78px] lg:2xl:h-[165px] max-sm:h-[51px] rounded-[6px] lg:2xl:rounded-[12px]">
             <GradientBorderButton
               handleClick={toggleActive}
               argumentList={[]}
               background="bg-[white] dark:bg-[--mirage]"
-              buttonClasses="w-full h-full flex items-center gap-[16px] m-0"
-              spanClasses="px-[16px] max-sm:px-[10px] gap-[8px]"
+              buttonClasses="w-full h-full flex items-center gap-[16px] lg:2xl:gap-[32px] m-0"
+              spanClasses="px-[16px] lg:2xl:px-[32px] max-sm:px-[10px] gap-[8px] lg:2xl:gap-[16px]"
               text=""
               active={active}
             >
-              <Avatar className="max-sm:w-[24px] max-sm:h-[24px]">
+              <Avatar className="lg:2xl:w-[64px] max-sm:w-[24px] lg:2xl:h-[64px] max-sm:h-[24px]">
                 <AvatarImage src={image} />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
               <ul className="w-full text-left max-sm:flex items-center justify-between">
-                <li className="font-medium">
+                <li className="lg:2xl:text-3xl font-medium">
                   {mobileView
                     ? symbol.toUpperCase()
                     : `
                   ${name} (${symbol.toUpperCase()})`}
                 </li>
-                <li className="flex justify-between max-sm:flex-col max-sm:items-end grow w-full text-sm max-sm:text-xs">
+                <li className="flex justify-between max-sm:flex-col max-sm:items-end grow w-full text-sm lg:2xl:text-3xl max-sm:text-xs">
                   <span className="text-[--dark-slate-blue] dark:text-[--light-gray]">
                     {currency.symbol}
                     {currency.symbol.length > 1 ? " " : ""}
@@ -95,7 +95,7 @@ const CarouselComponent = (props: {
                       src={rising ? ArrowUpGreen : ArrowDownRed}
                       width={6.67}
                       height={3.33}
-                      className="m-[5px] h-auto"
+                      className="m-[5px] lg:2xl:m-[10px] h-auto"
                     />
                     <span></span>
                     {percents[0].value}%
@@ -185,8 +185,8 @@ const CarouselComponent = (props: {
           ))}
         {isError && <h4>{errorMessage}</h4>}
       </CarouselContent>
-      <CarouselPrevious className="ml-[20px] -mt-1 overflow max-sm:hidden" />
-      <CarouselNext className="mr-[20px] -mt-1 max-sm:hidden" />
+      <CarouselPrevious className="lg:2xl:w-[80px] lg:2xl:h-[80px] ml-[20px] lg:2xl:ml-[40px] -mt-1 overflow max-sm:hidden" />
+      <CarouselNext className="lg:2xl:w-[80px] lg:2xl:h-[80px] mr-[20px] lg:2xl:mr-[40px] -mt-1 max-sm:hidden" />
     </Carousel>
   );
 };

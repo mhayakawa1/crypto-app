@@ -119,7 +119,7 @@ const RowContent = (props: {
                     : "url(#area-falling)"
                 }
                 dataB={null}
-                activeCoins={null}
+                activeCoins={[]}
                 compareData={false}
                 shouldUpdateChart={true}
                 toggleUpdateCharts={null}

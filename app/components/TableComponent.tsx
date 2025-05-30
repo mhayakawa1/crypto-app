@@ -10,7 +10,7 @@ import RowContent from "./RowContent";
 
 const TableComponent = (props: { currency: any }) => {
   const {
-    currency: { currency, symbol },
+    currency: {currency, symbol}
   } = props;
   const prevCurrency = useRef<any>(currency);
   const [firstPrice, setFirstPrice] = useState(null);

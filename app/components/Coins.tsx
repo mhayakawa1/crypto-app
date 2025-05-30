@@ -85,6 +85,12 @@ const Coins = (props: { currency: any }) => {
       if (activeCoins.length !== 2) {
         setShouldUpdateCharts(false);
       }
+      setTimeout(() => {
+        refetch();
+        if(activeCoins.length === 2){
+          refetchB()
+        }
+      }, 20000);
     } else if (isError && "error" in error) {
       setTimeout(() => {
         refetch();
@@ -144,7 +150,7 @@ const Coins = (props: { currency: any }) => {
     <div>
       <div>
         <div className="flex justify-between items-center pb-[4vh]">
-          <h2 className="text-[--dark-slate-blue] max-sm:text-sm dark:text-white mr-[16px] text-wrap">
+          <h2 className="text-[--dark-slate-blue] lg:2xl:text-3xl max-sm:text-sm dark:text-white mr-[16px] text-wrap">
             Select the currency to view statistics
           </h2>
           <CompareButton
@@ -158,7 +164,7 @@ const Coins = (props: { currency: any }) => {
           currency={currency}
           compareData={compareData}
         />
-        <div className="w-full h-auto flex max-md:flex-col justify-between gap-[1vw] pt-[120px] max-sm:pt-[86px]">
+        <div className="w-full h-auto flex max-md:flex-col justify-between gap-[1vw] pt-[120px] lg:2xl:pt-[240px] max-sm:pt-[86px]">
           <ChartContainer
             className="h-auto flex justify-between"
             dataLength={pricesA.length}
@@ -174,7 +180,7 @@ const Coins = (props: { currency: any }) => {
           >
             <AreaChartComponent
               xAxis={true}
-              height={"h-[165px] max-sm:h-[100px]"}
+              height={"h-[165px] lg:2xl:h-[330px] max-sm:h-[100px]"}
               width={"w-full"}
               data={pricesA}
               color={"var(--soft-blue)"}
@@ -201,7 +207,7 @@ const Coins = (props: { currency: any }) => {
           >
             <BarChartComponent
               xAxis={true}
-              height={"h-[165px] max-sm:h-[100px]"}
+              height={"h-[165px] lg:2xl:h-[330px] max-sm:h-[100px]"}
               width={"w-full"}
               data={volumesA}
               color={"var(--light-purple"}
@@ -215,7 +221,7 @@ const Coins = (props: { currency: any }) => {
         </div>
         <TimeRangeButtons updateChart={updateCharts} />
       </div>
-      {/* <TableComponent currency={currency.currency} /> */}
+      <TableComponent currency={currency} />
     </div>
   );
 };

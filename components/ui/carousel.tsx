@@ -219,7 +219,7 @@ const CarouselPrevious = React.forwardRef<
           alt=""
           width={17}
           height={16}
-          className="rotate-180"
+          className="lg:2xl:w-[34px] lg:2xl:h-[32px] rotate-180"
         />
         <span className="sr-only">Previous slide</span>
       </span>
@@ -256,6 +256,7 @@ const CarouselNext = React.forwardRef<
           width={17}
           height={16}
           style={{ height: "auto" }}
+          className="lg:2xl:w-[34px] lg:2xl:h-[32px]"
         />
         <span className="sr-only">Previous slide</span>
       </span>
