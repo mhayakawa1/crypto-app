@@ -172,7 +172,7 @@ const CarouselComponent = (props: {
   ]);
 
   return (
-    <Carousel className="absolute w-[90vw] max-sm:w-full left-1/2 max-sm:left-100 max-sm:pl-[4vw] -translate-x-1/2">
+    <Carousel className="absolute flex justify-center items-center w-[90vw] max-sm:w-full h-[78px] lg:2xl:h-[165px] max-sm:h-[51px] left-1/2 max-sm:left-100 max-sm:pl-[4vw] -translate-x-1/2">
       <CarouselContent className="mt-3 mb-5">
         {isLoading && (
           <h4 className="text-[--dark-slate-blue] dark:text-white">
@@ -183,7 +183,11 @@ const CarouselComponent = (props: {
           formatAllCoins(data).map((coin: any) => (
             <CoinButton key={coin.id} data={coin} />
           ))}
-        {isError && <h4>{errorMessage}</h4>}
+        {isError && (
+          <h4 className="text-[--dark-slate-blue] dark:text-white">
+            {errorMessage}
+          </h4>
+        )}
       </CarouselContent>
       <CarouselPrevious className="lg:2xl:w-[80px] lg:2xl:h-[80px] ml-[20px] lg:2xl:ml-[40px] -mt-1 overflow max-sm:hidden" />
       <CarouselNext className="lg:2xl:w-[80px] lg:2xl:h-[80px] mr-[20px] lg:2xl:mr-[40px] -mt-1 max-sm:hidden" />
