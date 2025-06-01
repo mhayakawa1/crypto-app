@@ -1,0 +1,41 @@
+"use client";
+import Image from "next/image";
+import { Progress } from "../../components/ui/progress";
+import ArrowUpGreen from "../../src/icons/Arrow_Up_Green.svg";
+import ArrowDownRed from "../../src/icons/Arrow_Down_Red.svg";
+
+const AssetListItem = (props: { listItem: any}) => {
+  const {
+    listItem: { name, value, arrow, colors },
+  } = props;
+  return (
+    <li className="max-md:border max-md:border-[--light-gray] max-md:dark:border-[--american-blue] max-md:w-[48%] h-[84px] max-md:h-[78px] lg:2xl:h-[168px] rounded-[6px] lg:2xl:rounded-[12px] flex flex-col justify-center items-center md:px-[.5vw]">
+      <ul className="flex flex-col justify-between max-md:justify-center text-center list-none gap-[16px] max-md:gap-[4px] lg:2xl:gap-[32px] max-md:h-[84px] lg:2xl:h-[168px] max-md:px-[8px] lg:2xl:px-[16px]">
+        <li className="flex justify-center text-base max-md:text-sm lg:2xl:text-3xl">{name}</li>
+        <li
+          className={`flex justify-center text-[${colors.color}] text-base max-md:text-sm lg:2xl:text-3xl`}
+        >
+          {arrow && (
+            <span className="flex items-center justify-center w-[16px] lg:2xl:w-[32px]">
+              <Image
+                src={colors.color === "--rising" ? ArrowUpGreen : ArrowDownRed}
+                alt=""
+              />
+            </span>
+          )}
+          {name === "Volume vs. Market Cap" ? (
+            <Progress
+              className={`bg-[${colors.bg}] mx-[1vw] max-md:mx-[4vw]`}
+              value={value}
+              color={`bg-[${colors.color}]`}
+            ></Progress>
+          ) : (
+            <span>{value}</span>
+          )}
+        </li>
+      </ul>
+    </li>
+  );
+};
+
+export default AssetListItem;

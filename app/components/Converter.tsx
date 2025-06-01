@@ -80,7 +80,6 @@ const Converter = (props: { currency: any }) => {
     isError,
     error,
     firstPrice,
-    prevFirstPrice.current,
     coinA.name,
     coinB.name,
   ]);
