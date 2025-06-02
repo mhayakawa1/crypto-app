@@ -5,7 +5,10 @@ import DeleteAssetModal from "../components/DeleteAssetModal";
 import PortfolioAsset from "../components/PortfolioAsset";
 import GradientBorderButton from "../components/GradientBorderButton";
 import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
-import { addLocalStorage } from "@/lib/features/portfolio/portfolioSlice";
+import {
+  addLocalStorage,
+  deleteAsset,
+} from "@/lib/features/portfolio/portfolioSlice";
 import { formatPortfolioCoin } from "@/lib/format/formatPortfolioCoin";
 import { formatErrorMessage } from "@/lib/format/formatErrorMessage";
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
@@ -34,10 +37,13 @@ export default function Portfolio() {
     setAddAssetVisible((current) => !current);
   };
 
-  const toggleDeleteModal = (data: any, index: number) => {
+  const toggleDeleteModal = (data: any, index: number, id: any) => {
     setAssetData(data);
     setIndex(index);
     setDeleteAssetVisible((current) => !current);
+    if (id) {
+      dispatch(deleteAsset(id));
+    }
   };
 
   useEffect(() => {
