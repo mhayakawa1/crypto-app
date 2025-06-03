@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import LinkButton from "./LinkButton";
 import { useState, useEffect, useCallback } from "react";
 import {
   Select,
@@ -38,6 +39,8 @@ const Navbar = () => {
   const [homeIcon, setHomeIcon] = useState(HomeWhite);
   const [resultsVisible, setResultsVisible] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [mobileView, setMobileView] = useState(false);
+  const [initialRender, setInitialRender] = useState(true);
   const selectItems = [
     { name: "usd", icon: USD },
     { name: "gbp", icon: GBP },
@@ -82,23 +85,6 @@ const Navbar = () => {
     }
   };
 
-  const LinkContainer = (props: { src: any; path: string; name: string }) => {
-    const { src, path, name } = props;
-    const isHomeActive = path === "" ? homeActive : !homeActive;
-
-    return (
-      <button
-        onClick={!isHomeActive ? toggleHomeActive : undefined}
-        className={`flex justify-between items-center gap-[8px] text-[--dark-slate-blue] dark:text-white ${
-          !isHomeActive && "opacity-50"
-        }`}
-      >
-        <Image src={src} alt="" />
-        <Link href={`/${path}`}>{name}</Link>
-      </button>
-    );
-  };
-
   const handleChange = useCallback(
     (value: string) => {
       localStorage.setItem("currency", value);
@@ -114,61 +100,79 @@ const Navbar = () => {
       handleChange(storageItem);
     }
     setChangeCurrency(false);
-  }, [changeCurrency, dispatch, handleChange]);
+
+    const handleResize = () => {
+      if (window.innerWidth < 640 && !mobileView) {
+        setMobileView(true);
+      } else if (window.innerWidth >= 640 && mobileView) {
+        setMobileView(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+
+    if (initialRender) {
+      handleResize();
+      setInitialRender(false);
+    }
+  }, [changeCurrency, dispatch, handleChange, initialRender, mobileView]);
 
   return (
-    <nav className="flex justify-between items-center px-[4vw]">
-      <div className="flex justify-between items-center gap-[20px] text-xl font-bold">
+    <nav className="flex justify-between items-center px-[4vw] max-lg:px-[2vw]">
+      <div className="flex justify-between items-center gap-[1vw]">
         <Image
           src={LogoIcon.src}
           alt=""
           width={36}
           height={20}
-          className="m-auto"
+          className="m-auto max-md:w-[28px] max-md:h-[16px]"
         />
-        <h1 className="text-[--dark-slate-blue] dark:text-white">Logoipsm</h1>
+        <h1 className="text-[--dark-slate-blue] dark:text-white text-xl max-md:hidden font-bold">Logoipsm</h1>
       </div>
-      <div className="flex justify-between gap-[24px]">
-        <LinkContainer
+      {!mobileView && <div className="flex justify-between gap-[2vw]">
+        <LinkButton
           src={darkActive ? homeIcon : HomeBlue}
           path=""
           name="Home"
-        ></LinkContainer>
-        <LinkContainer
+          homeActive={homeActive}
+          toggleHomeActive={toggleHomeActive}
+        />
+        <LinkButton
           src={darkActive ? PortfolioWhite : PortfolioBlue}
           path="portfolio"
           name="Portfolio"
-        ></LinkContainer>
-      </div>
-      <div className="flex justify-between gap-[16px]">
+          homeActive={homeActive}
+          toggleHomeActive={toggleHomeActive}
+        />
+      </div>}
+      <div className="flex justify-between items-center gap-[1vw]">
         <div
           onBlur={hideResults}
           className={`relative gap-[12px] m-0 w-auto h-auto ${
             resultsVisible
               ? "rounded-tl-[6px] rounded-tr-[6px] rounded-bl-none rounded-br-none"
               : "rounded-[6px]"
-          } bg-[--lavender] dark:bg-[#191925]`}
+          } h-fit w-fit bg-[--lavender] dark:bg-[--mirage]`}
         >
           <Image
             src={darkActive ? SearchWhite : SearchBlue}
             alt=""
-            className="absolute top-[16px] left-[16px]"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
           />
           <Input
             onChange={(event) => searchCoins(event.target.value.toLowerCase())}
             value={searchValue}
-            placeholder="Search..."
+            placeholder={mobileView ? "" : "Search..."}
             className={`rounded-tl-[6px] rounded-tr-[6px] ${
               resultsVisible
                 ? "rounded-bl-none rounded-br-none"
                 : "rounded-bl-[6px] rounded-br-[6px]"
-            } h-[48px] pl-[44px] flex justify-center items-center bg-transparent text-sm outline-none text-[--dark-slate-blue] border-none dark:text-white dark:border dark:border-[#242430]`}
+            } h-[48px] max-md:h-[36px] max-md:w-[100px] max-sm:w-[36px] pl-[44px] max-md:pl-[32px] max-sm:pl-0 flex justify-center items-center bg-transparent text-sm max-md:text-xs outline-none text-[--dark-slate-blue] border-none dark:text-white dark:border dark:border-[--dark-gunmetal]`}
           />
           {resultsVisible &&
             ((isLoading && <ResultsEmpty message="Loading..." />) ||
               (isError && <ResultsEmpty message={error.toString()} />) ||
               (resultsVisible && isSuccess ? (
-                <ul className="absolute z-10 pb-[8px] rounded-bl-[6px] rounded-br-[6px] w-full text-[--dark-slate-blue] dark:text-white bg-[--lavender] dark:border dark:border-[#242430] dark:border-t-0 dark:bg-[#191925]">
+                <ul className="absolute z-10 pb-[8px] rounded-bl-[6px] rounded-br-[6px] w-full text-[--dark-slate-blue] dark:text-white bg-[--lavender] dark:border dark:border-[--dark-gunmetal] dark:border-t-0 dark:bg-[--mirage]">
                   {data
                     .map((element: any) => {
                       return { id: element.id, name: element.name };
@@ -195,26 +199,26 @@ const Navbar = () => {
         </div>
         {!changeCurrency && (
           <Select defaultValue={currency} onValueChange={handleChange}>
-            <SelectTrigger className="w-[108px] h-[48px] px-[16px] bg-[--lavender] text-[--dark-slate-blue] border-none dark:text-white dark:border dark:border-[#242430] dark:bg-[#191925]">
+            <SelectTrigger className="w-[108px] max-md:w-[84px] h-[48px] max-md:h-[36px] px-[16px] max-md:px-[8px] bg-[--lavender] text-[--dark-slate-blue] border-none dark:text-white dark:border dark:border-[--dark-gunmetal] dark:bg-[--mirage]">
               <SelectValue className="flex justify-center items-center" />
             </SelectTrigger>
-            <SelectContent className="w-[108px] bg-[--lavender] border-none dark:border dark:border-[#242430] dark:bg-[#191925]">
-              <SelectGroup className="bg-none text-[--dark-slate-blue] dark:text-white">
+            <SelectContent className="w-[108px] max-md:w-[84px] bg-[--lavender] border-none dark:border dark:border-[--dark-gunmetal] dark:bg-[--mirage]">
+              <SelectGroup className="w-full bg-none text-[--dark-slate-blue] dark:text-white">
                 {selectItems.map((item: any) => (
                   <SelectItem
                     key={item.name}
                     value={item.name}
-                    className="hover:bg-white dark:hover:bg-[--dark-gunmetal]"
+                    className="hover:bg-white dark:hover:bg-[--dark-gunmetal] max-sm:px-1 max-sm:py-1"
                   >
-                    <span className="flex justify-center items-center gap-[8px]">
+                    <span className="max-sm:w-full max-sm:m-0 flex justify-center max-sm:justify-between items-center gap-[8px] max-md:gap-[4px] max">
                       <span className="flex justify-center items-center w-[20px] h-[20px] border bg-[--dark-slate-blue] dark:bg-transparent dark:border-white rounded-full">
                         <Image
                           src={item.icon}
                           alt=""
-                          className="w-auto h-[12px]"
+                          className="w-auto h-[12px] max-sm:h-[8px] aspect-square"
                         />
                       </span>
-                      <span className="font-medium">
+                      <span className="font-medium max-md:text-xs">
                         {item.name.toUpperCase()}
                       </span>
                     </span>
