@@ -1,4 +1,4 @@
-export function formatNumber(number: number, isCurrencyValue: boolean) {
+export function formatNumber(number: number, currency: string) {
   const placeValues = [
     { letter: "Q", value: 1000000000000000 },
     { letter: "T", value: 1000000000000 },
@@ -11,12 +11,13 @@ export function formatNumber(number: number, isCurrencyValue: boolean) {
   };
   const numberValues = number.toLocaleString().split(",");
   let newNumber;
-  if (numberValues.length === 1) {
+  const length = numberValues.length;
+  if (length === 1) {
     newNumber = `${numberValues[0]}`;
   } else {
-    newNumber = `${numberValues[0]}.${numberValues[1].slice(0, 2)}${
-      placeValue.letter
-    }`;
+    newNumber = `${numberValues[0]}.${Math.round(
+      Number(numberValues[1][0] + "." + numberValues[1][1])
+    )}${placeValue.letter}`;
   }
-  return `${isCurrencyValue ? '$' : ''}${newNumber}`
+  return `${currency}${currency.length > 1 ? " " : ""}${newNumber}`;
 }

@@ -1,6 +1,5 @@
 "use client";
-import { useState } from "react";
-import Image from "next/image";
+import { useState, useEffect } from "react";
 import { useCompareCoinsQuery } from "@/lib/features/api/apiSlice";
 import { formatCompareCoins } from "@/lib/format/formatCompareCoins";
 import AreaChartComponent from "./AreaChartComponent";
@@ -9,18 +8,30 @@ import CarouselComponent from "./CarouselComponent";
 import ChartContainer from "./ChartContainer";
 import TableComponent from "./TableComponent";
 import TimeRangeButtons from "./TimeRangeButtons";
-import CompareWhite from "../../src/icons/Compare_White.svg";
-import XWhite from "../../src/icons/X_White.svg";
+import CompareButton from "./CompareButton";
 
-const Coins = (props: {currency: any}) => {
-  const {currency} = props;
+const Coins = (props: { currency: any }) => {
+  const { currency } = props;
   const [compareData, setCompareData] = useState(false);
   const [days, setDays] = useState(1);
   const [intervalDaily, setIntervalDaily] = useState(false);
-
-  let areaChartContent: React.ReactNode;
-  let barChartContent: React.ReactNode;
-  const loading = <p>Loading...</p>;
+  const [activeCoins, setActiveCoins] = useState([
+    {
+      id: "bitcoin",
+      name: "",
+      symbol: "",
+      price: 0,
+      volumeMarketCap: { totalVolume: 0 },
+    },
+  ]);
+  const [initialRender, setInitialRender] = useState(true);
+  const [coinBId, setCoinBId] = useState("");
+  const [pricesA, setPricesA]: any[] = useState([]);
+  const [volumesA, setVolumesA]: any[] = useState([]);
+  const [pricesB, setPricesB]: any[] = useState([]);
+  const [volumesB, setVolumesB]: any[] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [shouldUpdateCharts, setShouldUpdateCharts] = useState(false);
 
   const {
     data: data = [],
@@ -28,43 +39,98 @@ const Coins = (props: {currency: any}) => {
     isSuccess,
     isError,
     error,
+    refetch,
   } = useCompareCoinsQuery({
-    coin: "bitcoin",
-    vsCurrency: "usd",
+    coin: activeCoins[0].id,
+    vsCurrency: currency.currency,
     days: days,
     intervalDaily: intervalDaily,
   });
-  if (isLoading) {
-    areaChartContent = loading;
-    barChartContent = loading;
-  } else if (isSuccess) {
-    const formattedData = formatCompareCoins(data, days, intervalDaily);
-    const { pricesData, volumesData } = formattedData;
-    areaChartContent = (
-      <AreaChartComponent
-        xAxis={true}
-        height={"h-[165px]"}
-        width={"w-full"}
-        data={pricesData}
-        color={"var(--soft-blue)"}
-        fill={"url(#area-blue)"}
-      />
-    );
-    barChartContent = (
-      <BarChartComponent
-        xAxis={true}
-        height={"h-[165px]"}
-        width={"w-full"}
-        data={volumesData}
-        color={"#B374F2"}
-        fill={"url(#area-purple)"}
-      />
-    );
-  } else if (isError) {
-    const errorMessage = <p>{error.toString()}</p>;
-    areaChartContent = errorMessage;
-    areaChartContent = errorMessage;
-  }
+
+  const {
+    data: coinBData = [],
+    isSuccess: isSuccessB,
+    isError: isErrorB,
+    refetch: refetchB,
+  } = useCompareCoinsQuery({
+    coin: coinBId.length > 1 ? coinBId : activeCoins[0].id,
+    vsCurrency: currency.currency,
+    days: days,
+    intervalDaily: intervalDaily,
+  });
+
+  const toggleUpdateCharts = (shouldUpdateCharts: boolean) => {
+    setShouldUpdateCharts(shouldUpdateCharts);
+  };
+
+  const updateActiveCoins = (newCoins: any) => {
+    setActiveCoins(newCoins);
+    if (newCoins.length === 2) {
+      setCoinBId(newCoins[1].id);
+    } else {
+      setCoinBId(newCoins[0].id);
+    }
+    setShouldUpdateCharts(true);
+  };
+
+  useEffect(() => {
+    if (initialRender) {
+      setInitialRender(false);
+    }
+    if (isSuccess || (isSuccess && shouldUpdateCharts)) {
+      const formattedData = formatCompareCoins(data, days, intervalDaily);
+      const { pricesData, volumesData } = formattedData;
+      setPricesA(pricesData);
+      setVolumesA(volumesData);
+      if (activeCoins.length !== 2) {
+        setShouldUpdateCharts(false);
+      }
+      setTimeout(() => {
+        refetch();
+        if(activeCoins.length === 2){
+          refetchB()
+        }
+      }, 20000);
+    } else if (isError && "error" in error) {
+      setTimeout(() => {
+        refetch();
+      }, 10000);
+      setErrorMessage(`${error.error}. Refetching...`);
+    }
+    if (coinBData && activeCoins.length === 2 && !initialRender) {
+      const formattedData = formatCompareCoins(coinBData, days, intervalDaily);
+      const { pricesData, volumesData } = formattedData;
+      setPricesB(pricesData);
+      setVolumesB(volumesData);
+    } else if ((!coinBData || activeCoins.length === 1) && pricesB.length) {
+      setPricesB([]);
+      setVolumesB([]);
+    }
+    if (shouldUpdateCharts) {
+      refetch();
+    }
+    if (isErrorB) {
+      setTimeout(() => {
+        refetchB();
+      }, 5000);
+    }
+  }, [
+    coinBData,
+    activeCoins,
+    shouldUpdateCharts,
+    pricesB.length,
+    isError,
+    data,
+    days,
+    error,
+    intervalDaily,
+    isSuccess,
+    initialRender,
+    isErrorB,
+    isSuccessB,
+    refetch,
+    refetchB,
+  ]);
 
   const updateCharts = (element: any) => {
     const { days, intervalDaily } = element;
@@ -74,49 +140,83 @@ const Coins = (props: {currency: any}) => {
 
   const toggleCompare = () => {
     setCompareData((current) => !current);
-  };
-
-  const CompareButton = () => {
-    const buttonInfo = [
-      { src: CompareWhite, text: "Compare" },
-      { src: XWhite, text: "Exit Comparison" },
-    ];
-    const index = compareData ? 1 : 0;
-    return (
-      <button
-        onClick={toggleCompare}
-        className="flex gap-[10px] px-[24px] py-[12px] rounded-[6px] w-fit bg-[--dark-gunmetal]"
-      >
-        <Image src={buttonInfo[index].src.src} alt="" width={20} height={20} />
-        {buttonInfo[index].text}
-      </button>
-    );
+    if (compareData && activeCoins.length === 2) {
+      const newActiveCoins = activeCoins.slice(1);
+      setActiveCoins(newActiveCoins);
+    }
   };
 
   return (
     <div>
       <div>
-        <div className="flex justify-between items-end pb-[4vh]">
-          <h2>Select the currency to view statistics</h2>
-          <CompareButton />
+        <div className="flex justify-between items-center pb-[4vh]">
+          <h2 className="text-[--dark-slate-blue] lg:2xl:text-3xl max-sm:text-sm dark:text-white mr-[16px] text-wrap">
+            Select the currency to view statistics
+          </h2>
+          <CompareButton
+            compareData={compareData}
+            toggleCompare={toggleCompare}
+          />
         </div>
-        <CarouselComponent />
-        <div className="w-full h-auto flex justify-between gap-[1vw] pt-[120px]">
-          <ChartContainer className="h-auto flex justify-between">
-            <ul className="text-[#d1d1d1]">
-              <li className="text-xl">Bitcoin (BTC)</li>
-              <li className="text-[28px]/[24px] text-white pt-[24px] pb-[16px]">{`$${13.431} mln`}</li>
-              <li className="text-base">September 29, 2023</li>
-            </ul>
-            {areaChartContent}
+        <CarouselComponent
+          updateActiveCoins={updateActiveCoins}
+          activeCoins={activeCoins}
+          currency={currency}
+          compareData={compareData}
+        />
+        <div className="w-full h-auto flex max-md:flex-col justify-between gap-[1vw] pt-[120px] lg:2xl:pt-[240px] max-sm:pt-[86px]">
+          <ChartContainer
+            className="h-auto flex justify-between"
+            dataLength={pricesA.length}
+            symbol={currency.symbol}
+            chartInfo={{
+              isPrice: true,
+            }}
+            isLoading={isLoading}
+            isSuccess={isSuccess}
+            errorMessage={errorMessage}
+            activeCoins={activeCoins}
+            compareData={compareData}
+          >
+            <AreaChartComponent
+              xAxis={true}
+              height={"h-[165px] lg:2xl:h-[330px] max-sm:h-[100px]"}
+              width={"w-full"}
+              data={pricesA}
+              color={"var(--soft-blue)"}
+              fill={"url(#area-blue)"}
+              dataB={pricesB}
+              activeCoins={activeCoins}
+              compareData={compareData}
+              shouldUpdateChart={shouldUpdateCharts}
+              toggleUpdateCharts={toggleUpdateCharts}
+            />
           </ChartContainer>
-          <ChartContainer className="h-auto flex flex-col justify-between">
-            <ul className="text-[#d1d1d1]">
-              <li className="text-xl">Volume 24h</li>
-              <li className="text-[28px]/[24px] text-white pt-[24px] pb-[16px]">{`$${807.243} bln`}</li>
-              <li className="text-base">September 29, 2023</li>
-            </ul>
-            {barChartContent}
+          <ChartContainer
+            className="h-auto flex justify-between"
+            dataLength={volumesA.length}
+            symbol={currency.symbol}
+            chartInfo={{
+              isPrice: false,
+            }}
+            isLoading={isLoading}
+            isSuccess={isSuccess}
+            errorMessage={errorMessage}
+            activeCoins={activeCoins}
+            compareData={compareData}
+          >
+            <BarChartComponent
+              xAxis={true}
+              height={"h-[165px] lg:2xl:h-[330px] max-sm:h-[100px]"}
+              width={"w-full"}
+              data={volumesA}
+              color={"var(--light-purple"}
+              fill={"url(#area-purple)"}
+              dataB={volumesB}
+              activeCoins={activeCoins}
+              compareData={compareData}
+              shouldUpdateChart={shouldUpdateCharts}
+            />
           </ChartContainer>
         </div>
         <TimeRangeButtons updateChart={updateCharts} />
