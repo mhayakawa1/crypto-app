@@ -90,7 +90,7 @@ const Coins = (props: { currency: any }) => {
         if(activeCoins.length === 2){
           refetchB()
         }
-      }, 60000);
+      }, 20000);
     } else if (isError && "error" in error) {
       setTimeout(() => {
         refetch();
@@ -105,9 +105,6 @@ const Coins = (props: { currency: any }) => {
     } else if ((!coinBData || activeCoins.length === 1) && pricesB.length) {
       setPricesB([]);
       setVolumesB([]);
-    }
-    if (shouldUpdateCharts) {
-      refetch();
     }
     if (isErrorB) {
       setTimeout(() => {
