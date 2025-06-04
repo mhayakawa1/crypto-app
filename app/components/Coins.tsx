@@ -69,8 +69,8 @@ const Coins = (props: { currency: any }) => {
       setCoinBId(newCoins[1].id);
     } else {
       setCoinBId(newCoins[0].id);
+      setShouldUpdateCharts(true);
     }
-    setShouldUpdateCharts(true);
   };
 
   useEffect(() => {
@@ -90,18 +90,24 @@ const Coins = (props: { currency: any }) => {
         if(activeCoins.length === 2){
           refetchB()
         }
-      }, 20000);
+      }, 60000);
     } else if (isError && "error" in error) {
       setTimeout(() => {
         refetch();
       }, 10000);
       setErrorMessage(`${error.error}. Refetching...`);
     }
-    if (coinBData && activeCoins.length === 2 && !initialRender) {
+    if (
+      coinBData &&
+      activeCoins.length === 2 &&
+      !initialRender &&
+      JSON.stringify(data) !== JSON.stringify(coinBData)
+    ) {
       const formattedData = formatCompareCoins(coinBData, days, intervalDaily);
       const { pricesData, volumesData } = formattedData;
       setPricesB(pricesData);
       setVolumesB(volumesData);
+      setShouldUpdateCharts(true);
     } else if ((!coinBData || activeCoins.length === 1) && pricesB.length) {
       setPricesB([]);
       setVolumesB([]);
@@ -109,7 +115,7 @@ const Coins = (props: { currency: any }) => {
     if (isErrorB) {
       setTimeout(() => {
         refetchB();
-      }, 5000);
+      }, 10000);
     }
   }, [
     coinBData,
@@ -213,6 +219,7 @@ const Coins = (props: { currency: any }) => {
               activeCoins={activeCoins}
               compareData={compareData}
               shouldUpdateChart={shouldUpdateCharts}
+              toggleUpdateCharts={toggleUpdateCharts}
             />
           </ChartContainer>
         </div>

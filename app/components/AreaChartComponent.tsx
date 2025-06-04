@@ -61,8 +61,7 @@ const AreaChartComponent = (props: {
       if (data[0].value !== chartData[0].value) {
         setChartData(data);
       }
-
-      if (twoCoinsActive && dataB.length) {
+      if (twoCoinsActive && dataB.length && JSON.stringify(prevChartData.current) !== JSON.stringify(chartData)) {
         const newData = data.map((element: any, index: number) => {
           if (dataB[index]) {
             return {
@@ -73,13 +72,7 @@ const AreaChartComponent = (props: {
           }
         });
         prevChartData.current = chartData;
-        if (
-          Object.keys(prevChartData.current[0]).length === 3 &&
-          JSON.stringify(prevChartData.current) !== JSON.stringify(newData) &&
-          JSON.stringify(data) !== JSON.stringify(dataB)
-        ) {
-          toggleUpdateCharts(false);
-        }
+        toggleUpdateCharts(false);
         setChartData(newData);
         chartConfig.value.label = activeCoins[0].name;
         chartConfig.valueB.label = activeCoins[1].name;
@@ -103,10 +96,7 @@ const AreaChartComponent = (props: {
   ]);
 
   return (
-    <ChartContainer
-      className={`${height} ${width} m-0`}
-      config={chartConfig}
-    >
+    <ChartContainer className={`${height} ${width} m-0`} config={chartConfig}>
       <AreaChart accessibilityLayer data={chartData}>
         <defs>
           {gradientInfo.map((element: any) => (
@@ -132,7 +122,14 @@ const AreaChartComponent = (props: {
           ))}
         </defs>
         <Line type="monotone" dataKey="value" stroke={color} dot={false} />
-        {xAxis && <XAxis dataKey="name" axisLine={false} tickLine={false} className="border border-red-500" />}
+        {xAxis && (
+          <XAxis
+            dataKey="name"
+            axisLine={false}
+            tickLine={false}
+            className="border border-red-500"
+          />
+        )}
         <YAxis
           domain={["auto", "dataMax"]}
           axisLine={false}
