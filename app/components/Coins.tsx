@@ -106,9 +106,6 @@ const Coins = (props: { currency: any }) => {
       setPricesB([]);
       setVolumesB([]);
     }
-    if (shouldUpdateCharts) {
-      refetch();
-    }
     if (isErrorB) {
       setTimeout(() => {
         refetchB();
