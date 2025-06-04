@@ -38,11 +38,11 @@ const TimeRangeButtons = (props: { updateChart: any }) => {
           handleClick={handleClick}
           argumentList={[element]}
           background="bg-transparent"
-          buttonClasses="w-[56px] lg:2xl:w-[112px] h-[34px] lg:2xl:h-[68px]"
-          spanClasses="text-[--dark-slate-blue] dark:text-white text-sm lg:2xl:text-2xl"
+          buttonClasses="w-[56px] max-sm:w-[40px] lg:2xl:w-[112px] h-[34px] max-sm:h-[32px] lg:2xl:h-[68px]"
+          spanClasses="text-[--dark-slate-blue] dark:text-white text-sm max-sm:text-xs lg:2xl:text-2xl"
           text={element.time}
           active={element.active}
-        />
+        >{null}</GradientBorderButton>
       ))}
     </div>
   );

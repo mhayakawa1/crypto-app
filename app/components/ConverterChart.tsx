@@ -9,8 +9,10 @@ const ConverterChart = (props: {
   coinB: any;
   days: number;
   intervalDaily: boolean;
+  symbol: string;
 }) => {
-  const { coinA, coinB, days, intervalDaily } = props;
+  const { coinA, coinB, days, intervalDaily, symbol } = props;
+  const [coinData, setCoinData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const {
     data: data = [],
@@ -26,30 +28,40 @@ const ConverterChart = (props: {
   });
 
   useEffect(() => {
-    if (isError && "error" in error) {
+    if (isSuccess) {
+      setCoinData(formatCompareCoins(data, days, intervalDaily).pricesData);
+    } else if (isError && "error" in error) {
       setErrorMessage(error.error);
     }
-  }, [error, isError]);
+  }, [error, isError, data, days, intervalDaily, isSuccess]);
 
   return (
-    <ChartContainer className="h-fit flex justify-between text-xl">
-      <h3 className="lg:2xl:text-2xl">
-        {`${coinA.name} (${coinA.symbol.toUpperCase()}) to ${
-          coinB.name
-        } (${coinB.symbol.toUpperCase()})`}
-      </h3>
-      {isLoading && <h4>Loading</h4>}
-      {isSuccess && (
-        <AreaChartComponent
-          xAxis={true}
-          height={"h-[32vh] max-md:max-xl:h-[16vh]"}
-          width={"w-full"}
-          data={formatCompareCoins(data, days, intervalDaily).pricesData}
-          color={"var(--soft-blue"}
-          fill={"url(#area-blue)"}
-        />
-      )}
-      {isError && <h4>{errorMessage}</h4>}
+    <ChartContainer
+      className="h-fit flex justify-between text-xl"
+      dataLength={coinData.length}
+      symbol={symbol}
+      chartInfo={`${coinA.name} (${coinA.symbol.toUpperCase()}) to ${
+        coinB.name
+      } (${coinB.symbol.toUpperCase()})`}
+      isLoading={isLoading}
+      isSuccess={isSuccess}
+      errorMessage={errorMessage}
+      activeCoins={null}
+      compareData={false}
+    >
+      <AreaChartComponent
+        xAxis={true}
+        height={"h-[32vh] max-md:max-xl:h-[16vh]"}
+        width={"w-full"}
+        data={coinData}
+        color={"var(--soft-blue"}
+        fill={"url(#area-blue)"}
+        dataB={null}
+        activeCoins={[]}
+        compareData={false}
+        shouldUpdateChart={true}
+        toggleUpdateCharts={null}
+      />
     </ChartContainer>
   );
 };

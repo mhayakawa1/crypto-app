@@ -48,7 +48,7 @@ export function formatAllCoins(apiData: any) {
         totalSupply: total_supply,
       },
       lastSevenDays: sparkline_in_7d.price.map((price: any, index: number) => {
-        return { name: index, uv: price };
+        return { name: index, value: price };
       }),
     };
   });
