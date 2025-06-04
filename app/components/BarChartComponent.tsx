@@ -1,11 +1,21 @@
 "use client";
-import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import { useState, useEffect } from "react";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 const chartConfig = {
-  uv: {
-    label: "uv",
+  value: {
+    label: "",
     color: "var(--chart-1)",
+  },
+  valueB: {
+    label: "",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
 
@@ -16,19 +26,95 @@ const BarChartComponent = (props: {
   data: any;
   color: any;
   fill: any;
+  dataB: any;
+  activeCoins: any;
+  compareData: boolean;
+  shouldUpdateChart: boolean;
 }) => {
-  const { xAxis, height, width, data, fill } = props;
+  const {
+    xAxis,
+    height,
+    width,
+    data,
+    color,
+    fill,
+    dataB,
+    activeCoins,
+    compareData,
+    shouldUpdateChart,
+  } = props;
+  const twoCoinsActive = activeCoins.length === 2;
+  const [compareActive, setCompareActive] = useState(true);
+  const [chartData, setChartData] = useState(data);
+  const gradientInfo = [
+    { id: "area-blue", stopColor: "var(--soft-blue)" },
+    { id: "area-purple", stopColor: "var(--light-purple)" },
+  ];
+
+  useEffect(() => {
+    if (shouldUpdateChart) {
+      if (data[0].value !== chartData[0].value) {
+        setChartData(data);
+      }
+      if (twoCoinsActive && dataB.length) {
+        const newData = data.map((element: any, index: number) => {
+          if (dataB[index]) {
+            return {
+              name: element.name,
+              value: element.value,
+              valueB: dataB[index].value,
+            };
+          }
+        });
+        setChartData(newData);
+        chartConfig.value.label = activeCoins[0].name;
+        chartConfig.valueB.label = activeCoins[1].name;
+      }
+    }
+    if (compareData && twoCoinsActive) {
+      setCompareActive(true);
+    } else {
+      setCompareActive(false);
+    }
+  }, [
+    data,
+    compareData,
+    compareActive,
+    twoCoinsActive,
+    dataB,
+    activeCoins,
+    chartData,
+    shouldUpdateChart,
+  ]);
+
   return (
     <ChartContainer
       className={`${height} ${width} p-auto m-0`}
       config={chartConfig}
     >
-      <BarChart accessibilityLayer data={data}>
+      <BarChart accessibilityLayer data={chartData}>
         <defs>
-          <linearGradient id="area-purple" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#B374F2" stopOpacity={0.8} />
-            <stop offset="95%" stopColor="#B374F2" stopOpacity={0} />
-          </linearGradient>
+          {gradientInfo.map((element: any) => (
+            <linearGradient
+              key={element.id}
+              id={element.id}
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop
+                offset="5%"
+                stopColor={element.stopColor}
+                stopOpacity={0.8}
+              />
+              <stop
+                offset="95%"
+                stopColor={element.stopColor}
+                stopOpacity={0}
+              />
+            </linearGradient>
+          ))}
         </defs>
         {xAxis && <XAxis dataKey="name" axisLine={false} tickLine={false} />}
         <YAxis
@@ -37,7 +123,25 @@ const BarChartComponent = (props: {
           tick={false}
           width={0}
         />
-        <Bar dataKey="uv" radius={4} fillOpacity={1} fill={fill} />
+        <Bar
+          dataKey="value"
+          stackId="a"
+          radius={4}
+          fillOpacity={1}
+          color={compareActive ? "var(--soft-blue" : color}
+          fill={compareActive ? "url(#area-blue)" : fill}
+        />
+        {compareActive && (
+          <Bar
+            dataKey="valueB"
+            stackId="a"
+            radius={4}
+            fillOpacity={1}
+            color={"var(--light-purple"}
+            fill="url(#area-purple)"
+          />
+        )}
+        {compareActive && <ChartLegend content={<ChartLegendContent />} />}
       </BarChart>
     </ChartContainer>
   );

@@ -65,7 +65,7 @@ const Converter = (props: { currency: any }) => {
     if (isError && "error" in error) {
       setErrorMessage(error.error);
     }
-    if (data) {
+    if (isSuccess) {
       const newFormattedData = formatAllCoins(data);
       setFormattedData(newFormattedData);
       prevFirstPrice.current = firstPrice;
@@ -77,10 +77,10 @@ const Converter = (props: { currency: any }) => {
     }
   }, [
     data,
+    isSuccess,
     isError,
     error,
     firstPrice,
-    prevFirstPrice.current,
     coinA.name,
     coinB.name,
   ]);
@@ -116,12 +116,13 @@ const Converter = (props: { currency: any }) => {
         </h3>
       )}
       <div className="w-full flex justify-between gap-[32px] mt-[4vh] aspect-[1296/293]">
-        {coinA.price ? (
+        {isSuccess && coinA.price ? (
           <ConverterChart
             coinA={coinA}
             coinB={coinB}
             days={days}
             intervalDaily={intervalDaily}
+            symbol={currency.symbol}
           />
         ) : null}
       </div>

@@ -11,7 +11,7 @@ export function formatCompareCoins(apiData: any, days: number, intervalDaily: bo
     return newData.map((element: any, index: number) => {
       return {
         name: index + 1,
-        uv: element[1],
+        value: element[1],
       };
     });
   };
