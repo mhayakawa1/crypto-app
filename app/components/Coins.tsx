@@ -90,7 +90,7 @@ const Coins = (props: { currency: any }) => {
         if(activeCoins.length === 2){
           refetchB()
         }
-      }, 20000);
+      }, 60000);
     } else if (isError && "error" in error) {
       setTimeout(() => {
         refetch();
