@@ -6,6 +6,7 @@ const GradientBorderButton = (props: {
   spanClasses: string;
   text: string;
   active: boolean;
+  children: any;
 }) => {
   const {
     handleClick,
@@ -15,6 +16,7 @@ const GradientBorderButton = (props: {
     spanClasses,
     text,
     active,
+    children,
   } = props;
   return (
     <button
@@ -30,7 +32,7 @@ const GradientBorderButton = (props: {
           active ? "bg-[--perano] dark:bg-[--american-blue]" : "bg-none"
         } w-full h-full rounded-[5px] lg:2xl:rounded-[10px] flex justify-center items-center ${spanClasses}`}
       >
-        {text}
+        {children ? children : text}
       </span>
     </button>
   );

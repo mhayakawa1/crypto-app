@@ -67,10 +67,10 @@ const Banner = () => {
           </BannerItem>
           <BannerItem>
             <Image src={ArrowUpGreen} alt="" />
-            <span>{formatNumber(bannerData.marketCap, false)}</span>
+            <span>{formatNumber(bannerData.marketCap, "")}</span>
           </BannerItem>
           <BannerItem>
-            <span>{formatNumber(bannerData.totalVolume, true)}</span>
+            <span>{formatNumber(bannerData.totalVolume, "")}</span>
             <Progress
               className={"bg-[rgb(255,255,255,.4)] w-[53px] h-[6px]"}
               value={bannerData.totalVolume}
