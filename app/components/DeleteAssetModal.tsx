@@ -28,7 +28,7 @@ const DeleteAssetModal = (props: {
             spanClasses=""
             text="Delete"
             active={true}
-          />
+          >{null}</GradientBorderButton>
         </div>
       </div>
     </div>
