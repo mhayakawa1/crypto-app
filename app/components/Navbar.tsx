@@ -204,10 +204,10 @@ const Navbar = () => {
         </div>
         {!changeCurrency && (
           <Select defaultValue={currency} onValueChange={handleChange}>
-            <SelectTrigger className="w-[108px] max-md:w-[84px] lg:2xl:w-[216px] h-[48px] max-md:h-[36px] lg:2xl:h-[96px] px-[16px] max-md:px-[8px] lg:2xl:px-[32px] bg-[--lavender] text-[--dark-slate-blue] border-none dark:text-white dark:border dark:border-[--dark-gunmetal] dark:bg-[--mirage]">
+            <SelectTrigger className="w-[108px] max-md:w-[84px] lg:2xl:w-[216px] h-[48px] max-md:h-[36px] lg:2xl:h-[96px] lg:2xl:rounded-[12px] px-[16px] max-md:px-[8px] lg:2xl:px-[32px] bg-[--lavender] text-[--dark-slate-blue] border-none dark:text-white dark:border dark:border-[--dark-gunmetal] dark:bg-[--mirage]">
               <SelectValue className="flex justify-center items-center" />
             </SelectTrigger>
-            <SelectContent className="w-[108px] max-md:w-[84px] lg:2xl:w-[216px] bg-[--lavender] border-none dark:border dark:border-[--dark-gunmetal] dark:bg-[--mirage]">
+            <SelectContent className="w-[108px] max-md:w-[84px] lg:2xl:w-[216px] lg:2xl:rounded-[12px] bg-[--lavender] border-none dark:border dark:border-[--dark-gunmetal] dark:bg-[--mirage]">
               <SelectGroup className="w-full bg-none text-[--dark-slate-blue] dark:text-white">
                 {selectItems.map((item: any) => (
                   <SelectItem
@@ -215,15 +215,15 @@ const Navbar = () => {
                     value={item.name}
                     className="hover:bg-white dark:hover:bg-[--dark-gunmetal] max-sm:px-1 max-sm:py-1"
                   >
-                    <span className="max-sm:w-full max-sm:m-0 flex justify-center max-sm:justify-between items-center gap-[8px] max-md:gap-[4px] max">
-                      <span className="flex justify-center items-center w-[20px] h-[20px] border bg-[--dark-slate-blue] dark:bg-transparent dark:border-white rounded-full">
+                    <span className="max-sm:w-full max-sm:m-0 flex justify-center max-sm:justify-between items-center gap-[8px] max-md:gap-[4px] lg:2xl:gap-[16px] max">
+                      <span className="flex justify-center items-center w-[20px] lg:2xl:w-[40px] h-[20px] lg:2xl:h-[40px] border bg-[--dark-slate-blue] dark:bg-transparent dark:border-white rounded-full">
                         <Image
                           src={item.icon}
                           alt=""
-                          className="w-auto h-[12px] max-sm:h-[8px] aspect-square"
+                          className="w-auto h-[12px] max-sm:h-[8px] lg:2xl:h-[24px] aspect-square"
                         />
                       </span>
-                      <span className="font-medium max-md:text-xs">
+                      <span className="font-medium max-md:text-xs lg:2xl:text-3xl">
                         {item.name.toUpperCase()}
                       </span>
                     </span>
