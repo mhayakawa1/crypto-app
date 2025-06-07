@@ -16,7 +16,7 @@ const NavLink = (props: {
       handleClick={updateActiveLink}
       argumentList={[text]}
       background=""
-      buttonClasses="w-[106px] h-[53px] text-xs"
+      buttonClasses="w-[88px] aspect-[2/1] text-xs"
       spanClasses=""
       text={text}
       active={isLinkActive}
@@ -30,12 +30,12 @@ const NavLink = (props: {
           alt=""
           width="0"
           height="0"
-          className="mx-auto w-[20px] h-auto"
+          className="mx-auto w-[16px] h-auto"
         />
         <span
           className={`${
             isLinkActive ? "text-white" : "text-[--dark-slate-blue]"
-          } dark:text-white`}
+          } dark:text-white text-[10px]`}
         >
           {text}
         </span>
