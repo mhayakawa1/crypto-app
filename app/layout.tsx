@@ -1,8 +1,8 @@
 "use client";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 import StoreProvider from "./StoreProvider";
 import Navbar from "./components/Navbar";
 import Banner from "./components/Banner";
-import { ThemeProvider } from "../components/ui/theme-provider";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
@@ -16,6 +16,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html className="h-full w-full" lang="en" suppressHydrationWarning>
       <StoreProvider>
@@ -32,7 +33,7 @@ export default function RootLayout({
               <Banner />
               <Navbar />
             </header>
-            <main className="py-[4vh] px-[8vh]">{children}</main>
+            <main className="py-[4vh] px-[8vw]">{children}</main>
           </ThemeProvider>
         </body>
       </StoreProvider>
