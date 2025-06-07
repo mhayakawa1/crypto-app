@@ -1,9 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactComponentAnnotation: {
-    enabled: process.env.NODE_ENV === "development",
-  },
+  /* config options here */
 };
 
 export default nextConfig;

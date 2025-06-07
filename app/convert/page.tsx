@@ -1,3 +1,4 @@
+"use client";
 import Converter from "../components/Converter";
 import { useAppSelector } from "@/lib/hooks";
 
