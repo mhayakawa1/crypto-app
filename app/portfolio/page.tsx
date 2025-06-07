@@ -70,7 +70,7 @@ export default function Portfolio() {
           spanClasses="lg:2xl:text-3xl max-sm:text-sm"
           text={"Add Asset"}
           active={true}
-        />
+        >{null}</GradientBorderButton>
       </div>
       {isLoading && (
         <span className="text-center mt-[16vh] text-[--dark-slate-blue] dark:text-white">
