@@ -18,11 +18,7 @@ const Converter = (props: { currency: any }) => {
   const [days, setDays] = useState(1);
   const [intervalDaily, setIntervalDaily] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
-  const today = new Date();
-  const formattedDate = `${today.toLocaleDateString(
-    "en-US"
-  )} ${today.toLocaleTimeString("en-US")}`;
+  const [formattedDate, setFormattedDate] = useState("");
 
   const convert = useCallback(
     (priceA: any, priceB: any) => {
@@ -75,15 +71,15 @@ const Converter = (props: { currency: any }) => {
         updateCoins(newFormattedData, null, false, coinB.name);
       }
     }
-  }, [
-    data,
-    isSuccess,
-    isError,
-    error,
-    firstPrice,
-    coinA.name,
-    coinB.name,
-  ]);
+    if (!formattedDate.length) {
+      const today = new Date();
+      setFormattedDate(
+        `${today.toLocaleDateString("en-US")} ${today.toLocaleTimeString(
+          "en-US"
+        )}`
+      );
+    }
+  }, [data, isSuccess, isError, error, firstPrice, coinA.name, coinB.name, formattedDate.length]);
 
   return (
     <div>
