@@ -1,8 +1,9 @@
 import Converter from "../components/Converter";
+import { useAppSelector } from "@/lib/hooks";
+
 const ConverterMobile = () => {
-    return(
-        <Converter />
-    )
-}
+  const currency = useAppSelector((state) => state.currency);
+  return <Converter currency={currency} />;
+};
 
 export default ConverterMobile;
