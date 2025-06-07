@@ -38,9 +38,9 @@ export function ThemeSwitchButton() {
       onClick={switchTheme}
       variant="outline"
       size="icon"
-      className="flex justify-center items-center w-[48px] h-[48px] rounded-[12px] bg-[--lavender] border-none dark:border dark:border-[#242430] dark:bg-[#191925]"
+      className="flex justify-center items-center w-[48px] max-md:w-[36px] lg:2xl:w-[96px] h-auto aspect-square rounded-[6px] lg:2xl:rounded-[12px] border-none dark:border dark:border-[--dark-gunmetal] bg-[--lavender] dark:bg-[--mirage]"
     >
-      <Image alt="" src={darkActive ? Sun : Moon} />
+      <Image alt="" src={darkActive ? Sun : Moon} className="max-md:h-[18px] lg:2xl:h-[48px] w-auto"/>
     </Button>
   );
 }
