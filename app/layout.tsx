@@ -33,7 +33,7 @@ export default function RootLayout({
               <Banner />
               <Navbar />
             </header>
-            <main className="py-[4vh] px-[8vw]">{children}</main>
+            <main className="py-[4vh] px-[5vw]">{children}</main>
           </ThemeProvider>
         </body>
       </StoreProvider>

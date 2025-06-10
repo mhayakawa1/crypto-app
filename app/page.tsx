@@ -8,11 +8,11 @@ import { useAppSelector } from "@/lib/hooks";
 export default function Home() {
   const [coinsVisible, setCoinsVisible] = useState(true);
   const currency = useAppSelector((state) => state.currency);
-
+const view = useAppSelector((state) => state.view);
+  const mobileView = view[0].mobileView;
   const toggleDisplay = () => {
     setCoinsVisible((current) => !current);
   };
-
   return (
     <StoreProvider>
       <div className="w-fit p-[4px] rounded-[6px] flex gap-[4px] bg-[#191925]">
@@ -51,7 +51,7 @@ export default function Home() {
       </div>
       <div className="pt-[4vh] overflow-x-hidden">
         {coinsVisible ? (
-          <Coins currency={currency} />
+          <Coins currency={currency} mobileView={mobileView} />
         ) : (
           <Converter currency={currency} />
         )}

@@ -1,6 +1,6 @@
 import { TableBody, TableCell, TableRow } from "@/components/ui/table";
-import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
 import AreaChartComponent from "./AreaChartComponent";
 import Arrow from "./Arrow";
 import ProgressContainer from "./ProgressContainer";
@@ -9,9 +9,10 @@ const RowContent = (props: {
   coinList: any;
   sortValue: any;
   reverse: boolean;
-  symbol: any;
+  mobileView: boolean;
+  currency:any;
 }) => {
-  const { coinList, sortValue, reverse, symbol } = props;
+  const { coinList, sortValue, reverse, mobileView, currency } = props;
   let sortedList = coinList;
   if (sortValue === "#") {
     sortedList = coinList;
@@ -40,23 +41,27 @@ const RowContent = (props: {
           id,
           image,
           name,
+          symbol,
           price,
           percents,
           volumeMarketCap,
           circulatingSupply,
           lastSevenDays,
         } = data;
+
         return (
           <TableRow
             key={id}
             className="flex justify-between items-center gap-[8px] rounded-xl bg-white hover:bg-[--lavender] text-[--dark-slate-blue] dark:text-white dark:bg-[--mirage] w-full h-[77px] border-none"
           >
-            <TableCell className="flex justify-between items-center gap-[8px] p-0 w-[4%]">
-              <span className="px-[10px] grow text-center">{index + 1}</span>
-            </TableCell>
-            <TableCell className="w-[16%] flex items-center p-0">
+            {!mobileView && (
+              <TableCell className="flex justify-between items-center gap-[8px] p-0 w-[4%]">
+                <span className="px-[10px] grow text-center">{index + 1}</span>
+              </TableCell>
+            )}
+            <TableCell className="w-[16%] max-sm:w-[30%] h-full flex items-center p-0">
               <Link
-                className="flex items-center gap-[16px] w-full"
+                className="flex max-sm:justify-center items-center gap-[16px] max-sm:gap-[8px] w-full"
                 href={`/coin/${id}`}
               >
                 {image !== null && (
@@ -65,56 +70,82 @@ const RowContent = (props: {
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 )}
-                <p className="truncate">{name}</p>
+                <p className='max-sm:flex flex-col'>
+                  {mobileView && <span className=''>{symbol.toUpperCase()}</span>}
+                  <span className="truncate max-sm:text-xs">{name}</span>
+                </p>
               </Link>
             </TableCell>
-            <TableCell className="w-[8%] truncate">
-              {price
-                ? `${symbol}${
-                    symbol.length > 1 ? " " : ""
-                  }${price.toLocaleString()}`
-                : "--"}
+            <TableCell className="w-[8%] max-sm:w-[30%] h-full max-sm:text-center flex flex-col justify-center items-center">
+              <span>
+                {price
+                  ? `${currency.symbol}${
+                      currency.symbol.length > 1 ? " " : ""
+                    }${price.toLocaleString()}`
+                  : "--"}
+              </span>
+              {mobileView && (
+                <span
+                  className={`text-xs ${
+                    percents[2].rising ? "text-[--rising]" : "text-[--falling]"
+                  }`}
+                >
+                  {percents[2].value ? (
+                    <div className="flex gap-[8px] w-full m-0">
+                      <Arrow rising={percents[2].rising} />
+                      {percents[2].value}%
+                    </div>
+                  ) : (
+                    <span>--</span>
+                  )}
+                </span>
+              )}
             </TableCell>
-            {percents.map((percent: any, index: number) => (
-              <TableCell
-                key={index}
-                className={`text-sm ${
-                  percent.rising ? "text-[--rising]" : "text-[--falling]"
-                } w-[6%] p-0`}
-              >
-                {percent.value ? (
-                  <div className="flex gap-[8px] w-full m-0">
-                    <Arrow rising={percent.rising} />
-                    {percent.value}%
-                  </div>
-                ) : (
-                  <span>--</span>
-                )}
+            {!mobileView &&
+              percents.map((percent: any, index: number) => (
+                <TableCell
+                  key={index}
+                  className={`text-sm ${
+                    percent.rising ? "text-[--rising]" : "text-[--falling]"
+                  } w-[6%] p-0`}
+                >
+                  {percent.value ? (
+                    <div className="flex gap-[8px] w-full m-0">
+                      <Arrow rising={percent.rising} />
+                      {percent.value}%
+                    </div>
+                  ) : (
+                    <span>--</span>
+                  )}
+                </TableCell>
+              ))}
+            {!mobileView && (
+              <TableCell className="grow">
+                <ProgressContainer
+                  numbers={volumeMarketCap}
+                  rising={percents[0].rising}
+                  symbol={currency.symbol}
+                />
               </TableCell>
-            ))}
-            <TableCell className="grow">
-              <ProgressContainer
-                numbers={volumeMarketCap}
-                rising={percents[0].rising}
-                symbol={symbol}
-              />
-            </TableCell>
-            <TableCell className="grow">
-              <ProgressContainer
-                numbers={circulatingSupply}
-                rising={percents[0].rising}
-                symbol={symbol}
-              />
-            </TableCell>
-            <TableCell className="rounded-r-xl p-0 w-grow h-full flex items-center">
+            )}
+            {!mobileView && (
+              <TableCell className="grow">
+                <ProgressContainer
+                  numbers={circulatingSupply}
+                  rising={percents[0].rising}
+                  symbol={currency.symbol}
+                />
+              </TableCell>
+            )}
+            <TableCell className="rounded-r-xl p-0 w-grow max-sm:w-[40%] h-full flex items-center">
               <AreaChartComponent
                 xAxis={false}
                 height={"h-[37px]"}
-                width={"w-[120px]"}
+                width={"w-[120px] max-sm:grow"}
                 data={lastSevenDays}
-                color={percents[0].rising ? "var(--rising)" : "var(--falling)"}
+                color={percents[2].rising ? "var(--rising)" : "var(--falling)"}
                 fill={
-                  percents[0].rising
+                  percents[2].rising
                     ? "url(#area-rising)"
                     : "url(#area-falling)"
                 }

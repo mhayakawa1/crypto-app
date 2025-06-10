@@ -52,7 +52,7 @@ const ChartContainer = (props: {
         <h3 className="lg:2xl:text-2xl">{chartInfo}</h3>
       ) : compareData ? (
         <ul className="text-[--mirage] dark:text-[--light-gray]">
-          <li className="text-2xl dark:text-white pt-[24px] lg:2xl:pt-[48px] pb-[16px] lg:2xl:pb-[32px] font-bold">
+          <li className="text-2xl dark:text-white lg:2xl:pt-[48px] pb-[16px] lg:2xl:pb-[32px] font-bold">
             {chartInfo.isPrice ? "Price 24h" : "Volume 24h"}
           </li>
           <li className="text-base">{formattedDate}</li>
