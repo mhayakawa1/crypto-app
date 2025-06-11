@@ -46,16 +46,16 @@ const ChartContainer = (props: {
 
   return (
     <div
-      className={`flex flex-col justify-between gap-[4vh] grow bg-white dark:bg-[--mirage] text-[--american-blue] dark:text-white px-[2vw] max-md:px-[4vw] py-[24px] lg:2xl:py-[48px] max-sm:pt-[16px] lg:2xl:pt-[32px] max-sm:pb-[4px] lg:2xl:pb-[8px] rounded-[16px] lg:2xl:rounded-[32px] ${className}`}
+      className={`flex flex-col justify-between gap-[4vh] grow bg-white dark:bg-[--mirage] text-[--american-blue] dark:text-white px-[2vw] max-md:px-[4vw] py-[24px] max-sm:pt-[16px] lg:2xl:py-[48px] max-sm:pb-[4px] rounded-[16px] lg:2xl:rounded-[32px] ${className}`}
     >
       {typeof chartInfo === "string" ? (
         <h3 className="lg:2xl:text-2xl">{chartInfo}</h3>
       ) : compareData ? (
         <ul className="text-[--mirage] dark:text-[--light-gray]">
-          <li className="text-2xl dark:text-white lg:2xl:pt-[48px] pb-[16px] lg:2xl:pb-[32px] font-bold">
+          <li className="text-2xl lg:2xl:text-5xl dark:text-white lg:2xl:pt-[48px] pb-[16px] lg:2xl:pb-[32px] font-bold">
             {chartInfo.isPrice ? "Price 24h" : "Volume 24h"}
           </li>
-          <li className="text-base">{formattedDate}</li>
+          <li className="text-base lg:2xl:text-3xl">{formattedDate}</li>
         </ul>
       ) : (
         <ul className="text-[--mirage] dark:text-[--light-gray] max-sm:flex justify-between">

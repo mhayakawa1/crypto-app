@@ -22,13 +22,13 @@ const TableHeaderContent = (props: { updateValue: any, mobileView: boolean }) =>
   const headerInfo = mobileView ? headerInfoMobile : headerInfoDesktop;
 
   return (
-    <TableRow className="h-[50px] hover:bg-transparent flex items-center justify-start gap-[8px] p-0 border-none">
+    <TableRow className="h-[50px] lg:2xl:h-[100px] hover:bg-transparent flex items-center justify-start gap-[8px] lg:2xl:gap-[16px] p-0 border-none">
       {headerInfo.map((element: any) => {
         const { name, sortValue, width } = element;
         return (
           <TableHead
             key={name}
-            className={`${width} h-full flex items-center justify-center p-0`}
+            className={`${width} h-full flex items-center justify-center p-0 lg:2xl:text-3xl`}
           >
             {sortValue !== null ? (
               <SortButton

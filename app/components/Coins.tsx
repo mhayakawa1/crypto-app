@@ -59,26 +59,30 @@ const Coins = (props: { currency: any; mobileView: boolean }) => {
 
   const updateCoinList = useCallback(
     (newCurrency: boolean) => {
-      const formattedData = formatAllCoins(data);
-      let newCoinList;
-      if (newCurrency || coinList.length === 1) {
-        newCoinList = formattedData;
-      } else {
-        newCoinList = coinList.concat(formattedData);
+      if (isSuccess) {
+        const formattedData = formatAllCoins(data);
+        let newCoinList;
+        if (newCurrency || coinList.length === 1) {
+          newCoinList = formattedData;
+        } else {
+          newCoinList = coinList.concat(formattedData);
+        }
+        if (currencyUpdated) {
+          const newActiveCoins = activeCoins;
+          updateActiveCoins(
+            newActiveCoins.map((element: any) => {
+              element.price = formattedData.find(
+                (data: any) => data.id === element.id
+              ).price;
+              return element;
+            })
+          );
+        }
+        setCoinList(newCoinList);
+        setFirstPrice(newCoinList[0].price);
       }
-      const newActiveCoins = activeCoins;
-      updateActiveCoins(
-        newActiveCoins.map((element: any) => {
-          element.price = formattedData.find(
-            (data: any) => data.id === element.id
-          ).price;
-          return element;
-        })
-      );
-      setCoinList(newCoinList);
-      setFirstPrice(newCoinList[0].price);
     },
-    [coinList, data, activeCoins]
+    [coinList, data, activeCoins, currencyUpdated, isSuccess]
   );
 
   useEffect(() => {
@@ -158,8 +162,8 @@ const Coins = (props: { currency: any; mobileView: boolean }) => {
   return (
     <div>
       <div>
-        <div className="flex justify-between items-center pb-[4vh]">
-          <h2 className="text-[--dark-slate-blue] lg:2xl:text-3xl max-sm:text-sm dark:text-white mr-[16px] text-wrap">
+        <div className="w-full flex justify-between items-center pb-[4vh]">
+          <h2 className="text-[--dark-slate-blue] lg:2xl:text-3xl max-sm:text-xs dark:text-white mr-[16px] max-sm:mr-0 max-sm:w-[50%] text-wrap">
             Select the currency to view statistics
           </h2>
           <CompareButton
@@ -177,6 +181,7 @@ const Coins = (props: { currency: any; mobileView: boolean }) => {
           errorMessage={errorMessage}
           isSuccess={isSuccess}
           coinList={coinList}
+          mobileView={mobileView}
         />
         <Charts
           currency={currency}

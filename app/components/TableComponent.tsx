@@ -14,14 +14,8 @@ const TableComponent = (props: {
   updateQuery: any;
   mobileView: boolean;
 }) => {
-  const {
-    currency,
-    coinList,
-    isError,
-    errorMessage,
-    updateQuery,
-    mobileView
-  } = props;
+  const { currency, coinList, isError, errorMessage, updateQuery, mobileView } =
+    props;
   const [sortValue, setSortValue] = useState("#");
   const [reverse, setReverse] = useState(false);
   //   data: data = [],
@@ -61,15 +55,21 @@ const TableComponent = (props: {
         ></LoadingSkeleton>
       }
       endMessage={
-        <p style={{ textAlign: "center" }}>
+        <p
+          style={{ textAlign: "center" }}
+          className="lg:2xl:text-3xl text-[--dark-slate-blue] dark:text-white"
+        >
           <b>Yay! You have seen it all</b>
         </p>
       }
     >
-      <div className="w-full mt-[8px]">
-        <Table className="flex flex-col gap-[8px] border-separate border-spacing-y-[8px] w-full max-lg:w-[980px] max-sm:w-full max-lg:overflow-x-scroll">
+      <div className="w-full mt-[8px] lg:2xl:mt-[16px]">
+        <Table className="flex flex-col gap-[8px] lg:2xl:gap-[16px] border-separate border-spacing-y-[8px] lg:2xl:border-spacing-y-[16px] w-full lg:2xl:min-w-[2000px] max-lg:w-[1000px] max-sm:w-full overflow-x-scroll">
           <TableHeader className="p-0">
-            <TableHeaderContent updateValue={updateValue} mobileView={mobileView} />
+            <TableHeaderContent
+              updateValue={updateValue}
+              mobileView={mobileView}
+            />
           </TableHeader>
           {coinList.length > 1 && (
             <RowContent
