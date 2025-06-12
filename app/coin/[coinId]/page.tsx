@@ -11,67 +11,11 @@ import PortfolioWhite from "./../../../src/icons/Portfolio_White.svg";
 import PortfolioBlue from "./../../../src/icons/Portfolio_Blue.svg";
 import ArrowUpGreen from "./../../../src/icons/Arrow_Up_Green.svg";
 import ArrowDownRed from "./../../../src/icons/Arrow_Down_Red.svg";
-import LinkWhite from "./../../../src/icons/Link_White.svg";
-import CopyWhite from "./../../../src/icons/Copy_White.svg";
 import Panel from "../../components/Panel";
+import HighLow from "../../components/HighLow";
+import LinkContainer from "../../components/LinkContainer";
 
 type Params = Promise<{ coinId: string }>;
-
-const LinkContainer = (props: { link: string; sliceIndex: number }) => {
-  const { link, sliceIndex } = props;
-  const shortenedLink = link.slice(sliceIndex);
-
-  const copyText = () => {
-    navigator.clipboard.writeText(link);
-  };
-
-  return (
-    <Panel className="flex justify-center items-center px-[20px] gap[16px] font-medium text-base/[24px] h-[52px]">
-      <a
-        href={link}
-        target="_blank"
-        className="flex items-center justify-center bg-[--perano] dark:bg-transparent aspect-square w-[24px] h-[24px] p-[2px] rounded-[4px]"
-      >
-        <Image src={LinkWhite} alt="" className="w-[20px] h-auto" />
-      </a>
-      <p className="mx-[16px] w-full text-center truncate">{shortenedLink}</p>
-      <button
-        onClick={copyText}
-        className="flex items-center justify-center bg-[--perano] dark:bg-transparent aspect-square w-[24px] h-[24px] p-[4px] rounded-[4px]"
-      >
-        <Image src={CopyWhite} alt="" className="w-[20px] h-auto" />
-      </button>
-    </Panel>
-  );
-};
-
-const HighLow = (props: { price: string; time: string; high: boolean }) => {
-  const { price, time, high } = props;
-  return (
-    <li className="high-low flex justify-start gap-[16px] h-[44px]">
-      <Image
-        width={16}
-        height={16}
-        style={{
-          width: "auto",
-          height: "auto",
-          maxHeight: "8px",
-          maxWidth: "16px",
-        }}
-        className="mt-[20px]"
-        src={high ? ArrowUpGreen.src : ArrowDownRed.src}
-        alt=""
-      />
-      <ul className="text-base/[14px] text-nowrap">
-        <li>
-          All time {high ? "high" : "low"}:{" "}
-          <span className="text-xl">{price}</span>
-        </li>
-        <li className="date text-sm text-[#b9b9ba]">{time}</li>
-      </ul>
-    </li>
-  );
-};
 
 export default function CoinPage(props: { params: Params }) {
   const { coinId } = use(props.params);
@@ -259,18 +203,18 @@ export default function CoinPage(props: { params: Params }) {
       <div className="mt-[6vh] mb-[4vh]">
         <Link
           href="/portfolio"
-          className="text-[--dark-slate-blue] dark:text-white"
+          className="text-[--dark-slate-blue] dark:text-white max-sm:text-sm"
         >
           Portfolio / Your {coinName} summary
         </Link>
       </div>
-      {isLoading && <h2>Loading...</h2>}
+      {isLoading && <h2 className="lg:2xl:text-5xl">Loading...</h2>}
       {isSuccess && (
         <div className="flex flex-col gap-[8vh] w-full max-md:gap-[4vh] justify-between">
           <div className="w-full flex flex-col md:xl:flex-row justify-between gap-[4vw] md:max-xl:gap-[4vh]">
-            <div className="flex justify-between gap-[4vw]">
-              <div className="flex justify-between flex-col gap-[16px] w-[44%]">
-                <Panel className="flex justify-center items-center flex-col grow gap-[24px]">
+            <div className="border border-red-500 flex justify-between max-sm:flex-col gap-[4vw]">
+              <div className="border border-blue-500 flex justify-between flex-col gap-[16px] w-[44%] max-sm:w-full">
+                <Panel className="flex justify-center items-center flex-col max-sm:flex-row grow gap-[24px]">
                   <div className="p-[16px] rounded-xl w-[64px] h-[64px] bg-[--lavender] dark:bg-[--space-cadet]">
                     <Avatar className="rounded-full w-[32px] h-[32px]">
                       <AvatarImage src={coinData.src} />
@@ -363,7 +307,8 @@ export default function CoinPage(props: { params: Params }) {
               </ul>
             </Panel>
           </div>
-          <div className="w-full flex justify-between max-md:flex-col-reverse max-md:gap-[4vh]">{/**/}
+          <div className="w-full flex justify-between max-md:flex-col-reverse max-md:gap-[4vh]">
+            {/**/}
             <div className="flex flex-col gap-[24px] w-[50%] max-md:w-full">
               <h4 className="text-xl font-medium text-[--dark-slate-blue] dark:text-white">
                 Description
