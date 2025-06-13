@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useCoinQuery } from "@/lib/features/api/apiSlice";
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 import { addLocalStorage } from "@/lib/features/portfolio/portfolioSlice";
+import { formatNumber } from "@/lib/format/formatNumber";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Plus from "./../../../src/icons/Plus.svg";
 import PortfolioWhite from "./../../../src/icons/Portfolio_White.svg";
@@ -21,6 +22,8 @@ export default function CoinPage(props: { params: Params }) {
   const { coinId } = use(props.params);
   const coinName = coinId[0].toUpperCase() + coinId.slice(1);
   const portfolio = useAppSelector((state) => state.portfolio);
+  const view = useAppSelector((state) => state.view);
+  const mobileView = view[0].mobileView;
   const dispatch = useAppDispatch();
   const darkActive = useAppSelector((state) => state.theme)[0].darkActive;
   const [textHidden, setTextHidden] = useState(true);
@@ -44,42 +47,49 @@ export default function CoinPage(props: { params: Params }) {
         name: "Market Cap",
         key: "market_cap.usd",
         value: "",
+        mobileValue: "",
         currency: { symbol: "$", start: true },
       },
       {
         name: "Fully Diluted Valuation",
         key: "fully_diluted_valuation.usd",
         value: "",
+        mobileValue: "",
         currency: { symbol: "$", start: true },
       },
       {
         name: "Volume 24h",
         key: "total_volume.usd",
         value: "",
+        mobileValue: "",
         currency: { symbol: "$", start: true },
       },
       {
         name: "Volume/Market",
         key: "",
         value: "",
+        mobileValue: "",
         currency: { symbol: "", start: true },
       },
       {
         name: "Total Volume",
         key: "total_volume.btc",
         value: "",
+        mobileValue: "",
         currency: { symbol: "symbol", start: false },
       },
       {
         name: "Circulating Supply",
         key: "circulating_supply",
         value: "",
+        mobileValue: "",
         currency: { symbol: "symbol", start: false },
       },
       {
         name: "Max Supply",
         key: "max_supply",
         value: "",
+        mobileValue: "",
         currency: { symbol: "symbol", start: false },
       },
     ],
@@ -133,8 +143,12 @@ export default function CoinPage(props: { params: Params }) {
     ).toFixed(5);
 
     newListData = newListData.map((element) => {
+      const { value, currency } = element;
+      element.mobileValue = formatNumber(
+        Number(value),
+        currency.symbol.toUpperCase()
+      );
       if (Number(element.value) > 1) {
-        const { value, currency } = element;
         element.value = `${
           currency.start ? currency.symbol : ""
         }${value.toLocaleString()} ${
@@ -199,76 +213,81 @@ export default function CoinPage(props: { params: Params }) {
   ]);
 
   return (
-    <div>
-      <div className="mt-[6vh] mb-[4vh]">
+    <div className="max-sm:pb-[100px]">
+      <div className="mt-[6vh] max-sm:mt-[1vh] mb-[4vh]">
         <Link
           href="/portfolio"
-          className="text-[--dark-slate-blue] dark:text-white max-sm:text-sm"
+          className="text-[--dark-slate-blue] dark:text-white max-sm:text-sm lg:2xl:text-2xl"
         >
           Portfolio / Your {coinName} summary
         </Link>
       </div>
-      {isLoading && <h2 className="lg:2xl:text-5xl">Loading...</h2>}
+      {isLoading && (
+        <h2 className="lg:2xl:text-4xl text-[--dark-slate-blue] dark:text-white">
+          Loading...
+        </h2>
+      )}
       {isSuccess && (
         <div className="flex flex-col gap-[8vh] w-full max-md:gap-[4vh] justify-between">
           <div className="w-full flex flex-col md:xl:flex-row justify-between gap-[4vw] md:max-xl:gap-[4vh]">
-            <div className="border border-red-500 flex justify-between max-sm:flex-col gap-[4vw]">
-              <div className="border border-blue-500 flex justify-between flex-col gap-[16px] w-[44%] max-sm:w-full">
-                <Panel className="flex justify-center items-center flex-col max-sm:flex-row grow gap-[24px]">
-                  <div className="p-[16px] rounded-xl w-[64px] h-[64px] bg-[--lavender] dark:bg-[--space-cadet]">
-                    <Avatar className="rounded-full w-[32px] h-[32px]">
+            <div className="flex justify-between max-sm:flex-col gap-[4vw]">
+              <div className="flex justify-between flex-col gap-[16px] lg:2xl:gap-[32px] w-[44%] max-sm:w-full">
+                <Panel className="flex justify-center max-sm:justify-start items-center flex-col max-sm:flex-row grow gap-[24px] max-sm:gap-[2vw] lg:2xl:gap-[48px] max-sm:py-[2vh] max-sm:px-[2vw]">
+                  <div className="p-[16px] max-sm:p-0 lg:2xl:p-[32px] rounded-xl w-[64px] max-sm:w-auto lg:2xl:w-[128px] aspect-square h-auto bg-[--lavender] max-sm:bg-transparent dark:bg-[--space-cadet]">
+                    <Avatar className="rounded-full w-[32px] lg:2xl:w-[64px] h-[32px] lg:2xl:h-[64px]">
                       <AvatarImage src={coinData.src} />
                       <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                   </div>
-                  <h2>{coinName}</h2>
+                  <h2 className="lg:2xl:text-4xl">{coinName}</h2>
                 </Panel>
                 <LinkContainer
                   link={coinData.homeLink}
                   sliceIndex={coinData.homeLink.indexOf("www.") + 4}
                 />
               </div>
-              <Panel className="flex justify-center items-center grow p-[40px]">
-                <ul className="self-center flex flex-col justify-center gap-[20px] h-fit">
-                  <li className="flex items-end gap-[16px] h-[25px]">
-                    <span className="text-4xl/[24px] font-bold">
+              <Panel className="flex justify-center items-center grow p-[40px] lg:2xl:p-[80px] max-sm:px-[2vw]">
+                <ul className="self-center flex flex-col justify-center gap-[20px] lg:2xl:gap-[40px] h-fit">
+                  <li className="flex items-end gap-[16px] lg:2xl:gap-[32px] h-[25px] lg:2xl:h-[50px]">
+                    <span className="text-4xl max-sm:text-3xl lg:2xl:text-7xl font-bold">
                       {coinData.price}
                     </span>
                     <span
                       className={`${
                         coinData.rising ? "text-[--rising]" : "text-[--falling]"
-                      } h-[14px] flex items-end`}
+                      } h-[14px] lg:2xl:h-[28px] flex items-center`}
                     >
                       <Image
                         src={
                           coinData.rising ? ArrowUpGreen.src : ArrowDownRed.src
                         }
-                        width={9}
-                        height={5}
-                        className="self-start w-[9px] h-[5px] mx-[5px] my-auto"
+                        width="0"
+                        height="0"
+                        className="self-start w-[9px] max-sm:w-[6px] lg:2xl:w-[18px] h-auto mx-[5px] lg:2xl:mx-[10px] my-auto"
                         alt=""
                       />
-                      <span className="text-xl/[14px]">
+                      <span className="text-xl max-sm:text-base lg:2xl:text-4xl">
                         {coinData.priceChange}%
                       </span>
                     </span>
                   </li>
-                  <li className="text-xl/[16px] text-left">
+                  <li className="text-xl max-sm:text-base lg:2xl:text-4xl text-left">
                     Profit:
                     <span
                       className={`${
                         coinData.rising ? "text-[--rising]" : "text-[--falling]"
-                      } text-2xl ml-[16px]`}
+                      } text-2xl max-sm:text-xl lg:2xl:text-5xl ml-[16px] lg:2xl:ml-[32px]`}
                     >
                       {coinData.profit}
                     </span>
                   </li>
-                  <li className="flex justify-center self-center mx-auto w-[24px] h-[24px]">
+                  <li className="flex justify-center self-center mx-auto w-[24px] lg:2xl:w-[48px] aspect-auto">
                     <Image
-                      width={24}
-                      height={24}
+                      width="0"
+                      height="0"
                       src={darkActive ? PortfolioWhite : PortfolioBlue}
                       alt=""
+                      className="w-[24px] lg:2xl:w-[48px] h-auto"
                     />
                   </li>
                   <HighLow
@@ -284,33 +303,40 @@ export default function CoinPage(props: { params: Params }) {
                 </ul>
               </Panel>
             </div>
-            <Panel className="grow flex items-center justify-center p-[24px] md:max-xl:aspect-auto">
-              <ul className="flex flex-col gap-[12px]">
+            <Panel className="grow flex items-center justify-center p-[24px] max-sm:px-[2vw] md:max-xl:aspect-auto">
+              <ul className="flex flex-col gap-[12px] lg:2xl:gap-[24px]">
                 {coinData.listData.map((element, index) => (
                   <li
                     key={index}
-                    className={`flex justify-between gap-[24px] text-base/[20px] ${
-                      index === 4 && "mt-[32px]"
+                    className={`flex justify-between gap-[24px] lg:2xl:gap-[48px] text-base max-sm:text-sm lg:2xl:text-3xl ${
+                      index === 4 && "mt-[32px] lg:2xl:mt-[64px]"
                     }`}
                   >
-                    <span className="flex flex-1 gap-[24px]">
-                      <span className="w-[24px] h-[24px] rounded-full p-[1px] flex items-center justify-center bg-gradient-to-b from-[--soft-blue] to-[--perano] dark:to-[--american-blue] shadow-[4px_4px_15px_2px_#7878fa26]">
-                        <span className="bg-[--perano] dark:bg-[--american-blue]  mt-[.25px] ml-[.25px] rounded-full w-full h-full flex items-center justify-center">
-                          <Image src={Plus} alt=""></Image>
+                    <span className="flex flex-1 gap-[24px] max-sm:gap-[2vw]">
+                      <span className="w-[24px] max-sm:w-[18px] h-[24px] max-sm:h-[18px] rounded-full p-[1px] flex items-center justify-center bg-gradient-to-b from-[--soft-blue] to-[--perano] dark:to-[--american-blue] shadow-[4px_4px_15px_2px_#7878fa26]">
+                        <span className="bg-[--perano] dark:bg-[--american-blue] mt-[.25px] ml-[.25px] rounded-full w-full h-full flex items-center justify-center">
+                          <Image
+                            src={Plus}
+                            alt=""
+                            width="0"
+                            height="0"
+                            className="max-sm:w-[12px] max-sm:h-[12px]"
+                          ></Image>
                         </span>
                       </span>
                       <span>{element.name}</span>
                     </span>
-                    <span>{element.value}</span>
+                    <span>
+                      {mobileView ? element.mobileValue : element.value}
+                    </span>
                   </li>
                 ))}
               </ul>
             </Panel>
           </div>
           <div className="w-full flex justify-between max-md:flex-col-reverse max-md:gap-[4vh]">
-            {/**/}
-            <div className="flex flex-col gap-[24px] w-[50%] max-md:w-full">
-              <h4 className="text-xl font-medium text-[--dark-slate-blue] dark:text-white">
+            <div className="flex flex-col gap-[2vh] w-[50%] max-md:w-full">
+              <h4 className="text-xl lg:2xl:text-4xl font-medium text-[--dark-slate-blue] dark:text-white">
                 Description
               </h4>
               <p
@@ -318,20 +344,20 @@ export default function CoinPage(props: { params: Params }) {
                   textHidden
                     ? "overflow-hidden text-ellipsis h-[210px]"
                     : "flex flex-col h-auto"
-                } relative text-sm/[21px] w-full text-[--dark-slate-blue] dark:text-white`}
+                } relative text-sm/[21px] lg:2xl:text-2xl/[42px] w-full text-[--dark-slate-blue] dark:text-white`}
               >
                 {coinData.description}
                 <button
                   onClick={toggleDescription}
                   className={`${
                     textHidden ? "absolute bottom-0 right-0" : "self-end"
-                  } pl-[16px] text-[#6060ff] text-sm/[21px] h-[21px] bg-gradient-to-r from-transparent from-0% to-[#f3f5f9] dark:to-[#13121A] to-20%`}
+                  } pl-[16px] lg:2xl:pl-[32px] text-[#6060ff] text-sm lg:2xl:text-2xl h-[21px] lg:2xl:h-[42px] bg-gradient-to-r from-transparent from-0% to-[--light-gray] dark:to-[--black-russian] to-20%`}
                 >
                   {textHidden ? "...read more" : "read less"}
                 </button>
               </p>
             </div>
-            <div className="flex flex-col gap-[24px] w-[40%] max-md:w-full">
+            <div className="flex flex-col gap-[24px] lg:2xl:gap-[48px] w-[40%] max-md:w-full">
               {coinData.blockchainLinks.map((link: string, index: number) => (
                 <LinkContainer key={index} link={link} sliceIndex={8} />
               ))}
@@ -339,7 +365,11 @@ export default function CoinPage(props: { params: Params }) {
           </div>
         </div>
       )}
-      {isError && <h2>{errorMessage}</h2>}
+      {isError && (
+        <h2 className="lg:2xl:text-5xl text-[--dark-slate-blue] dark:text-white">
+          {errorMessage}
+        </h2>
+      )}
     </div>
   );
 }
