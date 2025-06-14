@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useCompareCoinsQuery } from "@/lib/features/api/apiSlice";
 import { formatCompareCoins } from "@/lib/format/formatCompareCoins";
 import AreaChartComponent from "./AreaChartComponent";
@@ -53,7 +53,6 @@ const Charts = (props: {
 
   const {
     data: dataB = [],
-    isSuccess: isSuccessB,
     isError: isErrorB,
     error: errorB,
     refetch: refetchB,
@@ -64,6 +63,45 @@ const Charts = (props: {
     intervalDaily: intervalDaily,
   });
 
+  const queryRefetch = useCallback(
+    (isError: boolean, error: any, isQueryA: boolean) => {
+      if (isError && "error" in error) {
+        setIsSuccess(false);
+        setTimeout(() => {
+          if (isQueryA) {
+            refetch();
+          } else {
+            refetchB();
+          }
+        }, 10000);
+        setErrorMessage(`${error.error}. Refetching...`);
+      }
+    },
+    [refetch, refetchB]
+  );
+
+  const getFormattedData = useCallback(
+    (
+      queryData: any,
+      shouldToggleCharts: boolean,
+      isSuccess: boolean,
+      isCoinA: boolean
+    ) => {
+      toggleUpdateCharts(shouldToggleCharts);
+      setIsSuccess(isSuccess);
+      const formattedData = formatCompareCoins(queryData, days, intervalDaily);
+      const { pricesData, volumesData } = formattedData;
+      if (isCoinA) {
+        setPricesA(pricesData);
+        setVolumesA(volumesData);
+      } else {
+        setPricesB(pricesData);
+        setVolumesB(volumesData);
+      }
+    },
+    [days, intervalDaily, toggleUpdateCharts]
+  );
+
   useEffect(() => {
     const shouldUpdateActiveCoins =
       !initialRender && currencyUpdated && isSuccess;
@@ -72,14 +110,8 @@ const Charts = (props: {
       (isSuccessA && shouldUpdateCharts) ||
       shouldUpdateActiveCoins
     ) {
-      const formattedData = formatCompareCoins(data, days, intervalDaily);
-      const { pricesData, volumesData } = formattedData;
-      setPricesA(pricesData);
-      setVolumesA(volumesData);
-      if (activeCoins.length !== 2) {
-        toggleUpdateCharts(false);
-        setIsSuccess(true);
-      }
+      const twoCoinsActive = activeCoins.length === 2;
+      getFormattedData(data, twoCoinsActive, !twoCoinsActive, true);
       prevCurrency.current = currency;
       if (initialRender) {
         setInitialRender(false);
@@ -92,12 +124,6 @@ const Charts = (props: {
           }
         }, 60000);
       }
-    } else if (isError && "error" in error) {
-      setIsSuccess(false);
-      setTimeout(() => {
-        refetch();
-      }, 10000);
-      setErrorMessage(`${error.error}. Refetching...`);
     }
     if (
       dataB &&
@@ -105,46 +131,32 @@ const Charts = (props: {
       !initialRender &&
       JSON.stringify(data) !== JSON.stringify(dataB)
     ) {
-      const formattedData = formatCompareCoins(dataB, days, intervalDaily);
-      const { pricesData, volumesData } = formattedData;
-      setPricesB(pricesData);
-      setVolumesB(volumesData);
-      toggleUpdateCharts(true);
-      if (data) {
-        setIsSuccess(true);
-      }
+      getFormattedData(dataB, true, Boolean(data), false);
     } else if ((!dataB || activeCoins.length === 1) && pricesB.length) {
       setPricesB([]);
       setVolumesB([]);
     }
-    if (isErrorB && "error" in errorB) {
-      setIsSuccess(false);
-      setErrorMessage(`${errorB.error}. Refetching...`);
-      setTimeout(() => {
-        refetchB();
-      }, 10000);
-    }
+    queryRefetch(isError, error, true);
+    queryRefetch(isErrorB, errorB, false);
   }, [
+    activeCoins.length,
     currency,
     currencyUpdated,
-    dataB,
-    errorB,
-    pricesB.length,
-    activeCoins,
-    shouldUpdateCharts,
-    toggleUpdateCharts,
-    isError,
     data,
-    days,
+    dataB,
     error,
-    intervalDaily,
+    errorB,
+    initialRender,
+    isError,
+    isErrorB,
     isSuccess,
     isSuccessA,
-    initialRender,
-    isErrorB,
-    isSuccessB,
+    pricesB.length,
+    shouldUpdateCharts,
     refetch,
     refetchB,
+    queryRefetch,
+    getFormattedData,
   ]);
   return (
     <div className="w-full h-auto flex max-md:flex-col justify-between gap-[1vw] pt-[120px] lg:2xl:pt-[240px] max-sm:pt-[86px]">
