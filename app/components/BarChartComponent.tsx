@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   ChartConfig,
   ChartContainer,
@@ -7,6 +7,7 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
+
 
 const chartConfig = {
   value: {
@@ -19,6 +20,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+
 const BarChartComponent = (props: {
   xAxis: boolean;
   height: string;
@@ -30,6 +32,7 @@ const BarChartComponent = (props: {
   activeCoins: any;
   compareData: boolean;
   shouldUpdateChart: boolean;
+  toggleUpdateCharts: any;
 }) => {
   const {
     xAxis,
@@ -42,8 +45,10 @@ const BarChartComponent = (props: {
     activeCoins,
     compareData,
     shouldUpdateChart,
+    toggleUpdateCharts,
   } = props;
   const twoCoinsActive = activeCoins.length === 2;
+  const prevChartData = useRef<any>([{ name: "", value: 0 }]);
   const [compareActive, setCompareActive] = useState(true);
   const [chartData, setChartData] = useState(data);
   const gradientInfo = [
@@ -51,12 +56,17 @@ const BarChartComponent = (props: {
     { id: "area-purple", stopColor: "var(--light-purple)" },
   ];
 
+
   useEffect(() => {
     if (shouldUpdateChart) {
       if (data[0].value !== chartData[0].value) {
         setChartData(data);
       }
-      if (twoCoinsActive && dataB.length) {
+      if (
+        twoCoinsActive &&
+        dataB.length &&
+        JSON.stringify(prevChartData.current) !== JSON.stringify(chartData)
+      ) {
         const newData = data.map((element: any, index: number) => {
           if (dataB[index]) {
             return {
@@ -66,6 +76,8 @@ const BarChartComponent = (props: {
             };
           }
         });
+        prevChartData.current = chartData;
+        toggleUpdateCharts(false);
         setChartData(newData);
         chartConfig.value.label = activeCoins[0].name;
         chartConfig.valueB.label = activeCoins[1].name;
@@ -85,7 +97,9 @@ const BarChartComponent = (props: {
     activeCoins,
     chartData,
     shouldUpdateChart,
+    toggleUpdateCharts,
   ]);
+
 
   return (
     <ChartContainer

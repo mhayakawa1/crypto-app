@@ -1,17 +1,15 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useCompareCoinsQuery } from "@/lib/features/api/apiSlice";
-import { formatCompareCoins } from "@/lib/format/formatCompareCoins";
-import AreaChartComponent from "./AreaChartComponent";
-import BarChartComponent from "./BarChartComponent";
+import { useState, useEffect, useRef, useCallback } from "react";
+import Charts from "./Charts";
 import CarouselComponent from "./CarouselComponent";
-import ChartContainer from "./ChartContainer";
 import TableComponent from "./TableComponent";
 import TimeRangeButtons from "./TimeRangeButtons";
 import CompareButton from "./CompareButton";
+import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
+import { formatAllCoins } from "@/lib/format/formatAllCoins";
 
-const Coins = (props: { currency: any }) => {
-  const { currency } = props;
+const Coins = (props: { currency: any; mobileView: boolean }) => {
+  const { currency, mobileView } = props;
   const [compareData, setCompareData] = useState(false);
   const [days, setDays] = useState(1);
   const [intervalDaily, setIntervalDaily] = useState(false);
@@ -24,14 +22,15 @@ const Coins = (props: { currency: any }) => {
       volumeMarketCap: { totalVolume: 0 },
     },
   ]);
-  const [initialRender, setInitialRender] = useState(true);
   const [coinBId, setCoinBId] = useState("");
-  const [pricesA, setPricesA]: any[] = useState([]);
-  const [volumesA, setVolumesA]: any[] = useState([]);
-  const [pricesB, setPricesB]: any[] = useState([]);
-  const [volumesB, setVolumesB]: any[] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
   const [shouldUpdateCharts, setShouldUpdateCharts] = useState(false);
+  const prevCurrency = useRef<any>(currency);
+  const [firstPrice, setFirstPrice] = useState(null);
+  const [currencyUpdated, setCurrencyUpdated] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [page, setPage] = useState<any>(1);
+  const [coinList, setCoinList] = useState<any[]>([{ price: null }]);
+  const [initialRender, setInitialRender] = useState(true);
 
   const {
     data: data = [],
@@ -40,27 +39,12 @@ const Coins = (props: { currency: any }) => {
     isError,
     error,
     refetch,
-  } = useCompareCoinsQuery({
-    coin: activeCoins[0].id,
-    vsCurrency: currency.currency,
-    days: days,
-    intervalDaily: intervalDaily,
-  });
+  } = useAllCoinsQuery({ currency: currency.currency, page: page });
 
-  const {
-    data: coinBData = [],
-    isSuccess: isSuccessB,
-    isError: isErrorB,
-    refetch: refetchB,
-  } = useCompareCoinsQuery({
-    coin: coinBId.length > 1 ? coinBId : activeCoins[0].id,
-    vsCurrency: currency.currency,
-    days: days,
-    intervalDaily: intervalDaily,
-  });
-
-  const toggleUpdateCharts = (shouldUpdateCharts: boolean) => {
-    setShouldUpdateCharts(shouldUpdateCharts);
+  const updateQuery = () => {
+    if (coinList.length > 1) {
+      setPage(Number(page) + 1);
+    }
   };
 
   const updateActiveCoins = (newCoins: any) => {
@@ -69,65 +53,97 @@ const Coins = (props: { currency: any }) => {
       setCoinBId(newCoins[1].id);
     } else {
       setCoinBId(newCoins[0].id);
+      setShouldUpdateCharts(true);
     }
-    setShouldUpdateCharts(true);
   };
 
-  useEffect(() => {
-    if (initialRender) {
-      setInitialRender(false);
-    }
-    if (isSuccess || (isSuccess && shouldUpdateCharts)) {
-      const formattedData = formatCompareCoins(data, days, intervalDaily);
-      const { pricesData, volumesData } = formattedData;
-      setPricesA(pricesData);
-      setVolumesA(volumesData);
-      if (activeCoins.length !== 2) {
-        setShouldUpdateCharts(false);
-      }
-      setTimeout(() => {
-        refetch();
-        if(activeCoins.length === 2){
-          refetchB()
+  const updateCoinList = useCallback(
+    (newCurrency: boolean) => {
+      if (isSuccess) {
+        const formattedData = formatAllCoins(data);
+        let newCoinList;
+        if (newCurrency || coinList.length === 1) {
+          newCoinList = formattedData;
+        } else {
+          newCoinList = coinList.concat(formattedData);
         }
-      }, 20000);
+        if (currencyUpdated) {
+          const newActiveCoins = activeCoins;
+          updateActiveCoins(
+            newActiveCoins.map((element: any) => {
+              element.price = formattedData.find(
+                (data: any) => data.id === element.id
+              ).price;
+              return element;
+            })
+          );
+        }
+        setCoinList(newCoinList);
+        setFirstPrice(newCoinList[0].price);
+      }
+    },
+    [coinList, data, activeCoins, currencyUpdated, isSuccess]
+  );
+
+  useEffect(() => {
+    if (
+      !initialRender &&
+      prevCurrency.current &&
+      prevCurrency.current !== currency
+    ) {
+      setPage(1);
+      setCoinList([{ price: null }]);
+      prevCurrency.current = currency;
+      setCurrencyUpdated(true);
+    }
+    if (
+      currencyUpdated &&
+      firstPrice &&
+      data[0].current_price &&
+      firstPrice !== data[0].current_price
+    ) {
+      updateCoinList(true);
+      setCurrencyUpdated(false);
+    } else if (
+      isSuccess &&
+      !currencyUpdated &&
+      !coinList.find((coin: any) => coin.id === data[0].id)
+    ) {
+      const formattedData = formatAllCoins(data);
+      updateCoinList(false);
+      prevCurrency.current = currency;
+      if (initialRender) {
+        setInitialRender(false);
+        updateActiveCoins([formattedData[0]]);
+      }
     } else if (isError && "error" in error) {
-      setTimeout(() => {
-        refetch();
-      }, 10000);
-      setErrorMessage(`${error.error}. Refetching...`);
-    }
-    if (coinBData && activeCoins.length === 2 && !initialRender) {
-      const formattedData = formatCompareCoins(coinBData, days, intervalDaily);
-      const { pricesData, volumesData } = formattedData;
-      setPricesB(pricesData);
-      setVolumesB(volumesData);
-    } else if ((!coinBData || activeCoins.length === 1) && pricesB.length) {
-      setPricesB([]);
-      setVolumesB([]);
-    }
-    if (isErrorB) {
-      setTimeout(() => {
-        refetchB();
-      }, 5000);
+      if (error.status === "FETCH_ERROR") {
+        setTimeout(() => {
+          refetch();
+        }, 20000);
+        setErrorMessage(`${error.error}. Refetching...`);
+      } else {
+        setErrorMessage(error.error);
+      }
     }
   }, [
-    coinBData,
-    activeCoins,
-    shouldUpdateCharts,
-    pricesB.length,
-    isError,
-    data,
-    days,
-    error,
-    intervalDaily,
-    isSuccess,
+    currencyUpdated,
+    firstPrice,
     initialRender,
-    isErrorB,
-    isSuccessB,
+    updateCoinList,
+    currency,
+    page,
+    isError,
+    error,
+    isSuccess,
+    data,
+    coinList,
     refetch,
-    refetchB,
   ]);
+
+  const toggleUpdateCharts = (shouldUpdateCharts: boolean) => {
+    setShouldUpdateCharts(shouldUpdateCharts);
+  };
 
   const updateCharts = (element: any) => {
     const { days, intervalDaily } = element;
@@ -146,8 +162,8 @@ const Coins = (props: { currency: any }) => {
   return (
     <div>
       <div>
-        <div className="flex justify-between items-center pb-[4vh]">
-          <h2 className="text-[--dark-slate-blue] lg:2xl:text-3xl max-sm:text-sm dark:text-white mr-[16px] text-wrap">
+        <div className="w-full flex justify-between items-center pb-[4vh]">
+          <h2 className="text-[--dark-slate-blue] lg:2xl:text-3xl max-sm:text-xs dark:text-white mr-[16px] max-sm:mr-0 max-sm:w-[50%] text-wrap">
             Select the currency to view statistics
           </h2>
           <CompareButton
@@ -160,66 +176,36 @@ const Coins = (props: { currency: any }) => {
           activeCoins={activeCoins}
           currency={currency}
           compareData={compareData}
+          isLoading={isLoading}
+          isError={isError}
+          errorMessage={errorMessage}
+          isSuccess={isSuccess}
+          coinList={coinList}
+          mobileView={mobileView}
         />
-        <div className="w-full h-auto flex max-md:flex-col justify-between gap-[1vw] pt-[120px] lg:2xl:pt-[240px] max-sm:pt-[86px]">
-          <ChartContainer
-            className="h-auto flex justify-between"
-            dataLength={pricesA.length}
-            symbol={currency.symbol}
-            chartInfo={{
-              isPrice: true,
-            }}
-            isLoading={isLoading}
-            isSuccess={isSuccess}
-            errorMessage={errorMessage}
-            activeCoins={activeCoins}
-            compareData={compareData}
-          >
-            <AreaChartComponent
-              xAxis={true}
-              height={"h-[165px] lg:2xl:h-[330px] max-sm:h-[100px]"}
-              width={"w-full"}
-              data={pricesA}
-              color={"var(--soft-blue)"}
-              fill={"url(#area-blue)"}
-              dataB={pricesB}
-              activeCoins={activeCoins}
-              compareData={compareData}
-              shouldUpdateChart={shouldUpdateCharts}
-              toggleUpdateCharts={toggleUpdateCharts}
-            />
-          </ChartContainer>
-          <ChartContainer
-            className="h-auto flex justify-between"
-            dataLength={volumesA.length}
-            symbol={currency.symbol}
-            chartInfo={{
-              isPrice: false,
-            }}
-            isLoading={isLoading}
-            isSuccess={isSuccess}
-            errorMessage={errorMessage}
-            activeCoins={activeCoins}
-            compareData={compareData}
-          >
-            <BarChartComponent
-              xAxis={true}
-              height={"h-[165px] lg:2xl:h-[330px] max-sm:h-[100px]"}
-              width={"w-full"}
-              data={volumesA}
-              color={"var(--light-purple"}
-              fill={"url(#area-purple)"}
-              dataB={volumesB}
-              activeCoins={activeCoins}
-              compareData={compareData}
-              shouldUpdateChart={shouldUpdateCharts}
-            />
-          </ChartContainer>
-        </div>
+        <Charts
+          currency={currency}
+          coinBId={coinBId}
+          compareData={compareData}
+          days={days}
+          intervalDaily={intervalDaily}
+          activeCoins={activeCoins}
+          shouldUpdateCharts={shouldUpdateCharts}
+          toggleUpdateCharts={toggleUpdateCharts}
+          currencyUpdated={currencyUpdated}
+        />
         <TimeRangeButtons updateChart={updateCharts} />
       </div>
-      <TableComponent currency={currency} />
+      <TableComponent
+        currency={currency}
+        coinList={coinList}
+        isError={isError}
+        errorMessage={errorMessage}
+        updateQuery={updateQuery}
+        mobileView={mobileView}
+      />
     </div>
   );
 };
+
 export default Coins;

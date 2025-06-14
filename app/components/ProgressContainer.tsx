@@ -1,4 +1,4 @@
-import { Progress } from"../../components/ui/progress";
+import { Progress } from "../../components/ui/progress";
 
 const ProgressContainer = (props: {
   numbers: object;
@@ -48,18 +48,19 @@ const ProgressContainer = (props: {
 
   return (
     <div>
-      <div className="w-full flex justify-between items-center h-[16px]">
+      <div className="w-full flex justify-between items-center h-[16px] lg:2xl:h-[32px]">
         <div
-          className={`flex justify-between items-center gap-[4px] text-[${classes.progressColor}]`}
+          className={`lg:2xl:text-3xl flex justify-between items-center gap-[4px] lg:2xl:gap-[8px] text-[${classes.progressColor}]`}
         >
           <span
-            className={`w-[6px] h-[6px] rounded-full ${classes.progressColorBG}`}
-          ></span>
-          {values[0] ? formatNumber(values[0]) : "--"}
+            className={`w-[6px] lg:2xl:w-[12px] h-[6px] lg:2xl:h-[12px] rounded-full ${classes.progressColorBG}`}
+          >
+          </span>
+            {values[0] ? formatNumber(values[0]) : "--"}
         </div>
-        <div className="flex content-between items-center gap-[4px]">
+        <div className="lg:2xl:text-3xl flex content-between items-center gap-[4px] lg:2xl:gap-[8px]">
           <span
-            className={`w-[6px] h-[6px] rounded-full ${classes.barColor}`}
+            className={`w-[6px] lg:2xl:w-[12px] h-[6px] lg:2xl:h-[12px] rounded-full ${classes.barColor}`}
           ></span>
           {values[1] ? formatNumber(values[1]) : "--"}
         </div>
