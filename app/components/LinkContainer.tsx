@@ -13,11 +13,11 @@ const LinkContainer = (props: { link: string; sliceIndex: number }) => {
   };
 
   return (
-    <Panel className="flex justify-center items-center px-[20px] max-sm:px-[2vw] lg:2xl:px-[40px] max-sm:py-[8px] gap-[16px] lg:2xl:gap-[32px] font-medium text-base h-[52px] lg:2xl:h-[104px] max-sm:h-auto">
+    <Panel className="flex justify-center items-center px-[20px] max-sm:px-[2vw] lg:2xl:px-[40px] py-[16px] lg:2xl:py-[32px] gap-[16px] lg:2xl:gap-[32px] font-medium text-base h-auto">
       <a
         href={link}
         target="_blank"
-        className="flex items-center justify-center bg-[--perano] dark:bg-transparent aspect-square w-[24px] lg:2xl:w-[48px] p-[2px] lg:2xl:p-[4px] rounded-[4px] lg:2xl:rounded-[8px]"
+        className="flex items-center justify-center bg-[--perano] dark:bg-transparent aspect-square h-[24px] lg:2xl:h-[48px] p-[2px] lg:2xl:p-[4px] rounded-[4px] lg:2xl:rounded-[8px]"
       >
         <Image
           src={LinkWhite}
@@ -30,7 +30,7 @@ const LinkContainer = (props: { link: string; sliceIndex: number }) => {
       </p>
       <button
         onClick={copyText}
-        className="flex items-center justify-center bg-[--perano] dark:bg-transparent aspect-square w-[24px] lg:2xl:w-[48px] p-[4px] lg:2xl:p-[8px] rounded-[4px] lg:2xl:rounded-[8px]"
+        className="flex items-center justify-center bg-[--perano] dark:bg-transparent aspect-square h-[24px] lg:2xl:h-[48px] p-[4px] lg:2xl:p-[8px] rounded-[4px] lg:2xl:rounded-[8px]"
       >
         <Image
           src={CopyWhite}

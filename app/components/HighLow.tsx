@@ -10,7 +10,7 @@ const HighLow = (props: { price: string; time: string; high: boolean }) => {
       <Image
         width="0"
         height="0"
-        className="w-[7px] lg:2xl:w-[14px] h-auto mt-[20px] lg:2xl:my-auto"
+        className="w-[9px] max-sm:w-[6px] lg:2xl:w-[18px] h-auto mt-[20px] lg:2xl:my-auto"
         src={high ? ArrowUpGreen.src : ArrowDownRed.src}
         alt=""
       />

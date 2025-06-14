@@ -213,7 +213,7 @@ export default function CoinPage(props: { params: Params }) {
   ]);
 
   return (
-    <div className="max-sm:pb-[100px]">
+    <div className="pb-[4vh] max-sm:pb-[100px]">
       <div className="mt-[6vh] max-sm:mt-[1vh] mb-[4vh]">
         <Link
           href="/portfolio"
@@ -229,7 +229,7 @@ export default function CoinPage(props: { params: Params }) {
       )}
       {isSuccess && (
         <div className="flex flex-col gap-[8vh] w-full max-md:gap-[4vh] justify-between">
-          <div className="w-full flex flex-col md:xl:flex-row justify-between gap-[4vw] md:max-xl:gap-[4vh]">
+          <div className="w-full flex flex-col justify-between gap-[4vw] md:max-xl:gap-[4vh]">
             <div className="flex justify-between max-sm:flex-col gap-[4vw]">
               <div className="flex justify-between flex-col gap-[16px] lg:2xl:gap-[32px] w-[44%] max-sm:w-full">
                 <Panel className="flex justify-center max-sm:justify-start items-center flex-col max-sm:flex-row grow gap-[24px] max-sm:gap-[2vw] lg:2xl:gap-[48px] max-sm:py-[2vh] max-sm:px-[2vw]">
@@ -303,13 +303,13 @@ export default function CoinPage(props: { params: Params }) {
                 </ul>
               </Panel>
             </div>
-            <Panel className="grow flex items-center justify-center p-[24px] max-sm:px-[2vw] md:max-xl:aspect-auto">
-              <ul className="flex flex-col gap-[12px] lg:2xl:gap-[24px]">
+            <Panel className="grow flex items-center justify-center px-[2vw] py-[4vh] max-sm:px-[2vw] md:max-xl:aspect-auto">
+              <ul className="w-full flex flex-col xl:flex-row xl:justify-between xl:flex-wrap gap-[12px] xl:gap-[4vh]">
                 {coinData.listData.map((element, index) => (
                   <li
                     key={index}
-                    className={`flex justify-between gap-[24px] lg:2xl:gap-[48px] text-base max-sm:text-sm lg:2xl:text-3xl ${
-                      index === 4 && "mt-[32px] lg:2xl:mt-[64px]"
+                    className={`xl:h-[24px] xl:w-[48%] flex xl:flex-wrap justify-between gap-[24px] lg:2xl:gap-[48px] text-base max-sm:text-sm lg:2xl:text-3xl ${
+                      index === 4 && "mt-[32px] xl:mt-0"
                     }`}
                   >
                     <span className="flex flex-1 gap-[24px] max-sm:gap-[2vw]">
