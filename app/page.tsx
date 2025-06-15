@@ -1,31 +1,16 @@
 "use client";
 import StoreProvider from "./StoreProvider";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Coins from "./components/Coins";
 import Converter from "./components/Converter";
+import GradientBorderButton from "./components/GradientBorderButton";
 import { useAppSelector } from "@/lib/hooks";
 
 export default function Home() {
   const [coinsVisible, setCoinsVisible] = useState(true);
   const currency = useAppSelector((state) => state.currency);
-  const [initialRender, setInitialRender] = useState(true);
-  const [mobileView, setMobileView] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 640 && !mobileView) {
-        setMobileView(true);
-      } else if (window.innerWidth >= 640 && mobileView) {
-        setMobileView(false);
-      }
-    };
-    window.addEventListener("resize", handleResize);
-
-    if (initialRender) {
-      handleResize();
-      setInitialRender(false);
-    }
-  }, [initialRender, mobileView]);
+  const view = useAppSelector((state) => state.view);
+  const mobileView = view[0].mobileView;
 
   const toggleDisplay = () => {
     setCoinsVisible((current) => !current);
@@ -34,39 +19,35 @@ export default function Home() {
   return (
     <StoreProvider>
       {!mobileView && (
-        <div className="w-fit p-[4px] rounded-[6px] flex gap-[4px] bg-[#191925]">
-          <button
-            onClick={toggleDisplay}
-            className={`${
-              coinsVisible
-                ? "p-[1px] bg-gradient-to-b from-[--soft-blue] to-[--american-blue] shadow-[4px_4px_15px_2px_#7878fa26]"
-                : "bg-[--dark-gunmetal]"
-            } w-[244px] h-[45px] rounded-[6px] flex`}
+        <div className="w-fit p-[4px] lg:2xl:p-[8px] rounded-[9px] lg:2xl:rounded-[18px] flex gap-[4px] lg:2xl:gap-[8px] bg-white dark:bg-[--mirage]">
+          <GradientBorderButton
+            handleClick={toggleDisplay}
+            argumentList={[]}
+            background="bg-transparent"
+            buttonClasses="w-[244px] lg:2xl:w-[488px] h-[45px] lg:2xl:h-[90px]"
+            spanClasses={`${
+              coinsVisible ? "text-white" : "text-[--dark-slate-blue]"
+            } dark:text-white lg:2xl:text-3xl`}
+            text="Coins"
+            active={coinsVisible}
           >
-            <span
-              className={`${
-                coinsVisible ? "bg-[--american-blue]" : "bg-none"
-              } w-full h-full rounded-[5px] flex justify-center items-center`}
-            >
-              Coins
-            </span>
-          </button>
-          <button
-            onClick={toggleDisplay}
-            className={`${
-              coinsVisible
-                ? "bg-[--dark-gunmetal]"
-                : "p-[1px] bg-gradient-to-b from-[--soft-blue] to-[--american-blue] shadow-[4px_4px_15px_2px_#7878fa26]"
-            } w-[244px] h-[45px] rounded-[6px] flex`}
+            {null}
+          </GradientBorderButton>
+          <GradientBorderButton
+            handleClick={toggleDisplay}
+            argumentList={[]}
+            background="bg-transparent"
+            buttonClasses="w-[244px] lg:2xl:w-[488px] h-[45px] lg:2xl:h-[90px]"
+            spanClasses={`${
+              !coinsVisible
+                ? "text-white"
+                : "text-[--dark-slate-blue]"
+            } dark:text-white lg:2xl:text-3xl`}
+            text="Converter"
+            active={!coinsVisible}
           >
-            <span
-              className={`${
-                coinsVisible ? "bg-none" : "bg-[--american-blue]"
-              } w-full h-full rounded-[5px] flex justify-center items-center`}
-            >
-              Converter
-            </span>
-          </button>
+            {null}
+          </GradientBorderButton>
         </div>
       )}
       <div className="pt-[4vh] overflow-x-hidden">
