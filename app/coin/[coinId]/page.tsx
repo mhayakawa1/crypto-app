@@ -1,5 +1,5 @@
 "use client";
-import { use, useState, useEffect, useCallback } from "react";
+import { use, useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCoinQuery } from "@/lib/features/api/apiSlice";
@@ -22,12 +22,15 @@ export default function CoinPage(props: { params: Params }) {
   const { coinId } = use(props.params);
   const coinName = coinId[0].toUpperCase() + coinId.slice(1);
   const portfolio = useAppSelector((state) => state.portfolio);
+  const { currency, symbol } = useAppSelector((state) => state.currency);
+  const prevCurrency = useRef<any>(null);
   const view = useAppSelector((state) => state.view);
   const mobileView = view[0].mobileView;
   const dispatch = useAppDispatch();
   const darkActive = useAppSelector((state) => state.theme)[0].darkActive;
   const [textHidden, setTextHidden] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [initialRender, setInitialRender] = useState(true);
   const [coinData, setCoinData] = useState({
     src: "",
     name: "",
@@ -45,24 +48,24 @@ export default function CoinPage(props: { params: Params }) {
     listData: [
       {
         name: "Market Cap",
-        key: "market_cap.usd",
+        key: "market_cap",
         value: "",
         mobileValue: "",
-        currency: { symbol: "$", start: true },
+        currency: { symbol: symbol, start: true },
       },
       {
         name: "Fully Diluted Valuation",
-        key: "fully_diluted_valuation.usd",
+        key: "fully_diluted_valuation",
         value: "",
         mobileValue: "",
-        currency: { symbol: "$", start: true },
+        currency: { symbol: symbol, start: true },
       },
       {
         name: "Volume 24h",
-        key: "total_volume.usd",
+        key: "total_volume",
         value: "",
         mobileValue: "",
-        currency: { symbol: "$", start: true },
+        currency: { symbol: symbol, start: true },
       },
       {
         name: "Volume/Market",
@@ -73,7 +76,7 @@ export default function CoinPage(props: { params: Params }) {
       },
       {
         name: "Total Volume",
-        key: "total_volume.btc",
+        key: "total_volume",
         value: "",
         mobileValue: "",
         currency: { symbol: "symbol", start: false },
@@ -105,10 +108,18 @@ export default function CoinPage(props: { params: Params }) {
     isSuccess,
     isError,
     error,
+    refetch,
   } = useCoinQuery({ coinId: coinId, date: "" });
 
   const getCoinData = useCallback(() => {
-    const { image, symbol, name, description, links, market_data } = data;
+    const {
+      image,
+      symbol: coinSymbol,
+      name,
+      description,
+      links,
+      market_data,
+    } = data;
     const {
       current_price,
       price_change_percentage_24h,
@@ -118,12 +129,12 @@ export default function CoinPage(props: { params: Params }) {
       low_24h,
     } = market_data;
     let newListData = coinData.listData;
-
+    const space = symbol.length > 1 ? " " : "";
     const getValue = (string: string) => {
       let value = market_data;
       const keys = string.split(".");
       keys.forEach((k) => {
-        value = value[k];
+        value = typeof value[k] === "object" ? value[k][currency] : value[k];
       });
       return value;
     };
@@ -133,7 +144,7 @@ export default function CoinPage(props: { params: Params }) {
         element.value = getValue(element.key);
       }
       if (element.currency.symbol === "symbol") {
-        element.currency.symbol = symbol;
+        element.currency.symbol = coinSymbol;
       }
       return element;
     });
@@ -144,15 +155,12 @@ export default function CoinPage(props: { params: Params }) {
 
     newListData = newListData.map((element) => {
       const { value, currency } = element;
-      element.mobileValue = formatNumber(
-        Number(value),
-        currency.symbol.toUpperCase()
-      );
+      element.mobileValue = formatNumber(Number(value), symbol.toUpperCase());
       if (Number(element.value) > 1) {
         element.value = `${
-          currency.start ? currency.symbol : ""
+          currency.start ? symbol+space : ""
         }${value.toLocaleString()} ${
-          !currency.start ? currency.symbol.toUpperCase() : ""
+          !currency.start ? coinSymbol.toUpperCase() : ""
         }`;
       }
       return element;
@@ -166,22 +174,22 @@ export default function CoinPage(props: { params: Params }) {
       const loss = profitNumber < 0;
       profit = profitNumber.toLocaleString();
       if (loss) {
-        profit = profit.slice(0, 1) + "$" + profit.slice(1);
+        profit = profit.slice(0, 1) + symbol + profit.slice(1);
       } else {
-        profit = "$" + profit;
+        profit = symbol + profit;
       }
     }
 
     const newCoinData = {
       src: `${image.small}`,
       name: `${name}`,
-      price: `$${current_price.usd.toLocaleString()}`,
+      price: `${symbol}${space}${current_price[currency].toLocaleString()}`,
       priceChange: `${price_change_percentage_24h.toFixed(2)}`,
       profit: profit,
-      high: `$${high_24h.usd.toLocaleString()}`,
-      low: `$${low_24h.usd.toLocaleString()}`,
-      highDate: new Date(ath_date.usd).toString().slice(0, 28),
-      lowDate: new Date(atl_date.usd).toString().slice(0, 28),
+      high: `${symbol}${space}${high_24h[currency].toLocaleString()}`,
+      low: `${symbol}${space}${low_24h[currency].toLocaleString()}`,
+      highDate: new Date(ath_date[currency]).toString().slice(0, 28),
+      lowDate: new Date(atl_date[currency]).toString().slice(0, 28),
       rising: price_change_percentage_24h > 0,
       homeLink: `${links.homepage[0]}`,
       description: description.en,
@@ -189,17 +197,29 @@ export default function CoinPage(props: { params: Params }) {
       listData: [...newListData],
     };
     setCoinData(newCoinData);
-  }, [coinData.listData, data, portfolio]);
+  }, [coinData.listData, data, portfolio, currency, symbol]);
 
   useEffect(() => {
-    if (isSuccess && !coinData.name) {
+    if (
+      (isSuccess && !coinData.name) ||
+      (!initialRender && currency !== prevCurrency.current)
+    ) {
       getCoinData();
     } else if (isError && "error" in error) {
       setErrorMessage(error.error);
+      setTimeout(() => {
+        refetch();
+      }, 10000);
     }
     const storageItem = localStorage.getItem("portfolio");
     if (storageItem && !portfolio.length) {
       dispatch(addLocalStorage(JSON.parse(storageItem)));
+    }
+    if (initialRender && prevCurrency.current) {
+      setInitialRender(false);
+    }
+    if (currency) {
+      prevCurrency.current = currency;
     }
   }, [
     data,
@@ -210,6 +230,9 @@ export default function CoinPage(props: { params: Params }) {
     getCoinData,
     portfolio.length,
     dispatch,
+    currency,
+    initialRender,
+    refetch,
   ]);
 
   return (
@@ -239,7 +262,7 @@ export default function CoinPage(props: { params: Params }) {
                       <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                   </div>
-                  <h2 className="lg:2xl:text-4xl">{coinName}</h2>
+                  <h2 className="text-2xl max-sm:text-lg lg:2xl:text-5xl">{coinName}</h2>
                 </Panel>
                 <LinkContainer
                   link={coinData.homeLink}
@@ -248,7 +271,7 @@ export default function CoinPage(props: { params: Params }) {
               </div>
               <Panel className="flex justify-center items-center grow p-[40px] lg:2xl:p-[80px] max-sm:px-[2vw]">
                 <ul className="self-center flex flex-col justify-center gap-[20px] lg:2xl:gap-[40px] h-fit">
-                  <li className="flex items-end gap-[16px] lg:2xl:gap-[32px] h-[25px] lg:2xl:h-[50px]">
+                  <li className="flex items-center gap-[16px] lg:2xl:gap-[32px] h-[25px] lg:2xl:h-[50px]">
                     <span className="text-4xl max-sm:text-3xl lg:2xl:text-7xl font-bold">
                       {coinData.price}
                     </span>
@@ -275,7 +298,11 @@ export default function CoinPage(props: { params: Params }) {
                     Profit:
                     <span
                       className={`${
-                        coinData.rising ? "text-[--rising]" : "text-[--falling]"
+                        coinData.profit === "--"
+                          ? "text-[---dark-slate-blue]"
+                          : coinData.rising
+                          ? "text-[--rising]"
+                          : "text-[--falling]"
                       } text-2xl max-sm:text-xl lg:2xl:text-5xl ml-[16px] lg:2xl:ml-[32px]`}
                     >
                       {coinData.profit}
