@@ -3,27 +3,18 @@ import React, { useState, useEffect } from "react";
 import AddAssetModal from "../components/AddAssetModal";
 import DeleteAssetModal from "../components/DeleteAssetModal";
 import PortfolioAsset from "../components/PortfolioAsset";
+import GradientBorderButton from "../components/GradientBorderButton";
 import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
-import { addLocalStorage } from "@/lib/features/portfolio/portfolioSlice";
+import {
+  addLocalStorage,
+  deleteAsset,
+} from "@/lib/features/portfolio/portfolioSlice";
 import { formatPortfolioCoin } from "@/lib/format/formatPortfolioCoin";
+import { formatErrorMessage } from "@/lib/format/formatErrorMessage";
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
-const AddAssetButton = (props: { toggleAddModal: any; assetData: any }) => {
-  const { toggleAddModal, assetData } = props;
-  return (
-    <button
-      onClick={() => toggleAddModal(assetData, -1)}
-      className="w-[244px] h-[45px] p-[1px] rounded-[6px] flex items-center justify-center bg-gradient-to-b from-[--soft-blue] to-[--perano] dark:to-[--american-blue] shadow-[4px_4px_15px_2px_#7878fa26]"
-    >
-      <span className="bg-[--perano] dark:bg-[--american-blue] rounded-[6px] w-full h-full flex items-center justify-center">
-        Add Asset
-      </span>
-    </button>
-  );
-};
-
 export default function Portfolio() {
-  const { currency } = useAppSelector((state) => state.currency);
+  const currency = useAppSelector((state) => state.currency);
   const [addAssetVisible, setAddAssetVisible] = useState(false);
   const [deleteAssetVisible, setDeleteAssetVisible] = useState(false);
   const [assetData, setAssetData] = useState(null);
@@ -37,7 +28,8 @@ export default function Portfolio() {
     isSuccess,
     isError,
     error,
-  } = useAllCoinsQuery({ currency: currency, page: 1 });
+    refetch,
+  } = useAllCoinsQuery({ currency: currency.currency, page: 1 });
 
   const toggleAddModal = (assetData: any, index: number) => {
     setAssetData(assetData);
@@ -45,10 +37,13 @@ export default function Portfolio() {
     setAddAssetVisible((current) => !current);
   };
 
-  const toggleDeleteModal = (data: any, index: number) => {
+  const toggleDeleteModal = (data: any, index: number, id: any) => {
     setAssetData(data);
     setIndex(index);
     setDeleteAssetVisible((current) => !current);
+    if (id) {
+      dispatch(deleteAsset(id));
+    }
   };
 
   useEffect(() => {
@@ -56,15 +51,26 @@ export default function Portfolio() {
     if (storageItem) {
       dispatch(addLocalStorage(JSON.parse(storageItem)));
     }
-  }, [dispatch]);
+    if (currency) {
+      refetch();
+    }
+  }, [dispatch, currency, refetch]);
 
   return (
-    <div className="flex flex-col gap-[2vh] py-[4vh]">
+    <div className="relative flex flex-col gap-[2vh] py-[4vh] max-md:py-[0vh] max-sm:pb-[100px] max-md:w-full">
       <div className="flex justify-between items-center">
-        <h2 className="text-[--dark-slate-blue] dark:text-white">
+        <h2 className="lg:2xl:text-5xl text-[--dark-slate-blue] dark:text-white">
           Your statistics
         </h2>
-        <AddAssetButton toggleAddModal={toggleAddModal} assetData={assetData} />
+        <GradientBorderButton
+          handleClick={toggleAddModal}
+          argumentList={[assetData, -1]}
+          background=""
+          buttonClasses="w-[244px] max-sm:w-[140px] lg:2xl:w-[488px] h-[44px] max-sm:h-[32px] lg:2xl:h-[88px]"
+          spanClasses="lg:2xl:text-3xl max-sm:text-sm"
+          text={"Add Asset"}
+          active={true}
+        >{null}</GradientBorderButton>
       </div>
       {isLoading && (
         <span className="text-center mt-[16vh] text-[--dark-slate-blue] dark:text-white">
@@ -86,7 +92,8 @@ export default function Portfolio() {
                   assetData={assetData}
                   apiData={apiData}
                   index={index}
-                ></PortfolioAsset>
+                  currency={currency}
+                />
               );
             })
           ) : (
@@ -98,7 +105,7 @@ export default function Portfolio() {
       )}
       {isError && (
         <span className="text-center mt-[16vh] text-[--dark-slate-blue] dark:text-white">
-          Error: {error.toString()}
+          {formatErrorMessage(error)}
         </span>
       )}
       {addAssetVisible && (
