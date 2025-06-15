@@ -9,8 +9,8 @@ const AssetListItem = (props: { listItem: any }) => {
     listItem: { name, value, arrow, colors },
   } = props;
   return (
-    <li className="max-md:border max-md:border-[--lavender] max-md:dark:border-[--american-blue] max-md:w-[48%] h-[84px] max-md:h-[78px] lg:2xl:h-[168px] rounded-[6px] lg:2xl:rounded-[12px] flex flex-col justify-center items-center md:px-[.5vw] max-md:py-[8px]">
-      <ul className="h-full flex flex-col justify-between max-md:px-[8px] lg:2xl:px-[16px] text-base max-md:text-sm lg:2xl:text-3xl">
+    <li className="max-md:border max-md:border-[--lavender] max-md:dark:border-[--american-blue] max-md:w-[48%] h-[86px] lg:2xl:h-[168px] rounded-[6px] lg:2xl:rounded-[12px] flex flex-col justify-center items-center md:px-[.5vw] max-md:py-[4px]">
+      <ul className="h-full flex flex-col justify-between max-md:justify-around max-md:px-[8px] lg:2xl:px-[16px] text-base max-md:text-sm lg:2xl:text-3xl">
         <li className="text-center">{name}</li>
         <li className={`flex justify-center text-[${colors.color}]`}>
           {arrow && (

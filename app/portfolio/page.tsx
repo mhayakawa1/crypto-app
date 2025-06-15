@@ -57,7 +57,7 @@ export default function Portfolio() {
   }, [dispatch, currency, refetch]);
 
   return (
-    <div className="relative flex flex-col gap-[2vh] py-[4vh] max-md:py-[0vh] max-md:w-full">
+    <div className="relative flex flex-col gap-[2vh] py-[4vh] max-md:py-[0vh] max-sm:pb-[100px] max-md:w-full">
       <div className="flex justify-between items-center">
         <h2 className="lg:2xl:text-5xl text-[--dark-slate-blue] dark:text-white">
           Your statistics
