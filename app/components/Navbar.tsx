@@ -161,7 +161,7 @@ const Navbar = () => {
           <Image
             src={darkActive ? SearchWhite : SearchBlue}
             alt=""
-            className="absolute lg:2xl:w-[40px] lg:2xl:h-[40px] top-1/2 left-[12px] max-sm:left-1/2 lg:2xl:left-[24px] max-sm:transform max-sm:-translate-x-1/2 -translate-y-1/2"
+            className={`absolute lg:2xl:w-[40px] lg:2xl:h-[40px] top-1/2 left-[12px] max-sm:left-[8px] lg:2xl:left-[24px] -translate-y-1/2`}
           />
           <Input
             onChange={(event) => searchCoins(event.target.value.toLowerCase())}
@@ -171,13 +171,13 @@ const Navbar = () => {
               resultsVisible
                 ? "rounded-bl-none rounded-br-none"
                 : "rounded-bl-[6px] lg:2xl:rounded-bl-[12px] rounded-br-[6px] lg:2xl:rounded-br-[12px]"
-            } h-[48px] max-md:h-[36px] lg:2xl:h-[96px] w-[200px] max-md:w-[100px] max-sm:w-[36px] lg:2xl:w-[400px] pl-[44px] max-md:pl-[32px] max-sm:pl-0 lg:2xl:pl-[88px] flex justify-center items-center bg-transparent text-sm max-md:text-xs lg:2xl:text-3xl outline-none text-[--dark-slate-blue] border-none dark:text-white dark:border dark:border-[--dark-gunmetal]`}
+            } w-[200px] max-md:w-[40vw] lg:2xl:w-[400px] h-[48px] max-md:h-[36px] lg:2xl:h-[96px] pl-[44px] max-md:pl-[32px] lg:2xl:pl-[88px] flex justify-center items-center bg-transparent text-sm max-md:text-xs lg:2xl:text-3xl outline-none text-[--dark-slate-blue] dark:text-white border-none dark:border dark:border-[--dark-gunmetal]`}
           />
           {resultsVisible &&
             ((isLoading && <ResultsEmpty message="Loading..." />) ||
               (isError && <ResultsEmpty message={error.toString()} />) ||
               (resultsVisible && isSuccess ? (
-                <ul className="absolute z-10 pb-[8px] lg:2xl:pb-[16px] rounded-bl-[6px] lg:2xl:rounded-bl-[12px] rounded-br-[6px] lg:2xl:rounded-br-[12px] w-full text-[--dark-slate-blue] dark:text-white bg-[--lavender] dark:border dark:border-[--dark-gunmetal] dark:border-t-0 dark:bg-[--mirage]">
+                <ul className="absolute max-h-[80vh] overflow-y-scroll z-10 pb-[8px] lg:2xl:pb-[16px] rounded-bl-[6px] lg:2xl:rounded-bl-[12px] rounded-br-[6px] lg:2xl:rounded-br-[12px] w-full max-md:text-xs text-[--dark-slate-blue] dark:text-white bg-[--lavender] dark:border dark:border-[--dark-gunmetal] dark:border-t-0 dark:bg-[--mirage]">
                   {data
                     .map((element: any) => {
                       return { id: element.id, name: element.name };
@@ -188,7 +188,7 @@ const Navbar = () => {
                     .map((result: any) => (
                       <li
                         key={result.id}
-                        className="px-[8px] lg:2xl:px-[16px] py-[6px] lg:2xl:py-[12px] hover:bg-white"
+                        className="px-[8px] lg:2xl:px-[16px] py-[6px] lg:2xl:py-[12px] hover:bg-white dark:hover:bg-[--dark-gunmetal]"
                       >
                         <Link
                           className="flex items-center gap-[16px] lg:2xl:gap-[32px] lg:2xl:text-3xl"
@@ -204,7 +204,7 @@ const Navbar = () => {
         </div>
         {!changeCurrency && (
           <Select defaultValue={currency} onValueChange={handleChange}>
-            <SelectTrigger className="w-[108px] max-md:w-[84px] lg:2xl:w-[216px] h-[48px] max-md:h-[36px] lg:2xl:h-[96px] lg:2xl:rounded-[12px] px-[16px] max-md:px-[8px] lg:2xl:px-[32px] bg-[--lavender] text-[--dark-slate-blue] border-none dark:text-white dark:border dark:border-[--dark-gunmetal] dark:bg-[--mirage]">
+            <SelectTrigger className=" w-[108px] max-md:w-[84px] lg:2xl:w-[216px] h-[48px] max-md:h-[36px] lg:2xl:h-[96px] lg:2xl:rounded-[12px] px-[16px] max-md:px-[8px] max-sm:pl-2 max-sm:pr-1 lg:2xl:px-[32px] bg-[--lavender] text-[--dark-slate-blue] dark:text-white border-none dark:border dark:border-[--dark-gunmetal] dark:bg-[--mirage]">
               <SelectValue className="flex justify-center items-center" />
             </SelectTrigger>
             <SelectContent className="w-[108px] max-md:w-[84px] lg:2xl:w-[216px] lg:2xl:rounded-[12px] bg-[--lavender] border-none dark:border dark:border-[--dark-gunmetal] dark:bg-[--mirage]">
