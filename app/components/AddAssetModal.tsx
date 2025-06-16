@@ -160,7 +160,7 @@ const AddAssetModal = (props: {
                       </SelectItem>
                     );
                   })}
-                {isError && <SelectItem value="">{}</SelectItem>}
+                {isError && null}
               </SelectContent>
             </Select>
             <input
