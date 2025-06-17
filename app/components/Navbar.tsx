@@ -118,7 +118,7 @@ const Navbar = () => {
   }, [changeCurrency, dispatch, handleChange, initialRender, mobileView]);
 
   return (
-    <nav className="flex justify-between items-center px-[4vw] max-lg:px-[2vw]">
+    <nav className="flex justify-between max-sm:justify-around items-center px-[4vw] max-lg:px-[2vw]">
       <div className="flex justify-between items-center gap-[1vw]">
         <Image
           src={LogoIcon.src}
@@ -204,7 +204,7 @@ const Navbar = () => {
         </div>
         {!changeCurrency && (
           <Select defaultValue={currency} onValueChange={handleChange}>
-            <SelectTrigger className=" w-[108px] max-md:w-[84px] lg:2xl:w-[216px] h-[48px] max-md:h-[36px] lg:2xl:h-[96px] lg:2xl:rounded-[12px] px-[16px] max-md:px-[8px] max-sm:pl-2 max-sm:pr-1 lg:2xl:px-[32px] bg-[--lavender] text-[--dark-slate-blue] dark:text-white border-none dark:border dark:border-[--dark-gunmetal] dark:bg-[--mirage]">
+            <SelectTrigger className="w-[108px] max-md:w-[84px] lg:2xl:w-[216px] h-[48px] max-md:h-[36px] lg:2xl:h-[96px] lg:2xl:rounded-[12px] px-[16px] max-md:px-[8px] max-sm:pl-2 max-sm:pr-1 lg:2xl:px-[32px] bg-[--lavender] text-[--dark-slate-blue] dark:text-white border-none dark:border dark:border-[--dark-gunmetal] dark:bg-[--mirage]">
               <SelectValue className="flex justify-center items-center" />
             </SelectTrigger>
             <SelectContent className="w-[108px] max-md:w-[84px] lg:2xl:w-[216px] lg:2xl:rounded-[12px] bg-[--lavender] border-none dark:border dark:border-[--dark-gunmetal] dark:bg-[--mirage]">
@@ -213,7 +213,7 @@ const Navbar = () => {
                   <SelectItem
                     key={item.name}
                     value={item.name}
-                    className="hover:bg-white dark:hover:bg-[--dark-gunmetal] max-sm:px-1 max-sm:py-1"
+                    className="hover:bg-white dark:hover:bg-[--dark-gunmetal] lg:2xl:px-[32px] max-sm:px-1 max-sm:py-1"
                   >
                     <span className="max-sm:w-full max-sm:m-0 flex justify-center max-sm:justify-between items-center gap-[8px] max-md:gap-[4px] lg:2xl:gap-[16px] max">
                       <span className="flex justify-center items-center w-[20px] lg:2xl:w-[40px] h-[20px] lg:2xl:h-[40px] border bg-[--dark-slate-blue] dark:bg-transparent dark:border-white rounded-full">
