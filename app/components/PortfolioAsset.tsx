@@ -1,10 +1,8 @@
 "use client";
-import Image from "next/image";
-import { Progress } from "../../components/ui/progress";
+import AssetList from "./AssetList";
+import AssetButton from "./AssetButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Edit from "../../src/icons/Edit_White.svg";
-import ArrowUpGreen from "../../src/icons/Arrow_Up_Green.svg";
-import ArrowDownRed from "../../src/icons/Arrow_Down_Red.svg";
 import XWhite from "../../src/icons/X_White.svg";
 
 const PortfolioAsset = (props: {
@@ -13,23 +11,12 @@ const PortfolioAsset = (props: {
   assetData: any;
   apiData: any;
   index: number;
+  currency: any;
 }) => {
-  const { toggleAddModal, toggleDeleteModal, assetData, apiData, index } = props;
-  const {
-    initialPrice,
-    coinAmount,
-    name,
-    src,
-    symbol,
-    date,
-  } = assetData;
-  const {
-      circulating,
-      marketCap,
-      price,
-      priceChange,
-      totalVolume,    
-  } = apiData;
+  const { toggleAddModal, toggleDeleteModal, assetData, apiData, index, currency } = props;
+  const currencySymbol = `${currency.symbol}${currency.symbol.length > 1 ? " " : ""}`;
+  const { initialPrice, coinAmount, name, src, symbol, date } = assetData;
+  const { circulating, marketCap, price, priceChange, totalVolume } = apiData;
   const valueColors = [
     { bg: "--bg-falling", color: "--falling" },
     { bg: "--bg-rising", color: "--rising" },
@@ -43,7 +30,7 @@ const PortfolioAsset = (props: {
   const marketPriceData = [
     {
       name: "Current Price",
-      value: `$${price.toLocaleString()}`,
+      value: `${currencySymbol}${price.toLocaleString()}`,
       arrow: false,
       colors: defaultColors,
     },
@@ -61,7 +48,7 @@ const PortfolioAsset = (props: {
     },
     {
       name: "Circulating Supply",
-      value: `$${circulating.toLocaleString()}`,
+      value: `${currencySymbol}${Math.round(circulating).toLocaleString()}`,
       arrow: false,
       colors: defaultColors,
     },
@@ -71,7 +58,7 @@ const PortfolioAsset = (props: {
     { name: "Amount", value: coinAmount, arrow: false, colors: defaultColors },
     {
       name: "Amount Value",
-      value: `$${(Number(coinAmount) * price).toLocaleString()}`,
+      value: `${currencySymbol}${(Number(coinAmount) * price).toLocaleString()}`,
       arrow: true,
       colors: sincePurchaseColors,
     },
@@ -84,91 +71,43 @@ const PortfolioAsset = (props: {
     { name: "Purchase Date", value: date, arrow: false, colors: defaultColors },
   ];
 
-  const ListItem = (listItem: any) => {
-    const { name, value, arrow, colors } = listItem.listItem;
-    return (
-      <li className="flex flex-col justify-center items-center">
-        <ul className="flex flex-col justify-between text-center list-none gap-[16px]">
-          <li className="flex justify-center">{name}</li>
-          <li
-            className={`flex justify-center text-[${colors.color}] text-base/[16px]`}
-          >
-            {arrow && (
-              <span className="flex items-center justify-center w-[16px]">
-                <Image
-                  src={
-                    colors.color === "--rising" ? ArrowUpGreen : ArrowDownRed
-                  }
-                  alt=""
-                />
-              </span>
-            )}
-            {name === "Volume vs. Market Cap" ? (
-              <Progress
-                className={`bg-[${colors.bg}]`}
-                value={value}
-                color={`bg-[${colors.color}]`}
-              ></Progress>
-            ) : (
-              <span>{value}</span>
-            )}
-          </li>
-        </ul>
-      </li>
-    );
-  };
-
-  const List = (props: { data: any; heading: string; children: any }) => {
-    const { data, heading, children } = props;
-    return (
-      <div className="grow">
-        <div className="flex justify-between">
-          <h4>{heading}</h4>
-          {children}
-        </div>
-        <ul className="flex justify-between items-start list-none pt-[14px]">
-          {data.map((listItem: any) => (
-            <ListItem key={listItem.name} listItem={listItem} />
-          ))}
-        </ul>
-      </div>
-    );
-  };
-
   return (
-    <div className="flex border dark:border-[#191932] rounded-[6px] bg-white">
-      <div className="grow flex flex-col justify-center items-center gap-[24px]  text-[--dark-slate-blue] dark:text-white dark:bg-[#1e1932] p-[24px]">
-        <div className="w-[64px] h-[64px] rounded-[8px] flex justify-center items-center bg-[--lavender] dark:bg-[--space-cadet]">
-          <Avatar>
+    <div className="bg-white dark:bg-[--haiti] flex max-md:flex-col max-md:gap-[16px] lg:2xl:gap-[32px] border dark:border-[--mirage] rounded-[6px] max-md:p-[20px] lg:2xl:rounded-[12px]">
+      <div className="grow flex flex-col max-md:flex-row-reverse justify-center max-md:justify-between items-center gap-[24px] lg:2xl:gap-[48px] text-[--dark-slate-blue] dark:text-white md:border-r">
+        <div className="w-[64px] max-md:w-auto lg:2xl:w-[128px] aspect-square rounded-[8px] lg:2xl:rounded-[16px] flex justify-center items-center bg-[--lavender] dark:bg-[--space-cadet] max-md:bg-transparent max-md:dark:bg-transparent">
+          <Avatar className="w-[32px] lg:2xl:w-[64px] h-auto">
             <AvatarImage src={src} />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </div>
-        <h3 className="font-bold text-[28px] text-center">
+        <h3 className="font-bold text-3xl max-md:text-xl lg:2xl:text-6xl text-center">
           {name} ({symbol.toUpperCase()})
         </h3>
       </div>
-      <div className="flex flex-col gap-[24px] w-[80%] text-[--dark-slate-blue] dark:text-white dark:bg-[#191932] p-[32px]">
-        <List data={marketPriceData} heading="Market price">
-          <div className="flex gap-[8px]">
-            <button
-              className="flex justify-center bg-[--perano] dark:bg-[#3A3978] w-[40px] h-[40px] rounded-[4px]"
-              onClick={() => toggleAddModal(assetData, index)}
-            >
-              <Image src={Edit} alt="" />
-            </button>
-            <button
-              className="flex justify-center bg-[--perano] dark:bg-[#3A3978] w-[40px] h-[40px] rounded-[4px]"
-              onClick={() => toggleDeleteModal(assetData, index)}
-            >
-              <Image src={XWhite} alt="" />
-            </button>
+      <div className="flex flex-col gap-[24px] lg:2xl:gap-[48px] w-[90%] max-md:w-full text-[--dark-slate-blue] dark:text-white p-[32px] lg:2xl:p-[64px] max-md:p-0">
+        <AssetList
+          data={marketPriceData}
+          heading="Market price"
+        >
+          <div className="flex gap-[8px] lg:2xl:gap-[16px]">
+            <AssetButton
+              toggleAddModal={toggleAddModal}
+              assetData={assetData}
+              index={index}
+              src={Edit}
+            />
+            <AssetButton
+              toggleAddModal={toggleDeleteModal}
+              assetData={assetData}
+              index={index}
+              src={XWhite}
+            />
           </div>
-        </List>
+        </AssetList>
         <span className="w-full h-[1px] bg-[--dark-slate-blue] dark:bg-white"></span>
-        <List data={yourCoinData} heading="Your coin">
+        <AssetList data={yourCoinData} heading="Your coin">
           {null}
-        </List>
+        </AssetList>
       </div>
     </div>
   );
