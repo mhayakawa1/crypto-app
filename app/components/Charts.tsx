@@ -30,76 +30,52 @@ const Charts = (props: {
   } = props;
   const prevCurrency = useRef<any>(currency);
   const [initialRender, setInitialRender] = useState(true);
-  const [pricesA, setPricesA]: any[] = useState([]);
-  const [volumesA, setVolumesA]: any[] = useState([]);
-  const [pricesB, setPricesB]: any[] = useState([]);
-  const [volumesB, setVolumesB]: any[] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const {
-    data: data = [],
-    isLoading,
-    isSuccess: isSuccessA,
-    isError,
-    error,
-    refetch,
-  } = useCompareCoinsQuery({
-    coin: activeCoins[0].id,
-    vsCurrency: currency.currency,
-    days: days,
-    intervalDaily: intervalDaily,
-  });
+  function useQuery(coin: string) {
+    const [prices, setPrices] = useState([]);
+    const [volumes, setVolumes] = useState([]);
+    const { data, isLoading, isSuccess, isError, error, refetch } =
+      useCompareCoinsQuery({
+        coin,
+        vsCurrency: currency.currency,
+        days,
+        intervalDaily,
+      });
 
-  const {
-    data: dataB = [],
-    isError: isErrorB,
-    error: errorB,
-    refetch: refetchB,
-  } = useCompareCoinsQuery({
-    coin: coinBId.length > 1 ? coinBId : activeCoins[0].id,
-    vsCurrency: currency.currency,
-    days: days,
-    intervalDaily: intervalDaily,
-  });
-
-  const queryRefetch = useCallback(
-    (isError: boolean, error: any, isQueryA: boolean) => {
+    useEffect(() => {
+      if (isSuccess) {
+        const formattedData = formatCompareCoins(data, days, intervalDaily);
+        const { pricesData, volumesData } = formattedData;
+        setPrices(pricesData);
+        setVolumes(volumesData);
+      }
       if (isError && "error" in error) {
         setIsSuccess(false);
-        setTimeout(() => {
-          if (isQueryA) {
-            refetch();
-          } else {
-            refetchB();
-          }
-        }, 10000);
         setErrorMessage(`${error.error}. Refetching...`);
+        setTimeout(() => {
+          refetch();
+        }, 10000);
       }
-    },
-    [refetch, refetchB]
+    }, [isSuccess, data, isError, error, refetch]);
+    return [data, isLoading, isSuccess, prices, volumes, refetch];
+  }
+
+  const [dataA, isLoadingA, isSuccessA, pricesA, volumesA, refetchA] = useQuery(
+    activeCoins[0].id
+  );
+  const [dataB, isLoadingB, isSuccessB, pricesB, volumesB, refetchB] = useQuery(
+    coinBId.length > 1 ? coinBId : activeCoins[0].id
   );
 
-  const getFormattedData = useCallback(
-    (
-      queryData: any,
-      shouldToggleCharts: boolean,
-      isSuccess: boolean,
-      isCoinA: boolean
-    ) => {
+  const setChartSuccess = useCallback(
+    (shouldToggleCharts: boolean, isSuccess: boolean) => {
       toggleUpdateCharts(shouldToggleCharts);
       setIsSuccess(isSuccess);
-      const formattedData = formatCompareCoins(queryData, days, intervalDaily);
-      const { pricesData, volumesData } = formattedData;
-      if (isCoinA) {
-        setPricesA(pricesData);
-        setVolumesA(volumesData);
-      } else {
-        setPricesB(pricesData);
-        setVolumesB(volumesData);
-      }
     },
-    [days, intervalDaily, toggleUpdateCharts]
+    [toggleUpdateCharts]
   );
 
   useEffect(() => {
@@ -111,53 +87,49 @@ const Charts = (props: {
       shouldUpdateActiveCoins
     ) {
       const twoCoinsActive = activeCoins.length === 2;
-      getFormattedData(data, twoCoinsActive, !twoCoinsActive, true);
+      setChartSuccess(twoCoinsActive, !twoCoinsActive);
       prevCurrency.current = currency;
       if (initialRender) {
         setInitialRender(false);
       }
-      if (data) {
-        setTimeout(() => {
-          refetch();
-          if (activeCoins.length === 2 && dataB) {
-            refetchB();
-          }
-        }, 60000);
-      }
+      setTimeout(() => {
+        refetchA();
+        if (activeCoins.length === 2) {
+          refetchB();
+        }
+      }, 60000);
     }
     if (
-      dataB &&
+      isSuccessB &&
       activeCoins.length === 2 &&
       !initialRender &&
-      JSON.stringify(data) !== JSON.stringify(dataB)
+      JSON.stringify(dataA) !== JSON.stringify(dataB)
     ) {
-      getFormattedData(dataB, true, Boolean(data), false);
-    } else if ((!dataB || activeCoins.length === 1) && pricesB.length) {
-      setPricesB([]);
-      setVolumesB([]);
+      setChartSuccess(true, Boolean(dataA));
     }
-    queryRefetch(isError, error, true);
-    queryRefetch(isErrorB, errorB, false);
+    setIsLoading(
+      (isLoadingA && activeCoins.length === 1) || (isLoadingA && isLoadingB)
+        ? true
+        : false
+    );
   }, [
     activeCoins.length,
     currency,
     currencyUpdated,
-    data,
+    dataA,
     dataB,
-    error,
-    errorB,
+    setChartSuccess,
     initialRender,
-    isError,
-    isErrorB,
+    isLoadingA,
+    isLoadingB,
     isSuccess,
     isSuccessA,
-    pricesB.length,
-    shouldUpdateCharts,
-    refetch,
+    isSuccessB,
+    refetchA,
     refetchB,
-    queryRefetch,
-    getFormattedData,
+    shouldUpdateCharts,
   ]);
+
   return (
     <div className="w-full h-auto flex max-md:flex-col justify-between gap-[1vw] pt-[120px] lg:2xl:pt-[240px] max-sm:pt-[86px]">
       <ChartContainer
