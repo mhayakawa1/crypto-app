@@ -30,7 +30,7 @@ const Body = (props: { children: any }) => {
           <Banner />
           <Navbar />
         </header>
-        <main className="py-[4vh] px-[8vw]">{children}</main>
+        <main className="py-[4vh] px-[5vw]">{children}</main>
         {mobileView && <MobileNavbar />}
       </ThemeProvider>
     </body>
