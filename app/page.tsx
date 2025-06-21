@@ -30,7 +30,6 @@ export default function Home() {
   const toggleDisplay = () => {
     setCoinsVisible((current) => !current);
   };
-
   return (
     <StoreProvider>
       {!mobileView && (
@@ -71,7 +70,7 @@ export default function Home() {
       )}
       <div className="pt-[4vh] overflow-x-hidden">
         {coinsVisible ? (
-          <Coins currency={currency} />
+          <Coins currency={currency} mobileView={mobileView} />
         ) : (
           <Converter currency={currency} />
         )}
