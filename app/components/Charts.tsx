@@ -6,6 +6,8 @@ import AreaChartComponent from "./AreaChartComponent";
 import BarChartComponent from "./BarChartComponent";
 import ChartContainer from "./ChartContainer";
 
+let interval: any = null;
+
 const Charts = (props: {
   currency: any;
   coinBId: string;
@@ -33,6 +35,21 @@ const Charts = (props: {
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [count, setCount] = useState(0);
+  const [intervalActive, setIntervalActive] = useState(false);
+
+  const toggleTimer = (start: boolean) => {
+    clearInterval(interval);
+    if (start) {
+      interval = setInterval(() => {
+        setCount((count) => count + 1);
+      }, 1000);
+    } else {
+      setCount(0);
+      setIntervalActive(false);
+      interval = null;
+    }
+  };
 
   function useQuery(coin: string) {
     const [prices, setPrices] = useState([]);
@@ -51,13 +68,17 @@ const Charts = (props: {
         const { pricesData, volumesData } = formattedData;
         setPrices(pricesData);
         setVolumes(volumesData);
+        if (!intervalActive) {
+          toggleTimer(false);
+        }
       }
       if (isError && "error" in error) {
         setIsSuccess(false);
         setErrorMessage(`${error.error}. Refetching...`);
-        setTimeout(() => {
+        toggleTimer(true);
+        if (count % 10 === 0) {
           refetch();
-        }, 10000);
+        }
       }
     }, [isSuccess, data, isError, error, refetch]);
     return [data, isLoading, isSuccess, prices, volumes, refetch];
@@ -92,12 +113,10 @@ const Charts = (props: {
       if (initialRender) {
         setInitialRender(false);
       }
-      setTimeout(() => {
-        refetchA();
-        if (activeCoins.length === 2) {
-          refetchB();
-        }
-      }, 60000);
+      setIntervalActive(true);
+      if (!intervalActive) {
+        toggleTimer(true);
+      }
     }
     if (
       isSuccessB &&
@@ -112,14 +131,23 @@ const Charts = (props: {
         ? true
         : false
     );
+    if (count === 60) {
+      refetchA();
+      if (activeCoins.length === 2) {
+        refetchB();
+      }
+      toggleTimer(false);
+    }
   }, [
     activeCoins.length,
     currency,
     currencyUpdated,
+    count,
     dataA,
     dataB,
     setChartSuccess,
     initialRender,
+    intervalActive,
     isLoadingA,
     isLoadingB,
     isSuccess,
