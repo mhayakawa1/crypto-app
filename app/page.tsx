@@ -3,6 +3,8 @@ import StoreProvider from "./StoreProvider";
 import { useState } from "react";
 import Coins from "./components/Coins";
 import Converter from "./components/Converter";
+import MobileNavbar from "./components/MobileNavbar";
+import ScrollToTopButton from "./components/ScrollToTopButton";
 import GradientBorderButton from "./components/GradientBorderButton";
 import { useAppSelector } from "@/lib/hooks";
 
@@ -56,6 +58,8 @@ export default function Home() {
           <Converter currency={currency} />
         )}
       </div>
+      {mobileView && <MobileNavbar />}
+      <ScrollToTopButton />
     </StoreProvider>
   );
 }

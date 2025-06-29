@@ -105,8 +105,10 @@ const Navbar = () => {
 
     const handleResize = () => {
       if (window.innerWidth < 640) {
+        localStorage.setItem("mobileView", "true");
         dispatch(toggleView(true));
       } else if (window.innerWidth >= 640) {
+        localStorage.setItem("mobileView", "true");
         dispatch(toggleView(false));
       }
     };

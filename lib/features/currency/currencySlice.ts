@@ -2,7 +2,7 @@ import { createAction, createReducer } from "@reduxjs/toolkit";
 
 export const switchCurrency = createAction<any>("currency/switch");
 
-const currenciesData = [
+export const currenciesData = [
   { currency: "usd", symbol: "$" },
   { currency: "gbp", symbol: "£" },
   { currency: "eur", symbol: "€" },
