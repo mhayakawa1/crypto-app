@@ -26,59 +26,59 @@ const BannerItems: any = (props: { bannerData: any }) => {
             alt=""
             className="lg:2xl:h-[24px] lg:2xl:w-[24px]"
           />
-          <span className="text-[#D1D1D1] lg:2xl:text-2xl">Coins</span>
-          <span className="lg:2xl:text-2xl">
+          <span className="text-[#D1D1D1] lg:2xl:text-xl">Coins</span>
+          <span className="lg:2xl:text-xl">
             {formatNumber(bannerData.coins, "")}
           </span>
         </BannerItem>
       )}
       {!mobileView && (
         <BannerItem>
-          <Image src={ArrowUpGreen} alt="" className="lg:2xl:h-[8px] w-auto" />
-          <span className="lg:2xl:text-2xl">
+          <Image src={ArrowUpGreen} alt="" className="lg:2xl:h-[6px] w-auto" />
+          <span className="lg:2xl:text-xl">
             {formatNumber(bannerData.marketCap[currency], "")}
           </span>
         </BannerItem>
       )}
       <BannerItem>
-        <span className="lg:2xl:text-2xl">
+        <span className="lg:2xl:text-xl">
           {formatNumber(bannerData.totalVolume[currency], symbol)}
         </span>
         <Progress
-          className="bg-[rgb(255,255,255,.4)] w-[53px] max-sm:w-[42px] lg:2xl:w-[106px] h-[6px] lg:2xl:h-[12px]"
+          className="bg-[rgb(255,255,255,.4)] w-[52px] max-sm:w-[42px] lg:2xl:w-[78px] h-[6px] lg:2xl:h-[9px]"
           value={bannerData.totalVolume}
           color={"bg-[--background]"}
         />
       </BannerItem>
       <BannerItem>
-        <span className="flex items-center gap-[2px] lg:2xl:text-2xl">
+        <span className="flex items-center gap-[2px] lg:2xl:text-xl">
           <Image
             src={BTC}
             alt=""
-            className="w-auto h-[12px] lg:2xl:h-[24px] aspect-square"
+            className="w-auto h-[12px] lg:2xl:h-[18px]"
           />
           {Math.round(Number(bannerData.btc))}%
         </span>
         <Progress
           className={
-            "bg-[rgb(255,255,255,.4)] w-[53px] max-sm:w-[42px] lg:2xl:w-[106px] h-[6px] lg:2xl:h-[12px] max-sm:text-xs"
+            "bg-[rgb(255,255,255,.4)] w-[52px] max-sm:w-[42px] lg:2xl:w-[78px] h-[6px] lg:2xl:h-[9px] max-sm:text-xs"
           }
           value={bannerData.btc}
           color={"bg-[#F7931A]"}
         />
       </BannerItem>
       <BannerItem>
-        <span className="flex items-center gap-[2px] lg:2xl:gap-[4px] lg:2xl:text-2xl">
+        <span className="flex items-center gap-[2px] lg:2xl:gap-[3px] lg:2xl:text-xl">
           <Image
             src={ETH}
             alt=""
-            className="w-auto h-[12px] lg:2xl:h-[24px] aspect-square"
+            className="w-auto h-[12px] lg:2xl:h-[18px]"
           />
           {Math.round(Number(bannerData.eth))}%
         </span>
         <Progress
           className={
-            "bg-[rgb(255,255,255,.4)] w-[53px] max-sm:w-[42px] lg:2xl:w-[106px] h-[6px] lg:2xl:h-[12px] max-sm:text-xs"
+            "bg-[rgb(255,255,255,.4)] w-[52px] max-sm:w-[42px] lg:2xl:w-[78px] h-[6px] lg:2xl:h-[9px] max-sm:text-xs"
           }
           value={bannerData.eth}
           color={"bg-[#849DFF]"}

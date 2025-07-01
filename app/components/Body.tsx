@@ -1,8 +1,10 @@
 "use server";
 import Banner from "./Banner";
 import BannerItems from "./BannerItems";
-import { getGlobalData } from "@/lib/features/api/global";
+import { getGlobalData } from "@/lib/features/api/getGlobalData";
+import { getCoinsListData } from "@/lib/features/api/getCoinsListData";
 import Navbar from "./Navbar";
+import Main from "./Main";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { Space_Grotesk } from "next/font/google";
 import { Suspense } from "react";
@@ -43,6 +45,13 @@ async function Body(props: { children: any }) {
       };
     }
   }
+
+  let initialCoinsList: any = [];
+  if (!initialCoinsList.length) {
+    const coinsList = await getCoinsListData();
+    initialCoinsList = [...coinsList];
+  }
+
   return (
     <Suspense>
       <body
@@ -60,7 +69,7 @@ async function Body(props: { children: any }) {
             </Banner>
             <Navbar />
           </header>
-          <main className="py-[4vh] px-[5vw]">{children}</main>
+          <Main initialCoinsList={initialCoinsList}>{children}</Main>
         </ThemeProvider>
       </body>
     </Suspense>
