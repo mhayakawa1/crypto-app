@@ -5,6 +5,7 @@ import todosReducer from "./features/todos/todosSlice";
 import themeReducer from "./features/theme/themeSlice";
 import viewReducer from "./features/view/viewSlice";
 import currencyReducer from "./features/currency/currencySlice";
+import coinsListReducer from "./features/coinsList/coinsListSlice";
 
 export const makeStore = () => {
   return configureStore({
@@ -15,6 +16,7 @@ export const makeStore = () => {
       theme: themeReducer,
       view: viewReducer,
       currency: currencyReducer,
+      coinsList: coinsListReducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({

@@ -15,15 +15,15 @@ const LinkButton = (props: {
   return (
     <button
       onClick={!isHomeActive ? toggleHomeActive : undefined}
-      className={`flex justify-between items-center gap-[18px] lg:2xl:gap-[36px] max-lg:gap-[2px] text-[--dark-slate-blue] dark:text-white ${
+      className={`flex justify-between items-center gap-[18px] lg:2xl:gap-[27px] max-lg:gap-[2px] text-[--dark-slate-blue] dark:text-white ${
         !isHomeActive && "opacity-50"
       }`}
     >
       <Link
         href={`/${path}`}
-        className="flex justify-between items-center gap-[18px] lg:2xl:gap-[36px] max-lg:gap-[2px] lg:2xl:text-3xl"
+        className="flex justify-between items-center gap-[18px] lg:2xl:gap-[27px] max-lg:gap-[2px] lg:2xl:text-2xl"
       >
-        <Image src={src} alt="" className="w-auto h-[18px] lg:2xl:h-[36px]" />
+        <Image src={src} alt="" className="w-auto h-[18px] lg:2xl:h-[27px]" />
         <span className="max-md:text-xs">{name}</span>
       </Link>
     </button>

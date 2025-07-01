@@ -3,6 +3,8 @@ import StoreProvider from "./StoreProvider";
 import { useState } from "react";
 import Coins from "./components/Coins";
 import Converter from "./components/Converter";
+import MobileNavbar from "./components/MobileNavbar";
+import ScrollToTopButton from "./components/ScrollToTopButton";
 import GradientBorderButton from "./components/GradientBorderButton";
 import { useAppSelector } from "@/lib/hooks";
 
@@ -18,15 +20,15 @@ export default function Home() {
   return (
     <StoreProvider>
       {!mobileView && (
-        <div className="w-fit p-[4px] lg:2xl:p-[8px] rounded-[9px] lg:2xl:rounded-[18px] flex gap-[4px] lg:2xl:gap-[8px] bg-white dark:bg-[--mirage]">
+        <div className="w-fit p-[4px] lg:2xl:p-[6px] rounded-[8px] lg:2xl:rounded-[12px] flex gap-[4px] lg:2xl:gap-[6px] bg-white dark:bg-[--mirage]">
           <GradientBorderButton
             handleClick={toggleDisplay}
             argumentList={[]}
             background="bg-transparent"
-            buttonClasses="w-[244px] lg:2xl:w-[488px] h-[45px] lg:2xl:h-[90px]"
+            buttonClasses="w-[244px] lg:2xl:w-[366px] h-[44px] lg:2xl:h-[66px]"
             spanClasses={`${
               coinsVisible ? "text-white" : "text-[--dark-slate-blue]"
-            } dark:text-white lg:2xl:text-3xl`}
+            } dark:text-white lg:2xl:text-2xl`}
             text="Coins"
             active={coinsVisible}
           >
@@ -36,12 +38,12 @@ export default function Home() {
             handleClick={toggleDisplay}
             argumentList={[]}
             background="bg-transparent"
-            buttonClasses="w-[244px] lg:2xl:w-[488px] h-[45px] lg:2xl:h-[90px]"
+            buttonClasses="w-[244px] lg:2xl:w-[366px] h-[44px] lg:2xl:h-[66px]"
             spanClasses={`${
               !coinsVisible
                 ? "text-white"
                 : "text-[--dark-slate-blue]"
-            } dark:text-white lg:2xl:text-3xl`}
+            } dark:text-white lg:2xl:text-xl`}
             text="Converter"
             active={!coinsVisible}
           >
@@ -56,6 +58,8 @@ export default function Home() {
           <Converter currency={currency} />
         )}
       </div>
+      {mobileView && <MobileNavbar />}
+      <ScrollToTopButton />
     </StoreProvider>
   );
 }
