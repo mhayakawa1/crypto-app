@@ -61,7 +61,11 @@ const AreaChartComponent = (props: {
       if (data[0].value !== chartData[0].value) {
         setChartData(data);
       }
-      if (twoCoinsActive && dataB.length && JSON.stringify(prevChartData.current) !== JSON.stringify(chartData)) {
+      if (
+        twoCoinsActive &&
+        dataB.length &&
+        JSON.stringify(prevChartData.current) !== JSON.stringify(chartData)
+      ) {
         const newData = data.map((element: any, index: number) => {
           if (dataB[index]) {
             return {
@@ -94,7 +98,7 @@ const AreaChartComponent = (props: {
     shouldUpdateChart,
     toggleUpdateCharts,
   ]);
-
+console.log(chartData)
   return (
     <ChartContainer className={`${height} ${width} m-0`} config={chartConfig}>
       <AreaChart accessibilityLayer data={chartData}>
@@ -122,19 +126,14 @@ const AreaChartComponent = (props: {
           ))}
         </defs>
         <Line type="monotone" dataKey="value" stroke={color} dot={false} />
-        {xAxis && (
-          <XAxis
-            dataKey="name"
-            axisLine={false}
-            tickLine={false}
-            className="border border-red-500"
-          />
-        )}
+        {xAxis && <XAxis dataKey="name" axisLine={false} tickLine={false} />}
         <YAxis
+          dataKey="value"
           domain={["auto", "dataMax"]}
           axisLine={false}
           tick={false}
           width={0}
+          scale="log"
         />
         <Area
           dataKey="value"
@@ -144,6 +143,16 @@ const AreaChartComponent = (props: {
           fillOpacity={1}
           fill={fill}
         />
+        {compareActive && (
+          <YAxis
+            dataKey="valueB"
+            domain={["auto", "dataMax"]}
+            axisLine={false}
+            tick={false}
+            width={0}
+            scale="log"
+          />
+        )}
         {compareActive && (
           <Area
             dataKey="valueB"
