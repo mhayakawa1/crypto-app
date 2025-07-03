@@ -74,8 +74,8 @@ const ChartContainer = (props: {
         </ul>
       )}
 
-      {isLoading && <h3>Loading...</h3>}
-      {isSuccess && dataLength ? children : errorMessage}
+      {isLoading && <h3 className="pt-[25vh] lg:2xl:text-2xl text-[--dark-slate-blue] dark:text-white">Loading...</h3>}
+      {isSuccess && dataLength ? children :<h3 className="pt-[25vh] lg:2xl:text-2xl text-[--dark-slate-blue] dark:text-white">{errorMessage}</h3>}
     </div>
   );
 };

@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
-
 const chartConfig = {
   value: {
     label: "",
@@ -19,7 +18,6 @@ const chartConfig = {
     color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
-
 
 const BarChartComponent = (props: {
   xAxis: boolean;
@@ -55,7 +53,6 @@ const BarChartComponent = (props: {
     { id: "area-blue", stopColor: "var(--soft-blue)" },
     { id: "area-purple", stopColor: "var(--light-purple)" },
   ];
-
 
   useEffect(() => {
     if (shouldUpdateChart) {
@@ -99,7 +96,6 @@ const BarChartComponent = (props: {
     shouldUpdateChart,
     toggleUpdateCharts,
   ]);
-
 
   return (
     <ChartContainer
