@@ -27,55 +27,73 @@ const ChartContainer = (props: {
     compareData,
   } = props;
   const [value, setValue] = useState(0);
-  const today = new Date();
-  const formattedDate = `${today.toLocaleString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })}`;
+  const [formattedDate, setFormattedDate] = useState("");
 
   useEffect(() => {
+    if (!formattedDate.length) {
+      const today = new Date();
+      setFormattedDate(
+        `${today.toLocaleString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}`
+      );
+    }
     if (activeCoins) {
       const newValue = chartInfo.isPrice
         ? activeCoins[0].price
         : activeCoins[0].volumeMarketCap.totalVolume;
       setValue(newValue);
     }
-  }, [activeCoins, value, symbol, chartInfo]);
+  }, [activeCoins, chartInfo, formattedDate.length, symbol, value]);
 
   return (
     <div
-      className={`flex flex-col justify-between gap-[4vh] grow bg-white dark:bg-[--mirage] text-[--american-blue] dark:text-white px-[2vw] max-md:px-[4vw] py-[24px] max-sm:pt-[16px] lg:2xl:py-[48px] max-sm:pb-[4px] rounded-[16px] lg:2xl:rounded-[32px] ${className}`}
+      className={`flex flex-col justify-between gap-[4vh] grow bg-white dark:bg-[--mirage] text-[--american-blue] dark:text-white px-[2vw] max-md:px-[4vw] py-[2vh] max-sm:pt-[16px] rounded-[16px] lg:2xl:rounded-[24px] ${className}`}
     >
       {typeof chartInfo === "string" ? (
-        <h3 className="lg:2xl:text-2xl">{chartInfo}</h3>
+        <h3 className="lg:2xl:text-xl">{chartInfo}</h3>
       ) : compareData ? (
         <ul className="text-[--mirage] dark:text-[--light-gray]">
-          <li className="text-2xl lg:2xl:text-5xl dark:text-white lg:2xl:pt-[48px] pb-[16px] lg:2xl:pb-[32px] font-bold">
+          <li className="text-2xl lg:2xl:text-4xl dark:text-white lg:2xl:pt-[36px] pb-[16px] lg:2xl:pb-[24px] font-bold">
             {chartInfo.isPrice ? "Price 24h" : "Volume 24h"}
           </li>
-          <li className="text-base lg:2xl:text-3xl">{formattedDate}</li>
+          <li className="text-base lg:2xl:text-2xl">{formattedDate}</li>
         </ul>
       ) : (
         <ul className="text-[--mirage] dark:text-[--light-gray] max-sm:flex justify-between">
-          <li className="text-xl lg:2xl:text-4xl max-sm:text-base">
+          <li className="text-xl lg:2xl:text-3xl max-sm:text-base">
             {isSuccess
               ? `${
                   activeCoins[0].name
                 } (${activeCoins[0].symbol.toUpperCase()})`
               : ""}
           </li>
-          <li className="flex flex-col gap-[16px] lg:2xl:gap-[32px] max-sm:gap-[8px] dark:text-white pt-[24px] lg:2xl:pt-[48px] max-sm:pt-0">
-            <span className="text-2xl lg:2xl:text-5xl max-sm:text-xl font-bold">
-            {formatNumber(value, symbol)}</span>
-            <span className="text-base lg:2xl:text-3xl max-sm:text-xs">{formattedDate}</span>
+          <li className="flex flex-col gap-[16px] lg:2xl:gap-[24px] max-sm:gap-[8px] dark:text-white pt-[24px] lg:2xl:pt-[36px] max-sm:pt-0">
+            <span className="text-2xl lg:2xl:text-4xl max-sm:text-xl font-bold">
+              {formatNumber(value, symbol)}
+            </span>
+            <span className="text-base lg:2xl:text-2xl max-sm:text-xs">
+              {formattedDate}
+            </span>
           </li>
         </ul>
       )}
 
-      {isLoading && <h3 className="pt-[25vh] lg:2xl:text-2xl text-[--dark-slate-blue] dark:text-white">Loading...</h3>}
-      {isSuccess && dataLength ? children :<h3 className="pt-[25vh] lg:2xl:text-2xl text-[--dark-slate-blue] dark:text-white">{errorMessage}</h3>}
+      {isLoading && (
+        <h3 className="pt-[25vh] lg:2xl:text-xl text-[--dark-slate-blue] dark:text-white">
+          Loading...
+        </h3>
+      )}
+      {isSuccess && dataLength ? (
+        children
+      ) : (
+        <h3 className="pt-[25vh] lg:2xl:text-xl text-[--dark-slate-blue] dark:text-white">
+          {errorMessage}
+        </h3>
+      )}
     </div>
   );
 };
