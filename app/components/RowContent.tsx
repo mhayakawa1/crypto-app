@@ -145,17 +145,14 @@ const RowContent = (props: {
                 height={"h-[36px] lg:2xl:h-[72px]"}
                 width={"w-[120px] lg:2xl:w-[240px] max-sm:grow"}
                 data={lastSevenDays}
+                className=""
                 color={percents[2].rising ? "var(--rising)" : "var(--falling)"}
                 fill={
                   percents[2].rising
                     ? "url(#area-rising)"
                     : "url(#area-falling)"
                 }
-                dataB={null}
-                activeCoins={[]}
-                compareData={false}
                 shouldUpdateChart={true}
-                toggleUpdateCharts={null}
               />
             </TableCell>
           </TableRow>
