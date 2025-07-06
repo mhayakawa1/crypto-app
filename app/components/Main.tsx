@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import {
   addToCoinsList,
-  resetCoinsList,
 } from "@/lib/features/coinsList/coinsListSlice";
 
 const Main = (props: { children: any; initialCoinsList: any }) => {
@@ -15,19 +14,11 @@ const Main = (props: { children: any; initialCoinsList: any }) => {
   const prevCurrency = useRef<any>(null);
 
   useEffect(() => {
-    const coinsListItem = initialCoinsList.find(
-      (element: any) => element.currency === currency
-    );
     if (initialRender && currency === localStorage.getItem("currency")) {
       setInitialRender(false);
     }
-    if (!coinsList.length && coinsListItem) {
-      const { result } = coinsListItem;
-      dispatch(addToCoinsList(result));
-    }
-    if (!initialRender && currency !== prevCurrency.current) {
-      const { result } = coinsListItem;
-      dispatch(resetCoinsList(result));
+    if (!coinsList.length && initialCoinsList) {
+      dispatch(addToCoinsList(initialCoinsList));
     }
     prevCurrency.current = currency;
   }, [coinsList.length, currency, dispatch, initialCoinsList, initialRender]);

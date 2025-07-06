@@ -14,8 +14,10 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
 });
 
-async function Body(props: { children: any }) {
-  const { children } = props;
+async function Body(props: { children: any, 
+//  currency: any 
+}) {
+  const { children} = props;
   let bannerData = {
     noData: true,
     coins: 0,
@@ -48,7 +50,7 @@ async function Body(props: { children: any }) {
 
   let initialCoinsList: any = [];
   if (!initialCoinsList.length) {
-    const coinsList = await getCoinsListData();
+    const coinsList = await getCoinsListData("usd");
     initialCoinsList = [...coinsList];
   }
 
@@ -67,7 +69,7 @@ async function Body(props: { children: any }) {
             <Banner>
               <BannerItems bannerData={bannerData} />
             </Banner>
-            <Navbar />
+            <Navbar initialCoinsList={initialCoinsList} />
           </header>
           <Main initialCoinsList={initialCoinsList}>{children}</Main>
         </ThemeProvider>

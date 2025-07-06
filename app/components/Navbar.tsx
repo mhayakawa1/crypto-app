@@ -30,10 +30,10 @@ import PortfolioWhite from "../../src/icons/Portfolio_White.svg";
 import SearchBlue from "../../src/icons/Search_Blue.svg";
 import SearchWhite from "../../src/icons/Search_White.svg";
 
-const Navbar = () => {
+const Navbar = (props: { initialCoinsList: any }) => {
+  const { initialCoinsList } = props;
   const darkActive = useAppSelector((state) => state.theme)[0].darkActive;
   const view = useAppSelector((state) => state.view);
-  const coinsList = useAppSelector((state) => state.coinsList)[0];
   const mobileView = view[0].mobileView;
   const dispatch = useAppDispatch();
   const { currency } = useAppSelector((state) => state.currency);
@@ -54,7 +54,9 @@ const Navbar = () => {
 
   const searchCoins = (value: any) => {
     setSearchValue(value);
-    setResultsVisible(Boolean(value.length));
+    if (initialCoinsList.length) {
+      setResultsVisible(Boolean(value.length));
+    }
   };
 
   const toggleHomeActive = () => {
@@ -171,14 +173,18 @@ const Navbar = () => {
                 : "rounded-bl-[6px] lg:2xl:rounded-bl-[9px] rounded-br-[6px] lg:2xl:rounded-br-[9px]"
             } w-[200px] max-md:w-[40vw] lg:2xl:w-[300px] h-[48px] max-md:h-[36px] lg:2xl:h-[72px] pl-[44px] max-md:pl-[32px] lg:2xl:pl-[66px] flex justify-center items-center bg-transparent text-sm max-md:text-xs lg:2xl:text-xl outline-none text-[--dark-slate-blue] dark:text-white border-none dark:border dark:border-[--dark-gunmetal]`}
           />
-          {resultsVisible && coinsList.length ? (
+          {resultsVisible ? (
             <ul className="absolute max-h-[80vh] overflow-y-scroll z-10 pb-[8px] lg:2xl:pb-[12px] rounded-bl-[6px] lg:2x:rounded-bl-[12px] rounded-br-[6px] lg:2xl:rounded-br-[9px] w-full max-md:text-xs text-[--dark-slate-blue] dark:text-white bg-[--lavender] dark:border dark:border-[--dark-gunmetal] dark:border-t-0 dark:bg-[--mirage]">
-              {!coinsList.find(
+              {!initialCoinsList.find(
                 (element: any) => element.name.toLowerCase() === debouncedValue
               ) ? (
-                <SearchItem id={debouncedValue} name={debouncedValue} searchCoins={searchCoins} />
+                <SearchItem
+                  id={debouncedValue}
+                  name={debouncedValue}
+                  searchCoins={searchCoins}
+                />
               ) : null}
-              {coinsList
+              {initialCoinsList
                 .map((element: any) => {
                   return { id: element.id, name: element.name };
                 })
@@ -186,7 +192,12 @@ const Navbar = () => {
                   result.name.toLowerCase().includes(debouncedValue)
                 )
                 .map((result: any) => (
-                  <SearchItem key={result.id} id={result.id} name={result.name} searchCoins={searchCoins} />
+                  <SearchItem
+                    key={result.id}
+                    id={result.id}
+                    name={result.name}
+                    searchCoins={searchCoins}
+                  />
                 ))}
             </ul>
           ) : null}
