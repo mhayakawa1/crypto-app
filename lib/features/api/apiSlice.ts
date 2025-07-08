@@ -22,7 +22,7 @@ export const apiSlice = createApi({
         currency: string;
         page: any;
       }) => {
-        const url = `coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=50&page=${page}&sparkline=true&price_change_percentage=1h%2C24h%2C7d`;
+        const url = `coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=200&page=${page}&sparkline=true&price_change_percentage=1h%2C24h%2C7d`;
         return url;
       },
     }),

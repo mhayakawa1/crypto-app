@@ -23,6 +23,7 @@ const Coins = (props: { currency: any; mobileView: boolean }) => {
     },
   ]);
   const [coinBId, setCoinBId] = useState("");
+  const [coinCId, setCoinCId] = useState("");
   const [shouldUpdateCharts, setShouldUpdateCharts] = useState(false);
   const prevCurrency = useRef<any>(currency);
   const [firstPrice, setFirstPrice] = useState(null);
@@ -49,10 +50,14 @@ const Coins = (props: { currency: any; mobileView: boolean }) => {
 
   const updateActiveCoins = (newCoins: any) => {
     setActiveCoins(newCoins);
-    if (newCoins.length === 2) {
+    if (newCoins.length === 3) {
+      setCoinCId(newCoins[2].id);
+    }
+    if (newCoins.length > 1) {
       setCoinBId(newCoins[1].id);
     } else {
       setCoinBId(newCoins[0].id);
+      setCoinCId(newCoins[0].id);
       setShouldUpdateCharts(true);
     }
   };
@@ -153,8 +158,8 @@ const Coins = (props: { currency: any; mobileView: boolean }) => {
 
   const toggleCompare = () => {
     setCompareData((current) => !current);
-    if (compareData && activeCoins.length === 2) {
-      const newActiveCoins = activeCoins.slice(1);
+    if (compareData && activeCoins.length > 1) {
+      const newActiveCoins = activeCoins.slice(0, 1);
       setActiveCoins(newActiveCoins);
     }
   };
@@ -163,7 +168,7 @@ const Coins = (props: { currency: any; mobileView: boolean }) => {
     <div>
       <div>
         <div className="w-full flex justify-between items-center pb-[4vh]">
-          <h2 className="text-[--dark-slate-blue] lg:2xl:text-3xl max-sm:text-xs dark:text-white mr-[16px] max-sm:mr-0 max-sm:w-[50%] text-wrap">
+          <h2 className="text-[--dark-slate-blue] lg:2xl:text-2xl max-sm:text-xs dark:text-white mr-[16px] max-sm:mr-0 max-sm:w-[50%] text-wrap">
             Select the currency to view statistics
           </h2>
           <CompareButton
@@ -186,6 +191,7 @@ const Coins = (props: { currency: any; mobileView: boolean }) => {
         <Charts
           currency={currency}
           coinBId={coinBId}
+          coinCId={coinCId}
           compareData={compareData}
           days={days}
           intervalDaily={intervalDaily}

@@ -5,12 +5,14 @@ import { formatCompareCoins } from "@/lib/format/formatCompareCoins";
 import AreaChartComponent from "./AreaChartComponent";
 import BarChartComponent from "./BarChartComponent";
 import ChartContainer from "./ChartContainer";
+import Legend from "./Legend";
 
 let interval: any = null;
 
 const Charts = (props: {
   currency: any;
   coinBId: string;
+  coinCId: string;
   compareData: boolean;
   days: number;
   intervalDaily: boolean;
@@ -22,6 +24,7 @@ const Charts = (props: {
   const {
     currency,
     coinBId,
+    coinCId,
     compareData,
     days,
     intervalDaily,
@@ -90,6 +93,19 @@ const Charts = (props: {
   const [dataB, isLoadingB, isSuccessB, pricesB, volumesB, refetchB] = useQuery(
     coinBId.length > 1 ? coinBId : activeCoins[0].id
   );
+  const [dataC, isLoadingC, isSuccessC, pricesC, volumesC, refetchC] = useQuery(
+    coinCId.length > 1 ? coinCId : activeCoins[0].id
+  );
+
+  const chartsData = [
+    { data: pricesA, color: "var(--soft-blue)", fill: "url(#area-blue)" },
+    { data: pricesB, color: "var(--light-purple)", fill: "url(#area-purple)" },
+    {
+      data: pricesC,
+      color: "var(--magenta)",
+      fill: "url(#area-magenta)",
+    },
+  ];
 
   const setChartSuccess = useCallback(
     (shouldToggleCharts: boolean, isSuccess: boolean) => {
@@ -97,6 +113,28 @@ const Charts = (props: {
       setIsSuccess(isSuccess);
     },
     [toggleUpdateCharts]
+  );
+
+  const noDuplicateData = useCallback(() => {
+    const stringifiedData = [
+      JSON.stringify(dataA),
+      JSON.stringify(dataB),
+      JSON.stringify(dataC),
+    ];
+    for (let i = 0; i < activeCoins.length; i++) {
+      if (stringifiedData.indexOf(stringifiedData[i]) !== i) {
+        return false;
+      }
+    }
+    return true;
+  }, [activeCoins.length, dataA, dataB, dataC]);
+
+  const allTrue = useCallback(
+    (array: any) => {
+      const newArray = array.slice(0, activeCoins.length + 1);
+      return newArray.every((element: boolean) => element === true);
+    },
+    [activeCoins.length]
   );
 
   useEffect(() => {
@@ -107,8 +145,6 @@ const Charts = (props: {
       (isSuccessA && shouldUpdateCharts) ||
       shouldUpdateActiveCoins
     ) {
-      const twoCoinsActive = activeCoins.length === 2;
-      setChartSuccess(twoCoinsActive, !twoCoinsActive);
       prevCurrency.current = currency;
       if (initialRender) {
         setInitialRender(false);
@@ -118,102 +154,111 @@ const Charts = (props: {
         toggleTimer(true);
       }
     }
-    if (
-      isSuccessB &&
-      activeCoins.length === 2 &&
-      !initialRender &&
-      JSON.stringify(dataA) !== JSON.stringify(dataB)
-    ) {
-      setChartSuccess(true, Boolean(dataA));
+    const isLoadingValues = [isLoadingA, isLoadingB, isLoadingC];
+    const isSuccessValues = [isSuccessA, isSuccessB, isSuccessC];
+    if (allTrue(isSuccessValues) && !initialRender && noDuplicateData()) {
+      setChartSuccess(true, true);
     }
-    setIsLoading(
-      (isLoadingA && activeCoins.length === 1) || (isLoadingA && isLoadingB)
-        ? true
-        : false
-    );
+    setIsLoading(allTrue(isLoadingValues));
     if (count === 60) {
       refetchA();
-      if (activeCoins.length === 2) {
+      if (activeCoins.length > 1) {
         refetchB();
+      }
+      if (activeCoins.length === 3) {
+        refetchC();
       }
       toggleTimer(false);
     }
   }, [
     activeCoins.length,
+    allTrue,
+    count,
     currency,
     currencyUpdated,
-    count,
-    dataA,
-    dataB,
-    setChartSuccess,
     initialRender,
     intervalActive,
     isLoadingA,
     isLoadingB,
+    isLoadingC,
     isSuccess,
     isSuccessA,
     isSuccessB,
+    isSuccessC,
+    noDuplicateData,
     refetchA,
     refetchB,
+    refetchC,
+    setChartSuccess,
     shouldUpdateCharts,
   ]);
 
   return (
-    <div className="w-full h-auto flex max-md:flex-col justify-between gap-[1vw] pt-[120px] lg:2xl:pt-[240px] max-sm:pt-[86px]">
-      <ChartContainer
-        className="h-auto flex justify-between"
-        dataLength={pricesA.length}
-        symbol={currency.symbol}
-        chartInfo={{
-          isPrice: true,
-        }}
-        isLoading={isLoading}
-        isSuccess={isSuccess}
-        errorMessage={errorMessage}
-        activeCoins={activeCoins}
-        compareData={compareData}
-      >
-        <AreaChartComponent
-          xAxis={true}
-          height={"h-[165px] lg:2xl:h-[330px] max-sm:h-[100px]"}
-          width={"w-full"}
-          data={pricesA}
-          color={"var(--soft-blue)"}
-          fill={"url(#area-blue)"}
-          dataB={pricesB}
+    <div className="flex flex-col gap-[2vh]">
+      <div className="w-full h-auto flex max-md:flex-col justify-between gap-[1vw] pt-[120px] lg:2xl:pt-[180px] max-sm:pt-[86px]">
+        <ChartContainer
+          className="relative h-auto w-[50%] max-sm:w-full pb-[194px] lg:2xl:pb-[291px] max-sm:pb-[130px] flex justify-between"
+          dataLength={pricesA.length}
+          symbol={currency.symbol}
+          chartInfo={{
+            isPrice: true,
+          }}
+          isLoading={isLoading}
+          isSuccess={isSuccess}
+          errorMessage={errorMessage}
           activeCoins={activeCoins}
           compareData={compareData}
-          shouldUpdateChart={shouldUpdateCharts}
-          toggleUpdateCharts={toggleUpdateCharts}
-        />
-      </ChartContainer>
-      <ChartContainer
-        className="h-auto flex justify-between"
-        dataLength={volumesA.length}
-        symbol={currency.symbol}
-        chartInfo={{
-          isPrice: false,
-        }}
-        isLoading={isLoading}
-        isSuccess={isSuccess}
-        errorMessage={errorMessage}
-        activeCoins={activeCoins}
-        compareData={compareData}
-      >
-        <BarChartComponent
-          xAxis={true}
-          height={"h-[165px] lg:2xl:h-[330px] max-sm:h-[100px]"}
-          width={"w-full"}
-          data={volumesA}
-          color={"var(--light-purple"}
-          fill={"url(#area-purple)"}
-          dataB={volumesB}
+        >
+          {activeCoins.map((coin: any, index: number) => {
+            const { data, color, fill } = chartsData[index];
+            const firstCoin = Boolean(!index);
+            return (
+              <AreaChartComponent
+                key={coin.id}
+                className="absolute"
+                color={color}
+                data={data}
+                fill={fill}
+                height={`h-[164px] lg:2xl:h-[246px] max-sm:h-[100px] ${
+                  !firstCoin && "pb-[30px] lg:2xl:pb-[45px]"
+                }`}
+                shouldUpdateChart={shouldUpdateCharts}
+                width={"w-[90%]"}
+                xAxis={Boolean(!index)}
+              />
+            );
+          })}
+        </ChartContainer>
+        <ChartContainer
+          className="relative h-auto w-[50%] max-sm:w-full flex justify-between"
+          dataLength={volumesA.length}
+          symbol={currency.symbol}
+          chartInfo={{
+            isPrice: false,
+          }}
+          isLoading={isLoading}
+          isSuccess={isSuccess}
+          errorMessage={errorMessage}
           activeCoins={activeCoins}
           compareData={compareData}
-          shouldUpdateChart={shouldUpdateCharts}
-          toggleUpdateCharts={toggleUpdateCharts}
-        />
-      </ChartContainer>
+        >
+          <BarChartComponent
+            activeCoins={activeCoins}
+            color={"var(--light-purple)"}
+            compareData={compareData}
+            data={volumesA}
+            dataB={volumesB}
+            dataC={volumesC}
+            fill={"url(#area-purple)"}
+            height={`h-[164px] lg:2xl:h-[246px] max-sm:h-[100px]`}
+            shouldUpdateChart={shouldUpdateCharts}
+            toggleUpdateCharts={toggleUpdateCharts}
+            width="w-full"
+            xAxis={true}
+          />
+        </ChartContainer>
+      </div>
+      {compareData ? <Legend activeCoins={activeCoins} /> : null}
     </div>
   );
 };

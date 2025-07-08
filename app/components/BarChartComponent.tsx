@@ -1,13 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-} from "@/components/ui/chart";
+import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
-
 
 const chartConfig = {
   value: {
@@ -18,44 +12,49 @@ const chartConfig = {
     label: "",
     color: "var(--chart-2)",
   },
+  valueC: {
+    label: "",
+    color: "var(--chart-3)",
+  },
 } satisfies ChartConfig;
 
-
 const BarChartComponent = (props: {
-  xAxis: boolean;
-  height: string;
-  width: string;
-  data: any;
-  color: any;
-  fill: any;
-  dataB: any;
   activeCoins: any;
+  color: any;
   compareData: boolean;
+  data: any;
+  dataB: any;
+  dataC: any;
+  fill: any;
+  height: string;
   shouldUpdateChart: boolean;
   toggleUpdateCharts: any;
+  width: string;
+  xAxis: boolean;
 }) => {
   const {
-    xAxis,
-    height,
-    width,
-    data,
-    color,
-    fill,
-    dataB,
     activeCoins,
+    color,
     compareData,
+    data,
+    dataB,
+    dataC,
+    fill,
+    height,
     shouldUpdateChart,
     toggleUpdateCharts,
+    width,
+    xAxis,
   } = props;
-  const twoCoinsActive = activeCoins.length === 2;
+  const activeCount = activeCoins.length;
   const prevChartData = useRef<any>([{ name: "", value: 0 }]);
   const [compareActive, setCompareActive] = useState(true);
   const [chartData, setChartData] = useState(data);
   const gradientInfo = [
     { id: "area-blue", stopColor: "var(--soft-blue)" },
     { id: "area-purple", stopColor: "var(--light-purple)" },
+    { id: "area-magenta", stopColor: "var(--magenta)" },
   ];
-
 
   useEffect(() => {
     if (shouldUpdateChart) {
@@ -63,18 +62,19 @@ const BarChartComponent = (props: {
         setChartData(data);
       }
       if (
-        twoCoinsActive &&
+        activeCount > 1 &&
         dataB.length &&
+        (dataC.length || activeCount < 3) &&
         JSON.stringify(prevChartData.current) !== JSON.stringify(chartData)
       ) {
         const newData = data.map((element: any, index: number) => {
           if (dataB[index]) {
-            return {
-              name: element.name,
-              value: element.value,
-              valueB: dataB[index].value,
-            };
+            element.valueB = dataB[index].value;
           }
+          if (dataC[index]) {
+            element.valueC = dataC[index].value;
+          }
+          return element;
         });
         prevChartData.current = chartData;
         toggleUpdateCharts(false);
@@ -83,23 +83,23 @@ const BarChartComponent = (props: {
         chartConfig.valueB.label = activeCoins[1].name;
       }
     }
-    if (compareData && twoCoinsActive) {
+    if (compareData && activeCount > 1) {
       setCompareActive(true);
     } else {
       setCompareActive(false);
     }
   }, [
-    data,
-    compareData,
-    compareActive,
-    twoCoinsActive,
-    dataB,
     activeCoins,
+    activeCount,
+    compareActive,
+    compareData,
+    data,
+    dataB,
+    dataC,
     chartData,
     shouldUpdateChart,
     toggleUpdateCharts,
   ]);
-
 
   return (
     <ChartContainer
@@ -137,25 +137,20 @@ const BarChartComponent = (props: {
           tick={false}
           width={0}
         />
-        <Bar
-          dataKey="value"
-          stackId="a"
-          radius={4}
-          fillOpacity={1}
-          color={compareActive ? "var(--soft-blue" : color}
-          fill={compareActive ? "url(#area-blue)" : fill}
-        />
-        {compareActive && (
-          <Bar
-            dataKey="valueB"
-            stackId="a"
-            radius={4}
-            fillOpacity={1}
-            color={"var(--light-purple"}
-            fill="url(#area-purple)"
-          />
-        )}
-        {compareActive && <ChartLegend content={<ChartLegendContent />} />}
+        {activeCoins.map((element: any, index: number) => {
+          const { stopColor, id } = gradientInfo[index];
+          return (
+            <Bar
+              key={element.id}
+              dataKey={`${Object.keys(chartConfig)[index]}`}
+              stackId="a"
+              radius={4}
+              fillOpacity={1}
+              color={compareActive ? stopColor : color}
+              fill={compareActive ? `url(#${id})` : fill}
+            />
+          );
+        })}
       </BarChart>
     </ChartContainer>
   );
