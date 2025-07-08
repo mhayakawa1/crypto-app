@@ -17,12 +17,13 @@ const PortfolioAsset = (props: {
   const currencySymbol = `${currency.symbol}${currency.symbol.length > 1 ? " " : ""}`;
   const { initialPrice, coinAmount, name, src, symbol, date } = assetData;
   const { circulating, marketCap, price, priceChange, totalVolume } = apiData;
+  const initialPriceValue = initialPrice[currency.currency]
   const valueColors = [
     { bg: "--bg-falling", color: "--falling" },
     { bg: "--bg-rising", color: "--rising" },
   ];
   const changeSincePurchase = Number(
-    (((price - initialPrice) / Math.abs(initialPrice)) * 100).toFixed(2)
+    (((price - initialPriceValue) / Math.abs(initialPriceValue)) * 100).toFixed(2)
   );
   const sincePurchaseColors = valueColors[Number(changeSincePurchase >= 0)];
   const defaultColors = valueColors[Number(priceChange >= 0)];
