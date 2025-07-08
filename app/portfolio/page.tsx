@@ -4,13 +4,11 @@ import AddAssetModal from "../components/AddAssetModal";
 import DeleteAssetModal from "../components/DeleteAssetModal";
 import PortfolioAsset from "../components/PortfolioAsset";
 import GradientBorderButton from "../components/GradientBorderButton";
-import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
 import {
   addLocalStorage,
   deleteAsset,
 } from "@/lib/features/portfolio/portfolioSlice";
 import { formatPortfolioCoin } from "@/lib/format/formatPortfolioCoin";
-import { formatErrorMessage } from "@/lib/format/formatErrorMessage";
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
 export default function Portfolio() {
@@ -20,16 +18,8 @@ export default function Portfolio() {
   const [assetData, setAssetData] = useState(null);
   const [index, setIndex] = useState(-1);
   const portfolio = useAppSelector((state) => state.portfolio);
+  const coinsList = useAppSelector((state) => state.coinsList);
   const dispatch = useAppDispatch();
-
-  const {
-    data: data = [],
-    isLoading,
-    isSuccess,
-    isError,
-    error,
-    refetch,
-  } = useAllCoinsQuery({ currency: currency.currency, page: 1 });
 
   const toggleAddModal = (assetData: any, index: number) => {
     setAssetData(assetData);
@@ -37,8 +27,8 @@ export default function Portfolio() {
     setAddAssetVisible((current) => !current);
   };
 
-  const toggleDeleteModal = (data: any, index: number, id: any) => {
-    setAssetData(data);
+  const toggleDeleteModal = (coinsList: any, index: number, id: any) => {
+    setAssetData(coinsList);
     setIndex(index);
     setDeleteAssetVisible((current) => !current);
     if (id) {
@@ -51,48 +41,53 @@ export default function Portfolio() {
     if (storageItem) {
       dispatch(addLocalStorage(JSON.parse(storageItem)));
     }
-    if (currency) {
-      refetch();
-    }
-  }, [dispatch, currency, refetch]);
+  }, [dispatch, coinsList, currency]);
 
   return (
     <div className="relative flex flex-col gap-[2vh] py-[4vh] max-md:py-[0vh] max-sm:pb-[100px] max-md:w-full">
       <div className="flex justify-between items-center">
-        <h2 className="lg:2xl:text-5xl text-[--dark-slate-blue] dark:text-white">
+        <h2 className="lg:2xl:text-4xl text-[--dark-slate-blue] dark:text-white">
           Your statistics
         </h2>
         <GradientBorderButton
           handleClick={toggleAddModal}
           argumentList={[assetData, -1]}
           background=""
-          buttonClasses="w-[244px] max-sm:w-[140px] lg:2xl:w-[488px] h-[44px] max-sm:h-[32px] lg:2xl:h-[88px]"
-          spanClasses="lg:2xl:text-3xl max-sm:text-sm"
+          buttonClasses="w-[244px] max-sm:w-[140px] lg:2xl:w-[366px] h-[44px] max-sm:h-[32px] lg:2xl:h-[66px]"
+          spanClasses="lg:2xl:text-2xl max-sm:text-sm"
           text={"Add Asset"}
           active={true}
         >
           {null}
         </GradientBorderButton>
       </div>
-      {isLoading && (
-        <span className="text-center mt-[16vh] text-[--dark-slate-blue] dark:text-white">
-          Loading...
-        </span>
-      )}
-      {isSuccess && (
+      {coinsList.length && (
         <div className="w-full flex flex-col gap-[2vh]">
           {portfolio.length ? (
             portfolio.map((assetData: any, index: number) => {
               const apiData = formatPortfolioCoin(
-                data.find((element: any) => element.id === assetData.coinId)
+                coinsList.find(
+                  (element: any) => element.id === assetData.coinId
+                )
               );
+              console.log();
               return (
                 <PortfolioAsset
                   key={assetData.id}
                   toggleAddModal={toggleAddModal}
                   toggleDeleteModal={toggleDeleteModal}
                   assetData={assetData}
-                  apiData={apiData}
+                  apiData={
+                    apiData
+                      ? apiData
+                      : {
+                          circulating: null,
+                          marketCap: null,
+                          price: null,
+                          priceChange: null,
+                          totalVolume: null,
+                        }
+                  }
                   index={index}
                   currency={currency}
                 />
@@ -105,20 +100,12 @@ export default function Portfolio() {
           )}
         </div>
       )}
-      {isError && (
-        <span className="text-center mt-[16vh] text-[--dark-slate-blue] dark:text-white">
-          {formatErrorMessage(error)}
-        </span>
-      )}
       {addAssetVisible && (
         <AddAssetModal
           toggleAddModal={toggleAddModal}
           assetData={assetData}
           index={index}
-          data={data}
-          isLoading={isLoading}
-          isSuccess={isSuccess}
-          isError={isError}
+          coinsList={coinsList}
         />
       )}
       {deleteAssetVisible && (

@@ -19,20 +19,9 @@ const AddAssetModal = (props: {
   toggleAddModal: any;
   assetData: any;
   index: number;
-  data: any;
-  isLoading: boolean;
-  isSuccess: boolean;
-  isError: boolean;
+  coinsList: any;
 }) => {
-  const {
-    toggleAddModal,
-    assetData,
-    index,
-    data,
-    isLoading,
-    isSuccess,
-    isError,
-  } = props;
+  const { toggleAddModal, assetData, index, coinsList } = props;
   const [asset, setAsset] = useState({
     id: Math.random(),
     coinId: "",
@@ -47,17 +36,13 @@ const AddAssetModal = (props: {
   const [skip, setSkip] = useState(true);
   const [disabled, setDisabled] = useState(true);
   const [defaultValue, setDefaultValue] = useState("");
-  const today = new Date();
-  const day = today.getDate();
-  const month = today.getMonth() + 1;
-  const year = today.getFullYear();
+  const [day, setDay] = useState(0);
+  const [month, setMonth] = useState(0);
+  const [year, setYear] = useState(0);
   const [updated, setUpdated] = useState(false);
   const dispatch = useAppDispatch();
 
-  const {
-    data: coinData = {},
-    isSuccess: coinIsSuccess,
-  } = useCoinQuery(
+  const { data: coinData = {}, isSuccess: coinIsSuccess } = useCoinQuery(
     {
       coinId: asset.coinId,
       date: asset.apiDate,
@@ -85,7 +70,7 @@ const AddAssetModal = (props: {
   const handleChange = (event: any, keyName: any) => {
     const newAsset: any = JSON.parse(JSON.stringify(asset));
     if (keyName === "coinId") {
-      const apiData = data.find((coin: any) => coin.id === event);
+      const apiData = coinsList.find((coin: any) => coin.id === event);
       if (apiData) {
         const { id, name, symbol, image } = apiData;
         newAsset.coinId = id;
@@ -126,7 +111,13 @@ const AddAssetModal = (props: {
     if (Object.keys(asset.initialPrice).length) {
       setDisabled(false);
     }
-  }, [assetData, asset, coinData.market_data.current_price, coinIsSuccess, defaultValue, updated]);
+    if (!day) {
+      const today = new Date();
+      setDay(today.getDate());
+      setMonth(today.getMonth() + 1);
+      setYear(today.getFullYear());
+    }
+  }, [assetData, asset, coinData, coinIsSuccess, coinsList, day, defaultValue, updated]);
 
   return (
     <div className="fixed top-0 left-0 flex justify-center items-center w-[100vw] h-[100vh] bg-black/5 dark:bg-white/5 backdrop-blur-sm">
@@ -167,24 +158,19 @@ const AddAssetModal = (props: {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="max-md:h-[40vh] max-md:w-[224px] lg:2xl:text-2xl">
-                {isLoading && (
-                  <SelectItem value="" className="w-full lg:2xl:text-2xl">
-                    Loading...
-                  </SelectItem>
-                )}
-                {isSuccess &&
-                  formatAllCoins(data).map((coin: any) => {
-                    return (
-                      <SelectItem
-                        key={coin.id}
-                        value={coin.id}
-                        className="w-full lg:2xl:text-2xl"
-                      >
-                        {coin.name}
-                      </SelectItem>
-                    );
-                  })}
-                {isError && null}
+                {coinsList
+                  ? formatAllCoins(coinsList).map((coin: any) => {
+                      return (
+                        <SelectItem
+                          key={coin.id}
+                          value={coin.id}
+                          className="w-full lg:2xl:text-2xl"
+                        >
+                          {coin.name}
+                        </SelectItem>
+                      );
+                    })
+                  : null}
               </SelectContent>
             </Select>
             <input
