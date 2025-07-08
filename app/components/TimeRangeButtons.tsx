@@ -31,15 +31,15 @@ const TimeRangeButtons = (props: { updateChart: any }) => {
   };
 
   return (
-    <div className="w-fit h-[42px] lg:2xl:h-[84px] p-[4px] lg:2xl:p-[8px] mt-[2vh] flex gap-[8px] lg:2xl:gap-[16px] rounded-[6px] lg:2xl:rounded-[12px] bg-[--lavender] dark:bg-[--dark-gunmetal]">
+    <div className="w-fit h-[42px] lg:2xl:h-[63px] p-[4px] lg:2xl:p-[6px] mt-[2vh] flex gap-[8px] lg:2xl:gap-[12px] rounded-[6px] lg:2xl:rounded-[9px] bg-[--lavender] dark:bg-[--dark-gunmetal]">
       {timeRanges.map((element) => (
         <GradientBorderButton
           key={element.time}
           handleClick={handleClick}
           argumentList={[element]}
           background="bg-transparent"
-          buttonClasses="w-[56px] max-sm:w-[40px] lg:2xl:w-[112px] h-[34px] max-sm:h-[32px] lg:2xl:h-[68px]"
-          spanClasses="text-[--dark-slate-blue] dark:text-white text-sm max-sm:text-xs lg:2xl:text-2xl"
+          buttonClasses="w-[56px] max-sm:w-[40px] lg:2xl:w-[84px] h-[34px] max-sm:h-[32px] lg:2xl:h-[51px]"
+          spanClasses="text-[--dark-slate-blue] dark:text-white text-sm max-sm:text-xs lg:2xl:text-xl"
           text={element.time}
           active={element.active}
         >{null}</GradientBorderButton>

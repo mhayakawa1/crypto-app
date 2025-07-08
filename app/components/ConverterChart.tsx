@@ -54,13 +54,10 @@ const ConverterChart = (props: {
         height={"h-[32vh] max-md:max-xl:h-[16vh]"}
         width={"w-full"}
         data={coinData}
+        className=''
         color={"var(--soft-blue"}
         fill={"url(#area-blue)"}
-        dataB={null}
-        activeCoins={[]}
-        compareData={false}
         shouldUpdateChart={true}
-        toggleUpdateCharts={null}
       />
     </ChartContainer>
   );
