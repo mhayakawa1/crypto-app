@@ -1,11 +1,6 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-} from "@/components/ui/chart";
+import { useState, useEffect } from "react";
+import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Area, AreaChart, XAxis, YAxis, Line } from "recharts";
 
 const chartConfig = {
@@ -24,34 +19,26 @@ const AreaChartComponent = (props: {
   height: string;
   width: string;
   data: any;
+  className: string;
   color: any;
   fill: any;
-  dataB: any;
-  activeCoins: any;
-  compareData: boolean;
   shouldUpdateChart: boolean;
-  toggleUpdateCharts: any;
 }) => {
   const {
     xAxis,
     height,
     width,
     data,
+    className,
     color,
     fill,
-    dataB,
-    activeCoins,
-    compareData,
     shouldUpdateChart,
-    toggleUpdateCharts,
   } = props;
-  const twoCoinsActive = activeCoins.length === 2;
-  const prevChartData = useRef<any>([{ name: "", value: 0 }]);
-  const [compareActive, setCompareActive] = useState(true);
   const [chartData, setChartData] = useState(data);
   const gradientInfo = [
     { id: "area-blue", stopColor: "var(--soft-blue)" },
     { id: "area-purple", stopColor: "var(--light-purple)" },
+    { id: "area-magenta", stopColor: "var(--magenta)" },
     { id: "area-rising", stopColor: "var(--rising)" },
     { id: "area-falling", stopColor: "var(--falling)" },
   ];
@@ -61,43 +48,15 @@ const AreaChartComponent = (props: {
       if (data[0].value !== chartData[0].value) {
         setChartData(data);
       }
-      if (twoCoinsActive && dataB.length && JSON.stringify(prevChartData.current) !== JSON.stringify(chartData)) {
-        const newData = data.map((element: any, index: number) => {
-          if (dataB[index]) {
-            return {
-              name: element.name,
-              value: element.value,
-              valueB: dataB[index].value,
-            };
-          }
-        });
-        prevChartData.current = chartData;
-        toggleUpdateCharts(false);
-        setChartData(newData);
-        chartConfig.value.label = activeCoins[0].name;
-        chartConfig.valueB.label = activeCoins[1].name;
-      }
     }
-    if (compareData && twoCoinsActive) {
-      setCompareActive(true);
-    } else {
-      setCompareActive(false);
-    }
-  }, [
-    data,
-    compareData,
-    compareActive,
-    twoCoinsActive,
-    dataB,
-    activeCoins,
-    chartData,
-    shouldUpdateChart,
-    toggleUpdateCharts,
-  ]);
+  }, [data, chartData, shouldUpdateChart]);
 
   return (
-    <ChartContainer className={`${height} ${width} m-0`} config={chartConfig}>
-      <AreaChart accessibilityLayer data={chartData}>
+    <ChartContainer
+      className={`${height} ${width} ${className} m-0 bottom-[2vh]`}
+      config={chartConfig}
+    >
+      <AreaChart accessibilityLayer data={chartData} className="h-[164px]">
         <defs>
           {gradientInfo.map((element: any) => (
             <linearGradient
@@ -122,19 +81,15 @@ const AreaChartComponent = (props: {
           ))}
         </defs>
         <Line type="monotone" dataKey="value" stroke={color} dot={false} />
-        {xAxis && (
-          <XAxis
-            dataKey="name"
-            axisLine={false}
-            tickLine={false}
-            className="border border-red-500"
-          />
-        )}
+        {xAxis && <XAxis dataKey="name" axisLine={false} tickLine={false} />}
         <YAxis
-          domain={["auto", "dataMax"]}
+          dataKey="value"
+          domain={["auto", "dataMax+(dataMax/2)"]}
           axisLine={false}
           tick={false}
           width={0}
+          scale="log"
+          allowDataOverflow={false}
         />
         <Area
           dataKey="value"
@@ -144,17 +99,6 @@ const AreaChartComponent = (props: {
           fillOpacity={1}
           fill={fill}
         />
-        {compareActive && (
-          <Area
-            dataKey="valueB"
-            radius={4}
-            stroke="var(--light-purple)"
-            type="natural"
-            fillOpacity={1}
-            fill="url(#area-purple)"
-          />
-        )}
-        {compareActive && <ChartLegend content={<ChartLegendContent />} />}
       </AreaChart>
     </ChartContainer>
   );
