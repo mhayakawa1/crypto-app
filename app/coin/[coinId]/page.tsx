@@ -169,7 +169,7 @@ export default function CoinPage(props: { params: Params }) {
     let profit = "--";
     if (asset) {
       const profitNumber =
-        (current_price.usd - asset.initialPrice) * asset.coinAmount;
+        (current_price[currency] - asset.initialPrice[currency]) * asset.coinAmount;
       const loss = profitNumber < 0;
       profit = profitNumber.toLocaleString();
       if (loss) {
@@ -220,16 +220,16 @@ export default function CoinPage(props: { params: Params }) {
       prevCurrency.current = currency;
     }
   }, [
-    data,
-    isSuccess,
-    error,
-    isError,
     coinData.name,
-    getCoinData,
-    portfolio.length,
-    dispatch,
     currency,
+    data,
+    dispatch,
+    error,
+    getCoinData,
+    isError,
     initialRender,
+    isSuccess,
+    portfolio.length,
     refetch,
   ]);
 
@@ -397,7 +397,7 @@ export default function CoinPage(props: { params: Params }) {
             </div>
           </div>
         )}
-        {((!data.length && !isLoading) || isError) && (
+        {isError && (
           <h3 className="pt-[25vh] lg:2xl:text-2xl text-[--dark-slate-blue] dark:text-white">
             Error: No data
           </h3>
