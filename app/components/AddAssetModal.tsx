@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useCoinQuery } from "@/lib/features/api/apiSlice";
-import { useAppDispatch } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { addAsset, editAsset } from "@/lib/features/portfolio/portfolioSlice";
 import { formatAllCoins } from "@/lib/format/formatAllCoins";
 import Exit from "../../src/icons/Close_Circle.svg";
@@ -19,9 +19,8 @@ const AddAssetModal = (props: {
   toggleAddModal: any;
   assetData: any;
   index: number;
-  coinsList: any;
 }) => {
-  const { toggleAddModal, assetData, index, coinsList } = props;
+  const { toggleAddModal, assetData, index } = props;
   const [asset, setAsset] = useState({
     id: Math.random(),
     coinId: "",
@@ -40,6 +39,7 @@ const AddAssetModal = (props: {
   const [month, setMonth] = useState(0);
   const [year, setYear] = useState(0);
   const [updated, setUpdated] = useState(false);
+  const coinsList: any = useAppSelector((state) => state.coinsList);
   const dispatch = useAppDispatch();
 
   const { data: coinData = {}, isSuccess: coinIsSuccess } = useCoinQuery(
@@ -117,7 +117,16 @@ const AddAssetModal = (props: {
       setMonth(today.getMonth() + 1);
       setYear(today.getFullYear());
     }
-  }, [assetData, asset, coinData, coinIsSuccess, coinsList, day, defaultValue, updated]);
+  }, [
+    assetData,
+    asset,
+    coinData,
+    coinIsSuccess,
+    coinsList,
+    day,
+    defaultValue,
+    updated,
+  ]);
 
   return (
     <div className="fixed top-0 left-0 flex justify-center items-center w-[100vw] h-[100vh] bg-black/5 dark:bg-white/5 backdrop-blur-sm">

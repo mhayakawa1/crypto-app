@@ -31,6 +31,7 @@ export default function CoinPage(props: { params: Params }) {
   const [textHidden, setTextHidden] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [initialRender, setInitialRender] = useState(true);
+  const [readMoreVisible, setReadMoreVisible] = useState(true);
   const [coinData, setCoinData] = useState({
     src: "",
     name: "",
@@ -134,11 +135,15 @@ export default function CoinPage(props: { params: Params }) {
       let value = market_data;
       const keys = string.split(".");
       keys.forEach((k) => {
-        value = typeof value[k] === "object" ? value[k][currency] : value[k];
+        value =
+          value[k] === null
+            ? "--"
+            : typeof value[k] === "object"
+            ? value[k][currency]
+            : value[k];
       });
       return value;
     };
-
     newListData = newListData.map((element) => {
       if (element.key) {
         element.value = getValue(element.key);
@@ -158,7 +163,7 @@ export default function CoinPage(props: { params: Params }) {
       element.mobileValue = formatNumber(Number(value), symbol.toUpperCase());
       if (Number(element.value) > 1) {
         element.value = `${
-          currency.start ? symbol+space : ""
+          currency.start ? symbol + space : ""
         }${value.toLocaleString()} ${
           !currency.start ? coinSymbol.toUpperCase() : ""
         }`;
@@ -170,7 +175,7 @@ export default function CoinPage(props: { params: Params }) {
     let profit = "--";
     if (asset) {
       const profitNumber =
-        (current_price.usd - asset.initialPrice) * asset.coinAmount;
+        (current_price[currency] - asset.initialPrice[currency]) * asset.coinAmount;
       const loss = profitNumber < 0;
       profit = profitNumber.toLocaleString();
       if (loss) {
@@ -240,13 +245,13 @@ export default function CoinPage(props: { params: Params }) {
       <div className="mt-[6vh] max-sm:mt-[1vh] mb-[4vh]">
         <Link
           href="/portfolio"
-          className="text-[--dark-slate-blue] dark:text-white max-sm:text-sm lg:2xl:text-2xl"
+          className="text-[--dark-slate-blue] dark:text-white max-sm:text-sm lg:2xl:text-xl"
         >
           Portfolio / Your {coinName} summary
         </Link>
       </div>
       {isLoading && (
-        <h2 className="lg:2xl:text-4xl text-[--dark-slate-blue] dark:text-white">
+        <h2 className="lg:2xl:text-3xl text-[--dark-slate-blue] dark:text-white">
           Loading...
         </h2>
       )}
@@ -254,31 +259,33 @@ export default function CoinPage(props: { params: Params }) {
         <div className="flex flex-col gap-[8vh] w-full max-md:gap-[4vh] justify-between">
           <div className="w-full flex flex-col justify-between gap-[4vw] md:max-xl:gap-[4vh]">
             <div className="flex justify-between max-sm:flex-col gap-[4vw]">
-              <div className="flex justify-between flex-col gap-[16px] lg:2xl:gap-[32px] w-[44%] max-sm:w-full">
-                <Panel className="flex justify-center max-sm:justify-start items-center flex-col max-sm:flex-row grow gap-[24px] max-sm:gap-[2vw] lg:2xl:gap-[48px] max-sm:py-[2vh] max-sm:px-[2vw]">
-                  <div className="p-[16px] max-sm:p-0 lg:2xl:p-[32px] rounded-xl w-[64px] max-sm:w-auto lg:2xl:w-[128px] aspect-square h-auto bg-[--lavender] max-sm:bg-transparent dark:bg-[--space-cadet]">
-                    <Avatar className="rounded-full w-[32px] lg:2xl:w-[64px] h-[32px] lg:2xl:h-[64px]">
+              <div className="flex justify-between flex-col gap-[16px] lg:2xl:gap-[24px] w-[44%] max-sm:w-full">
+                <Panel className="flex justify-center max-sm:justify-start items-center flex-col max-sm:flex-row grow gap-[24px] max-sm:gap-[2vw] lg:2xl:gap-[36px] max-sm:py-[2vh] max-sm:px-[2vw]">
+                  <div className="p-[16px] max-sm:p-0 lg:2xl:p-[24px] rounded-xl w-[64px] max-sm:w-auto lg:2xl:w-[96px] aspect-square h-auto bg-[--lavender] max-sm:bg-transparent dark:bg-[--space-cadet]">
+                    <Avatar className="rounded-full w-[32px] lg:2xl:w-[48px] h-[32px] lg:2xl:h-[48px]">
                       <AvatarImage src={coinData.src} />
                       <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                   </div>
-                  <h2 className="text-2xl max-sm:text-lg lg:2xl:text-5xl">{coinName}</h2>
+                  <h2 className="text-2xl max-sm:text-lg lg:2xl:text-4xl">
+                    {coinName}
+                  </h2>
                 </Panel>
                 <LinkContainer
                   link={coinData.homeLink}
                   sliceIndex={coinData.homeLink.indexOf("www.") + 4}
                 />
               </div>
-              <Panel className="flex justify-center items-center grow p-[40px] lg:2xl:p-[80px] max-sm:px-[2vw]">
-                <ul className="self-center flex flex-col justify-center gap-[20px] lg:2xl:gap-[40px] h-fit">
-                  <li className="flex items-center gap-[16px] lg:2xl:gap-[32px] h-[25px] lg:2xl:h-[50px]">
-                    <span className="text-4xl max-sm:text-3xl lg:2xl:text-7xl font-bold">
+              <Panel className="flex justify-center items-center grow p-[40px] lg:2xl:p-[60px] max-sm:px-[2vw]">
+                <ul className="self-center flex flex-col justify-center gap-[20px] lg:2xl:gap-[30px] h-fit">
+                  <li className="flex items-center gap-[16px] lg:2xl:gap-[24px] h-[24px] lg:2xl:h-[36px]">
+                    <span className="text-4xl max-sm:text-3xl lg:2xl:text-6xl font-bold">
                       {coinData.price}
                     </span>
                     <span
                       className={`${
                         coinData.rising ? "text-[--rising]" : "text-[--falling]"
-                      } h-[14px] lg:2xl:h-[28px] flex items-center`}
+                      } h-[14px] lg:2xl:h-[21px] flex items-center`}
                     >
                       <Image
                         src={
@@ -286,15 +293,15 @@ export default function CoinPage(props: { params: Params }) {
                         }
                         width="0"
                         height="0"
-                        className="self-start w-[9px] max-sm:w-[6px] lg:2xl:w-[18px] h-auto mx-[5px] lg:2xl:mx-[10px] my-auto"
+                        className="self-start w-[8px] max-sm:w-[6px] lg:2xl:w-[12px] h-auto mx-[4px] lg:2xl:mx-[6px] my-auto"
                         alt=""
                       />
-                      <span className="text-xl max-sm:text-base lg:2xl:text-4xl">
+                      <span className="text-xl max-sm:text-base lg:2xl:text-3xl">
                         {coinData.priceChange}%
                       </span>
                     </span>
                   </li>
-                  <li className="text-xl max-sm:text-base lg:2xl:text-4xl text-left">
+                  <li className="text-xl max-sm:text-base lg:2xl:text-3xl text-left">
                     Profit:
                     <span
                       className={`${
@@ -303,18 +310,18 @@ export default function CoinPage(props: { params: Params }) {
                           : coinData.rising
                           ? "text-[--rising]"
                           : "text-[--falling]"
-                      } text-2xl max-sm:text-xl lg:2xl:text-5xl ml-[16px] lg:2xl:ml-[32px]`}
+                      } text-2xl max-sm:text-xl lg:2xl:text-4xl ml-[16px] lg:2xl:ml-[24px]`}
                     >
                       {coinData.profit}
                     </span>
                   </li>
-                  <li className="flex justify-center self-center mx-auto w-[24px] lg:2xl:w-[48px] aspect-auto">
+                  <li className="flex justify-center self-center mx-auto w-[24px] lg:2xl:w-[36px] aspect-auto">
                     <Image
                       width="0"
                       height="0"
                       src={darkActive ? PortfolioWhite : PortfolioBlue}
                       alt=""
-                      className="w-[24px] lg:2xl:w-[48px] h-auto"
+                      className="w-[24px] lg:2xl:w-[36px] h-auto"
                     />
                   </li>
                   <HighLow
@@ -335,7 +342,7 @@ export default function CoinPage(props: { params: Params }) {
                 {coinData.listData.map((element, index) => (
                   <li
                     key={index}
-                    className={`xl:h-[24px] xl:w-[48%] flex xl:flex-wrap justify-between gap-[24px] lg:2xl:gap-[48px] text-base max-sm:text-sm lg:2xl:text-3xl ${
+                    className={`xl:h-[24px] xl:w-[48%] flex xl:flex-wrap justify-between gap-[24px] lg:2xl:gap-[36px] text-base max-sm:text-sm lg:2xl:text-2xl ${
                       index === 4 && "mt-[32px] xl:mt-0"
                     }`}
                   >
@@ -363,28 +370,35 @@ export default function CoinPage(props: { params: Params }) {
           </div>
           <div className="w-full flex justify-between max-md:flex-col-reverse max-md:gap-[4vh]">
             <div className="flex flex-col gap-[2vh] w-[50%] max-md:w-full">
-              <h4 className="text-xl lg:2xl:text-4xl font-medium text-[--dark-slate-blue] dark:text-white">
+              <h4 className="text-xl lg:2xl:text-3xl font-medium text-[--dark-slate-blue] dark:text-white">
                 Description
               </h4>
               <p
+                ref={(el) => {
+                  if (!el) return;
+                  const height = el.getBoundingClientRect().height;
+                  setReadMoreVisible(height >= 210);
+                }}
                 className={`${
                   textHidden
-                    ? "overflow-hidden text-ellipsis h-[210px]"
-                    : "flex flex-col h-auto"
-                } relative text-sm/[21px] lg:2xl:text-2xl/[42px] w-full text-[--dark-slate-blue] dark:text-white`}
+                    ? "overflow-hidden text-ellipsis max-h-[200px]"
+                    : "flex flex-col"
+                } h-auto relative text-sm/[20px] lg:2xl:text-xl/[30px] w-full text-[--dark-slate-blue] dark:text-white`}
               >
                 {coinData.description}
-                <button
-                  onClick={toggleDescription}
-                  className={`${
-                    textHidden ? "absolute bottom-0 right-0" : "self-end"
-                  } pl-[16px] lg:2xl:pl-[32px] text-[#6060ff] text-sm lg:2xl:text-2xl h-[21px] lg:2xl:h-[42px] bg-gradient-to-r from-transparent from-0% to-[--light-gray] dark:to-[--black-russian] to-20%`}
-                >
-                  {textHidden ? "...read more" : "read less"}
-                </button>
+                {readMoreVisible && (
+                  <button
+                    onClick={toggleDescription}
+                    className={`${
+                      textHidden ? "absolute bottom-0 right-0" : "self-end"
+                    } pl-[16px] lg:2xl:pl-[24px] text-[#6060ff] text-sm lg:2xl:text-xl h-[20px] lg:2xl:h-[30px] bg-gradient-to-r from-transparent from-0% to-[--light-gray] dark:to-[--black-russian] to-20%`}
+                  >
+                    {textHidden ? "...read more" : "read less"}
+                  </button>
+                )}
               </p>
             </div>
-            <div className="flex flex-col gap-[24px] lg:2xl:gap-[48px] w-[40%] max-md:w-full">
+            <div className="flex flex-col gap-[24px] lg:2xl:gap-[36px] w-[40%] max-md:w-full">
               {coinData.blockchainLinks.map((link: string, index: number) => (
                 <LinkContainer key={index} link={link} sliceIndex={8} />
               ))}
@@ -393,7 +407,7 @@ export default function CoinPage(props: { params: Params }) {
         </div>
       )}
       {isError && (
-        <h2 className="lg:2xl:text-5xl text-[--dark-slate-blue] dark:text-white">
+        <h2 className="lg:2xl:text-4xl text-[--dark-slate-blue] dark:text-white">
           {errorMessage}
         </h2>
       )}

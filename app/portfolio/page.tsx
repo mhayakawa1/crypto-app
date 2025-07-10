@@ -70,7 +70,6 @@ export default function Portfolio() {
                   (element: any) => element.id === assetData.coinId
                 )
               );
-              console.log();
               return (
                 <PortfolioAsset
                   key={assetData.id}
@@ -105,7 +104,6 @@ export default function Portfolio() {
           toggleAddModal={toggleAddModal}
           assetData={assetData}
           index={index}
-          coinsList={coinsList}
         />
       )}
       {deleteAssetVisible && (
