@@ -30,6 +30,7 @@ export default function CoinPage(props: { params: Params }) {
   const darkActive = useAppSelector((state) => state.theme)[0].darkActive;
   const [textHidden, setTextHidden] = useState(true);
   const [initialRender, setInitialRender] = useState(true);
+  const [readMoreVisible, setReadMoreVisible] = useState(true);
   const [coinData, setCoinData] = useState({
     src: "",
     name: "",
@@ -133,7 +134,12 @@ export default function CoinPage(props: { params: Params }) {
       let value = market_data;
       const keys = string.split(".");
       keys.forEach((k) => {
-        value = typeof value[k] === "object" ? value[k][currency] : value[k];
+        value =
+          value[k] === null
+            ? "--"
+            : typeof value[k] === "object"
+            ? value[k][currency]
+            : value[k];
       });
       return value;
     };
@@ -169,7 +175,8 @@ export default function CoinPage(props: { params: Params }) {
     let profit = "--";
     if (asset) {
       const profitNumber =
-        (current_price[currency] - asset.initialPrice[currency]) * asset.coinAmount;
+        (current_price[currency] - asset.initialPrice[currency]) *
+        asset.coinAmount;
       const loss = profitNumber < 0;
       profit = profitNumber.toLocaleString();
       if (loss) {
@@ -197,6 +204,14 @@ export default function CoinPage(props: { params: Params }) {
     };
     setCoinData(newCoinData);
   }, [coinData.listData, data, portfolio, currency, symbol]);
+
+  const updateDescription = (element: any) => {
+    {
+      if (!element) return;
+      const height = element.getBoundingClientRect().height;
+      setReadMoreVisible(height >= 180);
+    }
+  };
 
   useEffect(() => {
     if (
@@ -367,28 +382,33 @@ export default function CoinPage(props: { params: Params }) {
               </Panel>
             </div>
             <div className="w-full flex justify-between max-md:flex-col-reverse max-md:gap-[4vh]">
-              <div className="flex flex-col gap-[2vh] w-[50%] max-md:w-full">
-                <h4 className="text-xl lg:2xl:text-3xl font-medium text-[--dark-slate-blue] dark:text-white">
-                  Description
-                </h4>
-                <p
-                  className={`${
-                    textHidden
-                      ? "overflow-hidden text-ellipsis h-[210px]"
-                      : "flex flex-col h-auto"
-                  } relative text-sm/[20px] lg:2xl:text-xl/[30px] w-full text-[--dark-slate-blue] dark:text-white`}
-                >
-                  {coinData.description}
-                  <button
-                    onClick={toggleDescription}
+              {coinData.description.length && (
+                <div className="flex flex-col gap-[2vh] w-[50%] max-md:w-full">
+                  <h4 className="text-xl lg:2xl:text-3xl font-medium text-[--dark-slate-blue] dark:text-white">
+                    Description
+                  </h4>
+                  <p
+                    ref={(element: any) => updateDescription(element)}
                     className={`${
-                      textHidden ? "absolute bottom-0 right-0" : "self-end"
-                    } pl-[16px] lg:2xl:pl-[24px] text-[#6060ff] text-sm lg:2xl:text-xl h-[20px] lg:2xl:h-[30px] bg-gradient-to-r from-transparent from-0% to-[--light-gray] dark:to-[--black-russian] to-20%`}
+                      textHidden
+                        ? "overflow-hidden text-ellipsis max-h-[180px]"
+                        : "flex flex-col"
+                    } h-auto relative text-sm/[20px] lg:2xl:text-xl/[30px] w-full text-[--dark-slate-blue] dark:text-white`}
                   >
-                    {textHidden ? "...read more" : "read less"}
-                  </button>
-                </p>
-              </div>
+                    {coinData.description}
+                    {readMoreVisible && (
+                      <button
+                        onClick={toggleDescription}
+                        className={`${
+                          textHidden ? "absolute bottom-0 right-0" : "self-end"
+                        } pl-[16px] lg:2xl:pl-[24px] text-[#6060ff] text-sm lg:2xl:text-xl h-[20px] lg:2xl:h-[30px] bg-gradient-to-r from-transparent from-0% to-[--light-gray] dark:to-[--black-russian] to-20%`}
+                      >
+                        {textHidden ? "...read more" : "read less"}
+                      </button>
+                    )}
+                  </p>
+                </div>
+              )}
               <div className="flex flex-col gap-[24px] lg:2xl:gap-[36px] w-[40%] max-md:w-full">
                 {coinData.blockchainLinks.map((link: string, index: number) => (
                   <LinkContainer key={index} link={link} sliceIndex={8} />
