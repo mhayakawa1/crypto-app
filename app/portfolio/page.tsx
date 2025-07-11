@@ -61,7 +61,7 @@ export default function Portfolio() {
           {null}
         </GradientBorderButton>
       </div>
-      {coinsList.length && (
+      {coinsList.length ? (
         <div className="w-full flex flex-col gap-[2vh]">
           {portfolio.length ? (
             portfolio.map((assetData: any, index: number) => {
@@ -98,6 +98,8 @@ export default function Portfolio() {
             </h3>
           )}
         </div>
+      ) : (
+        <h3 className="text-center mt-[16vh] text-[--dark-slate-blue] dark:text-white">No data.</h3>
       )}
       {addAssetVisible && (
         <AddAssetModal
