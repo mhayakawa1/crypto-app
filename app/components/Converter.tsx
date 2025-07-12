@@ -2,6 +2,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
 import { formatAllCoins } from "@/lib/format/formatAllCoins";
+import { useAppSelector } from "@/lib/hooks";
 import ConverterChart from "./ConverterChart";
 import ConverterInputs from "./ConverterInputs";
 import TimeRangeButtons from "./TimeRangeButtons";
@@ -9,6 +10,7 @@ import TimeRangeButtons from "./TimeRangeButtons";
 const Converter = (props: { currency: any }) => {
   const { currency } = props;
   const prevFirstPrice = useRef<any>(0);
+  const coinsList = useAppSelector((state) => state.coinsList)[0];
   const [firstPrice, setFirstPrice] = useState(null);
   const [formattedData, setFormattedData] = useState([]);
   const [amountCoinA, setAmountCoinA] = useState(1);
@@ -27,11 +29,12 @@ const Converter = (props: { currency: any }) => {
     [amountCoinA]
   );
 
-  const updateCoins = (data: any, amount: any, isCoinA: any, coinName: any) => {
+  const updateCoins = (amount: any, isCoinA: any, coinName: any) => {
     if (amount) {
       setAmountCoinA(amount);
     }
-    if (coinName) {
+    console.log(formattedData);
+    if (coinName && formattedData.length) {
       const newCoinData = data.find(
         (element: any) => element.name === coinName
       );
@@ -61,14 +64,14 @@ const Converter = (props: { currency: any }) => {
     if (isError && "error" in error) {
       setErrorMessage(error.error);
     }
-    if (isSuccess) {
-      const newFormattedData = formatAllCoins(data);
+    if (coinsList) {
+      const newFormattedData = formatAllCoins(coinsList);
       setFormattedData(newFormattedData);
       prevFirstPrice.current = firstPrice;
-      setFirstPrice(data[0].current_price);
-      if (firstPrice && firstPrice !== data[0].current_price) {
-        updateCoins(newFormattedData, null, true, coinA.name);
-        updateCoins(newFormattedData, null, false, coinB.name);
+      setFirstPrice(newFormattedData[0].current_price);
+      if (firstPrice && firstPrice !== coinsList[0].current_price) {
+        updateCoins(null, true, coinA.name);
+        updateCoins(null, false, coinB.name);
       }
     }
     if (!formattedDate.length) {
@@ -79,7 +82,17 @@ const Converter = (props: { currency: any }) => {
         )}`
       );
     }
-  }, [data, isSuccess, isError, error, firstPrice, coinA.name, coinB.name, formattedDate.length]);
+  }, [
+    coinsList,
+    isSuccess,
+    isError,
+    error,
+    firstPrice,
+    coinA.name,
+    coinB.name,
+    formattedDate.length,
+    updateCoins,
+  ]);
 
   return (
     <div>

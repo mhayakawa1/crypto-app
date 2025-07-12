@@ -14,10 +14,8 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
 });
 
-async function Body(props: { children: any, 
-//  currency: any 
-}) {
-  const { children} = props;
+async function Body(props: { children: any }) {
+  const { children } = props;
   let bannerData = {
     noData: true,
     coins: 0,
