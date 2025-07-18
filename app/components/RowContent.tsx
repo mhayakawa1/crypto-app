@@ -35,7 +35,7 @@ const RowContent = (props: {
   }
 
   return (
-    <TableBody className="flex flex-col gap-[8px] lg:2xl:gap-[16px]">
+    <TableBody className="flex flex-col gap-[8px] lg:2xl:gap-[12px]">
       {sortedList.map((data: any, index: number) => {
         const {
           id,
@@ -52,18 +52,18 @@ const RowContent = (props: {
         return (
           <TableRow
             key={id}
-            className="flex justify-between items-center gap-[8px] lg:2xl:gap-[16px] rounded-xl bg-white hover:bg-[--lavender] text-[--dark-slate-blue] dark:text-white dark:bg-[--mirage] w-full h-[78px] lg:2xl:h-[156px] border-none"
+            className="flex justify-between items-center gap-[8px] lg:2xl:gap-[12px] rounded-xl bg-white hover:bg-[--lavender] text-[--dark-slate-blue] dark:text-white dark:bg-[--mirage] w-full h-[78px] lg:2xl:h-[117px] border-none"
           >
             {!mobileView && (
-              <TableCell className="flex justify-between items-center gap-[8px] lg:2xl:gap-[16px] p-0 w-[4%]">
-                <span className="lg:2xl:text-3xl px-[10px] lg:2xl:px-[20px] grow text-center">
+              <TableCell className="flex justify-between items-center gap-[8px] lg:2xl:gap-[12px] p-0 w-[4%]">
+                <span className="lg:2xl:text-2xl px-[10px] lg:2xl:px-[15px] grow text-center">
                   {index + 1}
                 </span>
               </TableCell>
             )}
             <TableCell className="w-[16%] max-sm:w-[30%] h-full flex items-center p-0">
               <Link
-                className="flex max-sm:justify-center items-center gap-[16px] max-sm:gap-[8px] lg:2xl:gap-[32px] max-sm:pl-[8px] w-full"
+                className="flex max-sm:justify-center items-center gap-[16px] max-sm:gap-[8px] lg:2xl:gap-[24px] max-sm:pl-[8px] w-full"
                 href={`/coin/${id}`}
               >
                 {image !== null && (
@@ -72,13 +72,13 @@ const RowContent = (props: {
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 )}
-                <p className="lg:2xl:text-3xl max-sm:flex flex-col w-[100px] lg:2xl:w-auto truncate">
+                <p className="lg:2xl:text-2xl max-sm:flex flex-col w-[100px] lg:2xl:w-auto truncate">
                   {mobileView && <span>{symbol.toUpperCase()}</span>}
                   <span className="max-sm:text-xs">{name}</span>
                 </p>
               </Link>
             </TableCell>
-            <TableCell className="w-[8%] max-sm:w-[30%] h-full lg:2xl:text-3xl max-sm:text-center flex flex-col justify-center items-center">
+            <TableCell className="w-[8%] max-sm:w-[30%] h-full lg:2xl:text-2xl max-sm:text-center flex flex-col justify-center items-center">
               <span>
                 {price
                   ? `${currency.symbol}${
@@ -109,7 +109,7 @@ const RowContent = (props: {
                   key={index}
                   className={`text-sm ${
                     percent.rising ? "text-[--rising]" : "text-[--falling]"
-                  } w-[6%] p-0 lg:2xl:text-3xl`}
+                  } w-[6%] p-0 lg:2xl:text-2xl`}
                 >
                   {percent.value ? (
                     <div className="flex w-full m-0">
@@ -142,8 +142,8 @@ const RowContent = (props: {
             <TableCell className="rounded-r-xl p-0 w-grow max-sm:w-[40%] h-full flex items-center">
               <AreaChartComponent
                 xAxis={false}
-                height={"h-[36px] lg:2xl:h-[72px]"}
-                width={"w-[120px] lg:2xl:w-[240px] max-sm:grow"}
+                height={"h-[36px] lg:2xl:h-[54px]"}
+                width={"w-[120px] lg:2xl:w-[180px] max-sm:grow"}
                 data={lastSevenDays}
                 className=""
                 color={percents[2].rising ? "var(--rising)" : "var(--falling)"}

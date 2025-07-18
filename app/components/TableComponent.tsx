@@ -18,16 +18,6 @@ const TableComponent = (props: {
     props;
   const [sortValue, setSortValue] = useState("#");
   const [reverse, setReverse] = useState(false);
-  //   data: data = [],
-  //   isSuccess,
-  //   isError,
-  //   error,
-  //   refetch,
-  // } = useAllCoinsQuery({ currency: currency, page: page });
-
-  // const updateQuery = () => {
-  //   setPage(Number(page) + 1);
-  // };
 
   const updateValue = (name: string, value: any) => {
     if (sortValue === value) {
@@ -57,14 +47,14 @@ const TableComponent = (props: {
       endMessage={
         <p
           style={{ textAlign: "center" }}
-          className="lg:2xl:text-3xl text-[--dark-slate-blue] dark:text-white"
+          className="lg:2xl:text-2xl text-[--dark-slate-blue] dark:text-white"
         >
           <b>Yay! You have seen it all</b>
         </p>
       }
     >
-      <div className="w-full mt-[8px] lg:2xl:mt-[16px]">
-        <Table className="flex flex-col gap-[8px] lg:2xl:gap-[16px] border-separate border-spacing-y-[8px] lg:2xl:border-spacing-y-[16px] w-full lg:2xl:min-w-[2000px] max-lg:w-[1000px] max-sm:w-full overflow-x-scroll">
+      <div className="w-full mt-[8px] lg:2xl:mt-[12px]">
+        <Table className="flex flex-col gap-[8px] lg:2xl:gap-[12px] border-separate border-spacing-y-[8px] lg:2xl:border-spacing-y-[12px] w-full lg:2xl:min-w-[1500px] max-lg:w-[1000px] max-sm:w-full overflow-x-scroll">
           <TableHeader className="p-0">
             <TableHeaderContent
               updateValue={updateValue}
