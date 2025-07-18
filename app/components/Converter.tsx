@@ -1,26 +1,32 @@
 "use client";
-import { useState, useCallback, useEffect, useRef } from "react";
-import { useAllCoinsQuery } from "@/lib/features/api/apiSlice";
+import { useState, useCallback, useEffect } from "react";
 import { formatAllCoins } from "@/lib/format/formatAllCoins";
-import { useAppSelector } from "@/lib/hooks";
 import ConverterChart from "./ConverterChart";
 import ConverterInputs from "./ConverterInputs";
 import TimeRangeButtons from "./TimeRangeButtons";
 
-const Converter = (props: { currency: any }) => {
-  const { currency } = props;
-  const prevFirstPrice = useRef<any>(0);
-  const coinsList = useAppSelector((state) => state.coinsList)[0];
-  const [firstPrice, setFirstPrice] = useState(null);
-  const [formattedData, setFormattedData] = useState([]);
+const Converter = (props: { currency: any; coinsList: any }) => {
+  const { currency, coinsList } = props;
+  const [formattedData, setFormattedData]: any = useState([]);
   const [amountCoinA, setAmountCoinA] = useState(1);
   const [amountCoinB, setAmountCoinB] = useState(1);
-  const [coinA, setCoinA] = useState({ name: "", price: 0, symbol: "" });
-  const [coinB, setCoinB] = useState({ name: "", price: 0, symbol: "" });
+  const [coinA, setCoinA] = useState({
+    id: "bitcoin",
+    name: "",
+    price: 0,
+    symbol: "",
+  });
+  const [coinB, setCoinB] = useState({
+    id: "",
+    name: "",
+    price: 0,
+    symbol: "",
+  });
   const [days, setDays] = useState(1);
   const [intervalDaily, setIntervalDaily] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [formattedDate, setFormattedDate] = useState("");
+  const [shouldUpdateCoins, setShouldUpdateCoins] = useState(false);
+  const [dataAdded, setDataAdded] = useState(false);
 
   const convert = useCallback(
     (priceA: any, priceB: any) => {
@@ -29,30 +35,26 @@ const Converter = (props: { currency: any }) => {
     [amountCoinA]
   );
 
-  const updateCoins = (amount: any, isCoinA: any, coinName: any) => {
-    if (amount) {
-      setAmountCoinA(amount);
-    }
-    console.log(formattedData);
-    if (coinName && formattedData.length) {
-      const newCoinData = data.find(
-        (element: any) => element.name === coinName
-      );
-      if (isCoinA) {
-        setCoinA(newCoinData);
-      } else {
-        setCoinB(newCoinData);
+  const updateCoins = useCallback(
+    (amount: any, isCoinA: any, coinId: any) => {
+      if (amount) {
+        setAmountCoinA(amount);
       }
-    }
-  };
-
-  const {
-    data: data = [],
-    isLoading,
-    isSuccess,
-    isError,
-    error,
-  } = useAllCoinsQuery({ currency: currency.currency, page: 1 });
+      if (coinId) {
+        const newCoinData = formattedData.find(
+          (element: any) => element.id === coinId
+        );
+        if (isCoinA) {
+          setCoinA(newCoinData);
+        } else {
+          setCoinB(newCoinData);
+        }
+        setDataAdded(true);
+      }
+      setShouldUpdateCoins(false);
+    },
+    [formattedData]
+  );
 
   const updateChart = (range: any) => {
     const { days, intervalDaily } = range;
@@ -61,18 +63,14 @@ const Converter = (props: { currency: any }) => {
   };
 
   useEffect(() => {
-    if (isError && "error" in error) {
-      setErrorMessage(error.error);
-    }
-    if (coinsList) {
+    if (coinsList && !formattedData.length) {
       const newFormattedData = formatAllCoins(coinsList);
       setFormattedData(newFormattedData);
-      prevFirstPrice.current = firstPrice;
-      setFirstPrice(newFormattedData[0].current_price);
-      if (firstPrice && firstPrice !== coinsList[0].current_price) {
-        updateCoins(null, true, coinA.name);
-        updateCoins(null, false, coinB.name);
-      }
+      setShouldUpdateCoins(true);
+    }
+    if (shouldUpdateCoins && formattedData.length) {
+      updateCoins(null, true, formattedData[0].id);
+      updateCoins(null, false, formattedData[1].id);
     }
     if (!formattedDate.length) {
       const today = new Date();
@@ -84,18 +82,15 @@ const Converter = (props: { currency: any }) => {
     }
   }, [
     coinsList,
-    isSuccess,
-    isError,
-    error,
-    firstPrice,
-    coinA.name,
-    coinB.name,
-    formattedDate.length,
+    formattedData,
+    formattedData.length,
+    formattedDate,
     updateCoins,
+    shouldUpdateCoins,
   ]);
 
   return (
-    <div>
+    <div className="pb-[8vh]">
       <div className="flex flex-col justify-between items-start pb-[4vh]">
         <h2 className="text-[--dark-slate-blue] dark:text-white">
           Online currency converter
@@ -104,10 +99,7 @@ const Converter = (props: { currency: any }) => {
           {formattedDate}
         </p>
       </div>
-      {isLoading && (
-        <h3 className="text-[--dark-slate-blue] dark:text-white">Loading...</h3>
-      )}
-      {isSuccess && formattedData.length && (
+      {dataAdded && (
         <ConverterInputs
           data={formattedData}
           updateCoins={updateCoins}
@@ -119,21 +111,16 @@ const Converter = (props: { currency: any }) => {
           currency={currency}
         />
       )}
-      {isError && (
-        <h3 className="text-[--dark-slate-blue] dark:text-white">
-          {errorMessage}
-        </h3>
-      )}
       <div className="w-full flex justify-between gap-[32px] mt-[4vh] aspect-[1296/293]">
-        {isSuccess && coinA.price ? (
+        {dataAdded && (
           <ConverterChart
             coinA={coinA}
             coinB={coinB}
             days={days}
             intervalDaily={intervalDaily}
-            symbol={currency.symbol}
+            currency={currency}
           />
-        ) : null}
+        )}
       </div>
       <TimeRangeButtons updateChart={updateChart} />
     </div>
