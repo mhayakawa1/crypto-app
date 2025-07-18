@@ -59,7 +59,7 @@ const InputContainer = (props: {
                 <SelectValue />
               </SelectTrigger>
             </span>
-            <SelectContent className="shadow-[4px 0px 10px 16px] shadow-[#7878fa26] bg-white dark:bg-[#191932] text-[--space-cadet] dark:text-white">
+            <SelectContent className="w-[220px] max-sm:w-[180px] lg:2xl:w-[330px] shadow-[4px 0px 10px 16px] shadow-[#7878fa26] bg-white dark:bg-[#191932] text-[--space-cadet] dark:text-white">
               {coinsData.map((element: any) => {
                 return (
                   <SelectItem value={element.id} key={element.id}>
