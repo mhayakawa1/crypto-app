@@ -163,7 +163,7 @@ const AddAssetModal = (props: {
               onValueChange={(event) => handleChange(event, "coinId")}
               required={true}
             >
-              <SelectTrigger className="w-full h-[44px] max-md:h-[36px] lg:2xl:h-[66px] rounded-[4px] lg:2xl:rounded-[6px] p-[8px] lg:2xl:p-[12px] max-md:text-sm lg:2xl:text-2xl bg-white dark:bg-[--mirage]">
+              <SelectTrigger className="border w-full h-[44px] max-md:h-[36px] lg:2xl:h-[66px] rounded-[4px] lg:2xl:rounded-[6px] p-[8px] lg:2xl:p-[12px] max-md:text-sm lg:2xl:text-2xl bg-white dark:bg-[--mirage]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="max-md:h-[40vh] max-md:w-[224px] lg:2xl:text-2xl">
