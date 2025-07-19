@@ -11,6 +11,7 @@ import { useAppSelector } from "@/lib/hooks";
 export default function Home() {
   const [coinsVisible, setCoinsVisible] = useState(true);
   const currency = useAppSelector((state) => state.currency);
+  const coinsList = useAppSelector((state) => state.coinsList)[0];
   const view = useAppSelector((state) => state.view);
   const mobileView = view[0].mobileView;
 
@@ -40,9 +41,7 @@ export default function Home() {
             background="bg-transparent"
             buttonClasses="w-[244px] lg:2xl:w-[366px] h-[44px] lg:2xl:h-[66px]"
             spanClasses={`${
-              !coinsVisible
-                ? "text-white"
-                : "text-[--dark-slate-blue]"
+              !coinsVisible ? "text-white" : "text-[--dark-slate-blue]"
             } dark:text-white lg:2xl:text-xl`}
             text="Converter"
             active={!coinsVisible}
@@ -55,7 +54,7 @@ export default function Home() {
         {coinsVisible ? (
           <Coins currency={currency} mobileView={mobileView} />
         ) : (
-          <Converter currency={currency} />
+          <Converter currency={currency} coinsList={coinsList} />
         )}
       </div>
       {mobileView && <MobileNavbar />}

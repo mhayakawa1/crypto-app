@@ -1,5 +1,4 @@
 "use client";
-import { useEffect } from "react";
 import Image from "next/image";
 import { useAppSelector } from "@/lib/hooks";
 import VerticalSwitchBlue from "../../src/icons/Vertical_Switch_Blue.svg";
@@ -28,14 +27,6 @@ const ConverterInputs = (props: {
     currency,
   } = props;
 
-  useEffect(() => {
-    if (!coinA.name) {
-      updateCoins(data, null, true, data[0].name);
-      updateCoins(data, null, false, data[1].name);
-      convert(data[0].price, data[1].price);
-    }
-  }, [convert, data, updateCoins, coinA.name]);
-
   return (
     <div className="w-full relative">
       {data.length ? (
@@ -47,7 +38,7 @@ const ConverterInputs = (props: {
             coinsData={data}
             amount={amountCoinA}
             updateCoins={updateCoins}
-            defaultValue={"Bitcoin"}
+            defaultValue={"bitcoin"}
             currency={currency}
           />
           <InputContainer
@@ -57,19 +48,19 @@ const ConverterInputs = (props: {
             coinsData={data}
             amount={amountCoinB}
             updateCoins={updateCoins}
-            defaultValue={"Ethereum"}
+            defaultValue={"ethereum"}
             currency={currency}
           />
           <button
             onClick={() => convert(coinA.price, coinB.price)}
-            className="absolute flex justify-center items-center w-[48px] lg:2xl:w-[96] h-[48px] lg:2xl:h-[96] rounded-[50%] border-[4px] lg:2xl:border-[8px] border-[--perano] dark:border-[#13121a] bg-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+            className="absolute flex justify-center items-center w-[48px] lg:2xl:w-[72] h-[48px] lg:2xl:h-[72] rounded-[50%] border-[4px] lg:2xl:border-[6px] border-[--perano] dark:border-[#13121a] bg-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
           >
             <Image
               src={darkActive ? VerticalSwitchWhite : VerticalSwitchBlue}
               alt=""
               width={24}
               height={24}
-              className="lg:2xl:w-[48] lg:2xl:h-[48]"
+              className="lg:2xl:w-[36] lg:2xl:h-[36]"
             />
           </button>
         </div>
