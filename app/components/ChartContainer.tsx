@@ -83,16 +83,20 @@ const ChartContainer = (props: {
       )}
 
       {isLoading && (
-        <h3 className="pt-[25vh] lg:2xl:text-xl text-[--dark-slate-blue] dark:text-white">
-          Loading...
-        </h3>
+        <div className="h-[32vh]">
+          <h3 className="lg:2xl:text-xl text-[--dark-slate-blue] dark:text-white text-center">
+            Loading...
+          </h3>
+        </div>
       )}
       {isSuccess && dataLength ? (
         children
       ) : (
-        <h3 className="pt-[25vh] lg:2xl:text-xl text-[--dark-slate-blue] dark:text-white">
-          {errorMessage}
-        </h3>
+        <div className="h-[32vh] flex items-center justify-center">
+          <h3 className="lg:2xl:text-xl text-[--dark-slate-blue] dark:text-white text-center">
+            {errorMessage}
+          </h3>
+        </div>
       )}
     </div>
   );
