@@ -16,11 +16,11 @@ export default function Portfolio() {
   const [addAssetVisible, setAddAssetVisible] = useState(false);
   const [deleteAssetVisible, setDeleteAssetVisible] = useState(false);
   const [assetData, setAssetData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [index, setIndex] = useState(-1);
   const portfolio = useAppSelector((state) => state.portfolio);
   const coinsList = useAppSelector((state) => state.coinsList);
   const dispatch = useAppDispatch();
-  const storageItem = localStorage.getItem("portfolio");
 
   const toggleAddModal = (assetData: any, index: number) => {
     setAssetData(assetData);
@@ -38,10 +38,12 @@ export default function Portfolio() {
   };
 
   useEffect(() => {
+    const storageItem = localStorage.getItem("portfolio");
     if (storageItem) {
       dispatch(addLocalStorage(JSON.parse(storageItem)));
     }
-  }, [dispatch, coinsList, currency, storageItem]);
+    setIsLoading(false);
+  }, [dispatch, coinsList, currency]);
 
   return (
     <div className="relative flex flex-col gap-[2vh] py-[4vh] max-md:py-[0vh] max-sm:pb-[100px] max-md:w-full">
@@ -98,7 +100,7 @@ export default function Portfolio() {
             </h3>
           )}
         </div>
-      ) : storageItem ? (
+      ) : isLoading ? (
         <h3 className="text-center mt-[16vh] text-[--dark-slate-blue] dark:text-white">
           Loading...
         </h3>
