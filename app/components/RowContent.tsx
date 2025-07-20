@@ -1,8 +1,8 @@
 import { TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import AreaChartComponent from "./AreaChartComponent";
 import Arrow from "./Arrow";
+import AreaChartComponent from "./AreaChartComponent";
 import ProgressContainer from "./ProgressContainer";
 
 const RowContent = (props: {
@@ -15,7 +15,9 @@ const RowContent = (props: {
   const { coinList, sortValue, reverse, mobileView, currency } = props;
   let sortedList = coinList;
   if (sortValue === "#") {
-    sortedList = coinList;
+    sortedList = sortedList.sort(function (a: any, b: any) {
+      return a.number - b.number;
+    });
   } else if (sortValue === "Name") {
     sortedList = sortedList.sort((a: any, b: any) =>
       a.name.localeCompare(b.name)

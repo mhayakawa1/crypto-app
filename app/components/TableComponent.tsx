@@ -18,7 +18,6 @@ const TableComponent = (props: {
     props;
   const [sortValue, setSortValue] = useState("#");
   const [reverse, setReverse] = useState(false);
-
   const updateValue = (name: string, value: any) => {
     if (sortValue === value) {
       setReverse((current) => !current);
@@ -28,9 +27,14 @@ const TableComponent = (props: {
     }
     const parsed = queryString.parse(location.hash);
     parsed.sort = `${name.toLowerCase()}`;
-    const stringified =
-      sortValue === "#" ? sortValue : queryString.stringify(parsed);
-    location.hash = stringified;
+    if (value === "#") {
+      location.hash = "";
+      location.pathname = "";
+      const noHashURL = window.location.href.replace(/#.*$/, "");
+      window.history.replaceState("", document.title, noHashURL);
+    } else {
+      location.hash = queryString.stringify(parsed);
+    }
   };
 
   return (
