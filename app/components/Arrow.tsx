@@ -10,7 +10,7 @@ const Arrow = (props: { rising: boolean }) => {
       alt=""
       width="0"
       height="0"
-      className="my-auto w-[8px] lg:2xl:w-[16px] h-[4px] lg:2xl:h-[8px] mx-[2px] lg:2xl:mx-[4px]"
+      className="my-auto w-[8px] lg:2xl:w-[12px] h-[4px] lg:2xl:h-[6px] mx-[2px] lg:2xl:mx-[3px]"
     />
   );
 };
