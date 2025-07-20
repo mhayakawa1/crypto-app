@@ -143,6 +143,7 @@ export default function CoinPage(props: { params: Params }) {
       });
       return value;
     };
+    
     newListData = newListData.map((element) => {
       if (element.key) {
         element.value = getValue(element.key);
@@ -252,7 +253,7 @@ export default function CoinPage(props: { params: Params }) {
       <div className="mt-[6vh] max-sm:mt-[1vh] mb-[4vh]">
         <Link
           href="/portfolio"
-          className="text-[--dark-slate-blue] dark:text-white max-sm:text-sm lg:2xl:text-xl"
+          className="text-[--dark-slate-blue] dark:text-white max-sm:text-sm lg:2xl:text-2xl"
         >
           Portfolio / Your {coinName} summary
         </Link>
