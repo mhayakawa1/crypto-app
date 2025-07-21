@@ -218,6 +218,9 @@ export default function CoinPage(props: { params: Params }) {
       (isSuccess && !coinData.name) ||
       (!initialRender && currency !== prevCurrency.current)
     ) {
+      if (initialRender) {
+        setInitialRender(false);
+      }
       getCoinData();
     } else if (isError && "error" in error) {
       setTimeout(() => {
@@ -227,9 +230,6 @@ export default function CoinPage(props: { params: Params }) {
     const storageItem = localStorage.getItem("portfolio");
     if (storageItem && !portfolio.length) {
       dispatch(addLocalStorage(JSON.parse(storageItem)));
-    }
-    if (initialRender && prevCurrency.current) {
-      setInitialRender(false);
     }
     if (currency) {
       prevCurrency.current = currency;
