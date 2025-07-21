@@ -11,7 +11,7 @@ export const coinsListReducer = createReducer(
     builder
       .addCase(addToCoinsList, (state: any, action: any) => {
         const data = action.payload;
-        return [...state, data];
+        return [...state, ...data];
       })
       .addCase(resetCoinsList, (state: any, action: any) => {
         const data = action.payload;

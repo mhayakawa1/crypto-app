@@ -143,7 +143,7 @@ export default function CoinPage(props: { params: Params }) {
       });
       return value;
     };
-
+    
     newListData = newListData.map((element) => {
       if (element.key) {
         element.value = getValue(element.key);
