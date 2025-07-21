@@ -11,7 +11,7 @@ import { useAppSelector } from "@/lib/hooks";
 export default function Home() {
   const [coinsVisible, setCoinsVisible] = useState(true);
   const currency = useAppSelector((state) => state.currency);
-  const coinsList = useAppSelector((state) => state.coinsList)[0];
+  const coinsList = useAppSelector((state) => state.coinsList);
   const view = useAppSelector((state) => state.view);
   const mobileView = view[0].mobileView;
 
