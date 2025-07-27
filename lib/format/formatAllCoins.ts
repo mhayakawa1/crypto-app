@@ -1,3 +1,4 @@
+import { v1 as uuidv1 } from "uuid";
 export function formatAllCoins(apiData: any) {
   const newData = apiData.map((data: any, index: number) => {
     const {
@@ -30,6 +31,7 @@ export function formatAllCoins(apiData: any) {
     return {
       number: index + 1,
       id: id,
+      tableId: uuidv1(),
       symbol: symbol,
       name: name,
       image: image,

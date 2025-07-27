@@ -58,7 +58,7 @@ const TableComponent = (props: {
       }
     >
       <div className="w-full mt-[8px] lg:2xl:mt-[12px]">
-        <Table className="flex flex-col gap-[8px] lg:2xl:gap-[12px] border-separate border-spacing-y-[8px] lg:2xl:border-spacing-y-[12px] w-full lg:2xl:min-w-[1500px] max-lg:w-[1000px] max-sm:w-full overflow-x-scroll">
+        <Table className="flex flex-col gap-[8px] lg:2xl:gap-[12px] border-separate border-spacing-y-[8px] lg:2xl:border-spacing-y-[12px] w-full lg:2xl:min-w-[1500px] max-lg:w-[1000px] max-sm:w-full no-scrollbar">
           <TableHeader className="p-0">
             <TableHeaderContent
               updateValue={updateValue}

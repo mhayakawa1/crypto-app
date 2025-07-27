@@ -1,7 +1,7 @@
 const LoadingSkeleton = (props: { isError: boolean; errorMessage: string }) => {
   const { isError, errorMessage } = props;
   return (
-    <div className="flex flex-col gap-[8px] lg:2xl:gap-[12px] w-full mt-[8px] lg:2xl:mt-[12px]">
+    <div className="flex flex-col gap-[8px] lg:2xl:gap-[12px] w-full lg:2xl:min-w-[1500px] max-lg:w-[1000px] max-sm:w-full mt-[8px] lg:2xl:mt-[12px] no-scrollbar">
       {[...Array(5).keys()].map((key) => (
         <div
           key={key}

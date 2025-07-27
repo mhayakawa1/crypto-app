@@ -4,6 +4,7 @@ import Link from "next/link";
 import Arrow from "./Arrow";
 import AreaChartComponent from "./AreaChartComponent";
 import ProgressContainer from "./ProgressContainer";
+import NoData from "./NoData";
 
 const RowContent = (props: {
   coinList: any;
@@ -41,6 +42,7 @@ const RowContent = (props: {
       {sortedList.map((data: any, index: number) => {
         const {
           id,
+          tableId,
           image,
           name,
           symbol,
@@ -50,10 +52,16 @@ const RowContent = (props: {
           circulatingSupply,
           lastSevenDays,
         } = data;
+        const { marketCap, totalVolume } = volumeMarketCap;
+        const { circulating, totalSupply } = circulatingSupply;
+        const showProgressBar1 =
+          typeof marketCap === "number" && typeof totalVolume === "number";
+        const showProgressBar2 =
+          typeof circulating === "number" && typeof totalSupply === "number";
 
         return (
           <TableRow
-            key={id}
+            key={tableId}
             className="flex justify-between items-center gap-[8px] lg:2xl:gap-[12px] rounded-xl bg-white hover:bg-[--lavender] text-[--dark-slate-blue] dark:text-white dark:bg-[--mirage] w-full h-[78px] lg:2xl:h-[117px] border-none"
           >
             {!mobileView && (
@@ -100,7 +108,7 @@ const RowContent = (props: {
                       {percents[2].value}%
                     </div>
                   ) : (
-                    <span>--</span>
+                    <NoData />
                   )}
                 </span>
               )}
@@ -111,7 +119,7 @@ const RowContent = (props: {
                   key={index}
                   className={`text-sm ${
                     percent.rising ? "text-[--rising]" : "text-[--falling]"
-                  } w-[6%] p-0 lg:2xl:text-2xl`}
+                  } w-[6%] p-0 lg:2xl:text-2xl flex`}
                 >
                   {percent.value ? (
                     <div className="flex w-full m-0">
@@ -119,43 +127,57 @@ const RowContent = (props: {
                       <span>{percent.value}%</span>
                     </div>
                   ) : (
-                    <span>--</span>
+                    <NoData />
                   )}
                 </TableCell>
               ))}
             {!mobileView && (
               <TableCell className="grow">
-                <ProgressContainer
-                  numbers={volumeMarketCap}
-                  rising={percents[0].rising}
-                  symbol={currency.symbol}
-                />
+                {showProgressBar1 ? (
+                  <ProgressContainer
+                    numbers={volumeMarketCap}
+                    rising={percents[0].rising}
+                    symbol={currency.symbol}
+                  />
+                ) : (
+                  <NoData />
+                )}
               </TableCell>
             )}
             {!mobileView && (
               <TableCell className="grow">
-                <ProgressContainer
-                  numbers={circulatingSupply}
-                  rising={percents[0].rising}
-                  symbol={currency.symbol}
-                />
+                {showProgressBar2 ? (
+                  <ProgressContainer
+                    numbers={circulatingSupply}
+                    rising={percents[0].rising}
+                    symbol={currency.symbol}
+                  />
+                ) : (
+                  <NoData />
+                )}
               </TableCell>
             )}
             <TableCell className="rounded-r-xl p-0 w-grow max-sm:w-[40%] h-full flex items-center">
-              <AreaChartComponent
-                xAxis={false}
-                height={"h-[36px] lg:2xl:h-[54px]"}
-                width={"w-[120px] lg:2xl:w-[180px] max-sm:grow"}
-                data={lastSevenDays}
-                className=""
-                color={percents[2].rising ? "var(--rising)" : "var(--falling)"}
-                fill={
-                  percents[2].rising
-                    ? "url(#area-rising)"
-                    : "url(#area-falling)"
-                }
-                shouldUpdateChart={true}
-              />
+              {lastSevenDays.length ? (
+                <AreaChartComponent
+                  xAxis={false}
+                  height={"h-[36px] lg:2xl:h-[54px]"}
+                  width={"w-[120px] lg:2xl:w-[180px] max-sm:grow"}
+                  data={lastSevenDays}
+                  className=""
+                  color={
+                    percents[2].rising ? "var(--rising)" : "var(--falling)"
+                  }
+                  fill={
+                    percents[2].rising
+                      ? "url(#area-rising)"
+                      : "url(#area-falling)"
+                  }
+                  shouldUpdateChart={true}
+                />
+              ) : (
+                <NoData />
+              )}
             </TableCell>
           </TableRow>
         );
