@@ -35,7 +35,7 @@ const MobileNavbar = () => {
   ];
 
   return (
-    <div className="flex justify-evenly items-center fixed bottom-0 z-10 border-t border-[--lavender] dark:border-[--space-cadet] bg-white/80 dark:bg-[rgb(25,25,37)]/80 text-[--dark-slate-blue] dark:text-white backdrop-blur-sm w-full py-[8px]">
+    <div className="flex justify-evenly items-center fixed bottom-0 left-0 z-10 border border-[--lavender] dark:border-[--space-cadet] bg-white/80 dark:bg-[rgb(25,25,37)]/80 text-[--dark-slate-blue] dark:text-white backdrop-blur-sm w-full py-[8px]">
       {linksData.map((data: any) => {
         const {
           path,

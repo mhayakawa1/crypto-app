@@ -1,5 +1,5 @@
 "use server";
-import StoreProvider from "./StoreProvider";
+import StoreProvider from "./components/StoreProvider";
 import Body from "./components/Body";
 import "./globals.css";
 
