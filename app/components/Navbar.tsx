@@ -118,7 +118,7 @@ const Navbar = (props: { initialCoinsList: any }) => {
   ]);
 
   return (
-    <nav className="flex justify-between max-sm:justify-around items-center px-[4vw] max-lg:px-[2vw]">
+    <nav className="flex justify-between max-sm:justify-around items-center px-[5vw] max-lg:px-[2vw]">
       <div className="flex justify-between items-center gap-[1vw]">
         <Image
           src={LogoIcon.src}
@@ -204,7 +204,7 @@ const Navbar = (props: { initialCoinsList: any }) => {
         </div>
         {!changeCurrency && (
           <Select defaultValue={currency} onValueChange={handleChange}>
-            <SelectTrigger className="w-[108px] max-md:w-[84px] lg:2xl:w-[162px] h-[48px] max-md:h-[36px] lg:2xl:h-[72px] lg:2xl:rounded-[9px] px-[16px] max-md:px-[8px] max-sm:pl-2 max-sm:pr-1 bg-[--lavender] text-[--dark-slate-blue] dark:text-white border-none dark:border dark:border-[--dark-gunmetal] dark:bg-[--mirage]">
+            <SelectTrigger className="w-[108px] max-md:w-[84px] lg:2xl:w-[162px] h-[48px] max-md:h-[36px] lg:2xl:h-[72px] lg:2xl:rounded-[9px] px-3 max-md:px-[8px] max-sm:pl-2 max-sm:pr-1 bg-[--lavender] text-[--dark-slate-blue] dark:text-white border-none dark:border dark:border-[--dark-gunmetal] dark:bg-[--mirage]">
               <SelectValue className="flex justify-center items-center" />
             </SelectTrigger>
             <SelectContent className="w-[108px] max-md:w-[84px] lg:2xl:w-[162px] lg:2xl:rounded-[9px] bg-[--lavender] border-none dark:border dark:border-[--dark-gunmetal] dark:bg-[--mirage]">

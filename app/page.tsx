@@ -1,9 +1,7 @@
 "use client";
-import StoreProvider from "./StoreProvider";
 import { useState } from "react";
 import Coins from "./components/Coins";
 import Converter from "./components/Converter";
-import MobileNavbar from "./components/MobileNavbar";
 import ScrollToTopButton from "./components/ScrollToTopButton";
 import GradientBorderButton from "./components/GradientBorderButton";
 import { useAppSelector } from "@/lib/hooks";
@@ -19,7 +17,7 @@ export default function Home() {
     setCoinsVisible((current) => !current);
   };
   return (
-    <StoreProvider>
+    <div>
       {!mobileView && (
         <div className="w-fit p-[4px] lg:2xl:p-[6px] rounded-[8px] lg:2xl:rounded-[12px] flex gap-[4px] lg:2xl:gap-[6px] bg-white dark:bg-[--mirage]">
           <GradientBorderButton
@@ -57,8 +55,7 @@ export default function Home() {
           <Converter currency={currency} coinsList={coinsList} />
         )}
       </div>
-      {mobileView && <MobileNavbar />}
       <ScrollToTopButton />
-    </StoreProvider>
+    </div>
   );
 }
