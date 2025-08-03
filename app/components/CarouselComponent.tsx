@@ -62,13 +62,13 @@ const CarouselComponent = (props: {
         );
         setActive(false);
       }
-      
+
       setTwoCoinsActive(newActiveCoins.length === 3);
       updateActiveCoins(newActiveCoins);
     };
 
     return (
-      <CarouselItem key={id} className="pl-2 lg:2xl:pl-3 overflow-visible">
+      <CarouselItem key={id} className="pr-[1vw] overflow-visible">
         <Card className="p-0">
           <CardContent className="p-0 w-[252px] lg:2xl:w-[378px] max-sm:w-[200px] h-[78px] lg:2xl:h-[117px] max-sm:h-[51px] rounded-[6px] lg:2xl:rounded-[9px]">
             <GradientBorderButton
@@ -120,25 +120,29 @@ const CarouselComponent = (props: {
   };
 
   return (
-    <Carousel className="absolute flex justify-center items-center w-[90vw] max-sm:w-full h-[78px] lg:2xl:h-[117px] max-sm:h-[51px] left-1/2 max-sm:left-100 max-sm:pl-[4vw] -translate-x-1/2">
-      <CarouselContent className="mt-3 mb-5">
-        {isLoading && (
-          <h4 className="lg:2xl:text-3xl text-[--dark-slate-blue] dark:text-white">
-            Loading...
-          </h4>
-        )}
-        {isSuccess &&
-          coinList.length > 1 &&
-          coinList.map((coin: any) => <CoinButton key={coin.id} data={coin} />)}
-        {isError && (
-          <h4 className="lg:2xl:text-2xl text-[--dark-slate-blue] dark:text-white">
-            {errorMessage}
-          </h4>
-        )}
-      </CarouselContent>
-      <CarouselPrevious className="lg:2xl:w-[60px] lg:2xl:h-[60px] ml-[20px] lg:2xl:ml-[30px] -mt-1 overflow max-sm:hidden" />
-      <CarouselNext className="lg:2xl:w-[60px] lg:2xl:h-[60px] mr-[20px] lg:2xl:mr-[30px] -mt-1 max-sm:hidden" />
-    </Carousel>
+    <div className="absolute w-full left-0 px-[5vw]">
+      <Carousel className="flex justify-center items-center w-full h-[78px] lg:2xl:h-[117px] max-sm:h-[51px]">
+        <CarouselContent className="mt-3 mb-5">
+          {isLoading && (
+            <h4 className="lg:2xl:text-3xl text-[--dark-slate-blue] dark:text-white">
+              Loading...
+            </h4>
+          )}
+          {isSuccess &&
+            coinList.length > 1 &&
+            coinList.map((coin: any) => (
+              <CoinButton key={coin.id} data={coin} />
+            ))}
+          {isError && (
+            <h4 className="lg:2xl:text-2xl text-[--dark-slate-blue] dark:text-white">
+              {errorMessage}
+            </h4>
+          )}
+        </CarouselContent>
+        <CarouselPrevious className="lg:2xl:w-[60px] lg:2xl:h-[60px] ml-[20px] lg:2xl:ml-[30px] -mt-1 overflow max-sm:hidden" />
+        <CarouselNext className="lg:2xl:w-[60px] lg:2xl:h-[60px] mr-[20px] lg:2xl:mr-[30px] overflow -mt-1 max-sm:hidden" />
+      </Carousel>
+    </div>
   );
 };
 export default CarouselComponent;
