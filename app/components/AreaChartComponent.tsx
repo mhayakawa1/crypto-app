@@ -81,7 +81,9 @@ const AreaChartComponent = (props: {
           ))}
         </defs>
         <Line type="monotone" dataKey="value" stroke={color} dot={false} />
-        {xAxis && <XAxis dataKey="name" axisLine={false} tickLine={false} />}
+        {xAxis && (
+          <XAxis dataKey="name" axisLine={false} tickLine={false} dx={2} width={90} />
+        )}
         <YAxis
           dataKey="value"
           domain={["auto", "dataMax+(dataMax/2)"]}
@@ -98,6 +100,7 @@ const AreaChartComponent = (props: {
           type="natural"
           fillOpacity={1}
           fill={fill}
+          width={200}
         />
       </AreaChart>
     </ChartContainer>

@@ -35,7 +35,6 @@ const Charts = (props: {
   } = props;
   const prevCurrency = useRef<any>(currency);
   const [initialRender, setInitialRender] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [count, setCount] = useState(0);
@@ -77,7 +76,6 @@ const Charts = (props: {
       }
       if (isError && "error" in error) {
         setIsSuccess(false);
-        setErrorMessage(`${error.error}. Refetching...`);
         toggleTimer(true);
         if (count % 10 === 0) {
           refetch();
@@ -197,7 +195,7 @@ const Charts = (props: {
     <div className="flex flex-col gap-[2vh]">
       <div className="w-full h-auto flex max-md:flex-col justify-between gap-[1vw] pt-[120px] lg:2xl:pt-[180px] max-sm:pt-[86px]">
         <ChartContainer
-          className="relative h-auto w-[50%] max-sm:w-full pb-[194px] lg:2xl:pb-[291px] max-sm:pb-[130px] flex justify-between"
+          className="relative w-[50%] max-sm:w-full pb-[194px] lg:2xl:pb-[291px] max-sm:pb-[130px] flex justify-between"
           dataLength={pricesA.length}
           symbol={currency.symbol}
           chartInfo={{
@@ -205,7 +203,6 @@ const Charts = (props: {
           }}
           isLoading={isLoading}
           isSuccess={isSuccess}
-          errorMessage={errorMessage}
           activeCoins={activeCoins}
           compareData={compareData}
         >
@@ -223,14 +220,14 @@ const Charts = (props: {
                   !firstCoin && "pb-[30px] lg:2xl:pb-[45px]"
                 }`}
                 shouldUpdateChart={shouldUpdateCharts}
-                width={"w-[90%]"}
+                width={"w-[91%]"}
                 xAxis={Boolean(!index)}
               />
             );
           })}
         </ChartContainer>
         <ChartContainer
-          className="relative h-auto w-[50%] max-sm:w-full flex justify-between"
+          className="relative w-[50%] max-sm:w-full flex justify-between"
           dataLength={volumesA.length}
           symbol={currency.symbol}
           chartInfo={{
@@ -238,7 +235,6 @@ const Charts = (props: {
           }}
           isLoading={isLoading}
           isSuccess={isSuccess}
-          errorMessage={errorMessage}
           activeCoins={activeCoins}
           compareData={compareData}
         >

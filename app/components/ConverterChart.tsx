@@ -21,7 +21,6 @@ const ConverterChart = (props: {
   const [coinData, setCoinData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [chartInfo, setChartInfo] = useState("");
 
   function useQuery(coin: string) {
@@ -40,7 +39,6 @@ const ConverterChart = (props: {
         const { pricesData } = formattedData;
         setPrices(pricesData);
       } else if (isError) {
-        setErrorMessage("No data.");
         setIsSuccess(false);
         setTimeout(() => {
           refetch();
@@ -74,8 +72,6 @@ const ConverterChart = (props: {
         }
       });
       setCoinData(comparedPrices);
-    } else {
-      setErrorMessage("No data.");
     }
   }, [
     coinA,
@@ -102,7 +98,6 @@ const ConverterChart = (props: {
       chartInfo={chartInfo}
       isLoading={isLoading}
       isSuccess={isSuccess}
-      errorMessage={errorMessage}
       activeCoins={null}
       compareData={false}
     >
