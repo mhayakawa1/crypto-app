@@ -46,17 +46,15 @@ const ChartContainer = (props: {
       setValue(newValue);
     }
   }, [activeCoins, chartInfo, formattedDate.length, symbol, value]);
-
   return (
     <div
       className={`flex flex-col justify-start gap-[4vh] grow bg-white dark:bg-[--mirage] text-[--american-blue] dark:text-white px-[2vw] max-md:px-[4vw] py-[2vh] max-sm:pt-[16px] rounded-[16px] lg:2xl:rounded-[24px] ${className}`}
     >
-      {typeof chartInfo === "string" ?
-      <h3 className="border border-red-500 lg:2xl:text-xl">
-        { chartInfo}
-      </h3> : null}
+      {typeof chartInfo === "string" ? (
+        <h3 className="lg:2xl:text-xl">{chartInfo}</h3>
+      ) : null}
       {compareData ? (
-        <ul className="border border-red-500 text-[--mirage] dark:text-[--light-gray]">
+        <ul className="text-[--mirage] dark:text-[--light-gray]">
           <li className="text-2xl lg:2xl:text-4xl dark:text-white lg:2xl:pt-[36px] pb-[16px] lg:2xl:pb-[24px] font-bold">
             {chartInfo.isPrice ? "Price 24h" : "Volume 24h"}
           </li>
@@ -64,14 +62,20 @@ const ChartContainer = (props: {
         </ul>
       ) : (
         <ul className="text-[--mirage] dark:text-[--light-gray] max-sm:flex justify-between">
-          <li className="text-xl lg:2xl:text-3xl max-sm:text-base">
-            {isSuccess && activeCoins.length
-              ? `${
-                  activeCoins[0].name
-                } (${activeCoins[0].symbol.toUpperCase()})`
-              : "--"}
-          </li>
-          <li className="flex flex-col gap-[16px] lg:2xl:gap-[24px] max-sm:gap-[8px] dark:text-white pt-[24px] lg:2xl:pt-[36px] max-sm:pt-0">
+          {activeCoins ? (
+            <li className="text-xl lg:2xl:text-3xl max-sm:text-base">
+              {isSuccess
+                ? `${
+                    activeCoins[0].name
+                  } (${activeCoins[0].symbol.toUpperCase()})`
+                : "--"}
+            </li>
+          ) : null}
+          <li
+            className={`flex flex-col gap-[16px] lg:2xl:gap-[24px] max-sm:gap-[8px] dark:text-white ${
+              activeCoins && "pt-[24px] lg:2xl:pt-[36px] max-sm:pt-0"
+            }`}
+          >
             <span className="text-2xl lg:2xl:text-4xl max-sm:text-xl font-bold">
               {formatNumber(value, symbol)}
             </span>
