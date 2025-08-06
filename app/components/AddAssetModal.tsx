@@ -173,7 +173,7 @@ const AddAssetModal = (props: {
                         <SelectItem
                           key={coin.id}
                           value={coin.id}
-                          className="w-full lg:2xl:text-2xl"
+                          className="w-full lg:2xl:text-2xl hover:cursor-pointer hover:bg-[--light-gray] dark:hover:bg-[--dark-gunmetal]"
                         >
                           {coin.name}
                         </SelectItem>
