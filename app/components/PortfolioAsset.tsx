@@ -88,7 +88,7 @@ const PortfolioAsset = (props: {
 
   return (
     <div className="bg-white dark:bg-[--haiti] flex max-md:flex-col max-md:gap-[16px] lg:2xl:gap-[24px] border dark:border-[--mirage] rounded-[6px] max-md:p-[20px] lg:2xl:rounded-[9px]">
-      <div className="grow flex flex-col max-md:flex-row-reverse justify-center max-md:justify-between items-center gap-[24px] lg:2xl:gap-[36px] text-[--dark-slate-blue] dark:text-white md:border-r">
+      <div className="w-[30%] max-md:w-full px-[1vw] grow flex flex-col max-md:flex-row-reverse justify-center max-md:justify-between items-center gap-[24px] lg:2xl:gap-[36px] text-[--dark-slate-blue] dark:text-white md:border-r">
         <div className="p-0 w-[64px] max-md:w-auto lg:2xl:w-[96px] aspect-square rounded-[8px] lg:2xl:rounded-[12px] flex justify-center items-center bg-[--lavender] dark:bg-[--space-cadet] max-md:bg-transparent max-md:dark:bg-transparent">
           <Avatar className="w-[32px] lg:2xl:w-[48px] h-[32px] lg:2xl:h-[48px] aspect-square">
             <AvatarImage src={src} />

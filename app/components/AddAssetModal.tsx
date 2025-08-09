@@ -39,10 +39,17 @@ const AddAssetModal = (props: {
   const [month, setMonth] = useState(0);
   const [year, setYear] = useState(0);
   const [updated, setUpdated] = useState(false);
+  const [saveIsLoading, setSaveIsLoading] = useState(false);
+  const [saveClicked, setSaveClicked] = useState(false);
   const coinsList: any = useAppSelector((state) => state.coinsList);
   const dispatch = useAppDispatch();
 
-  const { data: coinData = {}, isSuccess: coinIsSuccess } = useCoinQuery(
+  const {
+    data: coinData = {},
+    isSuccess,
+    isError,
+    refetch,
+  } = useCoinQuery(
     {
       coinId: asset.coinId,
       date: asset.apiDate,
@@ -50,8 +57,7 @@ const AddAssetModal = (props: {
     { skip: skip }
   );
 
-  function handleSubmit(event: any) {
-    event.preventDefault();
+  function dispatchData() {
     if (asset.coinId.length) {
       const newAsset: any = JSON.parse(JSON.stringify(asset));
       if (assetData) {
@@ -64,6 +70,14 @@ const AddAssetModal = (props: {
         dispatch(addAsset(newAsset));
       }
       toggleAddModal(null, -1);
+    }
+  }
+
+  function handleSubmit(event: any) {
+    event.preventDefault();
+    setSaveClicked(true);
+    if (!saveIsLoading) {
+      dispatchData();
     }
   }
 
@@ -91,7 +105,6 @@ const AddAssetModal = (props: {
           4
         )}`;
         newAsset.apiDate = newApiDate;
-        setSkip(false);
       }
     }
     setAsset(newAsset);
@@ -103,13 +116,20 @@ const AddAssetModal = (props: {
       setDefaultValue(assetData.coinId);
       setUpdated(true);
     }
-    if (coinIsSuccess) {
+    if (isSuccess && asset.name === coinData.name) {
       const newAsset = asset;
       newAsset.initialPrice = coinData.market_data.current_price;
       setAsset(newAsset);
-    }
-    if (Object.keys(asset.initialPrice).length) {
-      setDisabled(false);
+      if (saveIsLoading) {
+        dispatchData();
+      }
+    } else if (isError) {
+      setSaveIsLoading(true);
+      setTimeout(() => {
+        if (window.document.getElementById("addAssetModal")) {
+          refetch();
+        }
+      }, 10000);
     }
     if (!day) {
       const today = new Date();
@@ -117,20 +137,32 @@ const AddAssetModal = (props: {
       setMonth(today.getMonth() + 1);
       setYear(today.getFullYear());
     }
+    if (asset.coinId.length && asset.date.length && skip) {
+      setSkip(false);
+      setDisabled(false);
+    }
   }, [
     assetData,
     asset,
     coinData,
-    coinIsSuccess,
     coinsList,
     day,
     defaultValue,
+    dispatchData,
+    isError,
+    isSuccess,
+    refetch,
+    saveIsLoading,
+    skip,
     updated,
   ]);
 
   return (
-    <div className="fixed top-0 left-0 flex justify-center items-center w-[100vw] h-[100vh] bg-black/5 dark:bg-white/5 backdrop-blur-sm">
-      <div className="w-fit flex flex-col gap-[32px] max-md:gap-[2vh] rounded-[20px] max-md:rounded-[10px] px-[4vw] py-[8vh] max-md:p-[16px] bg-white text-[--dark-slate-blue] dark:text-white dark:bg-[--black-russian]">
+    <div
+      id="addAssetModal"
+      className="fixed top-0 left-0 flex justify-center items-center w-[100vw] h-[100vh] bg-black/5 dark:bg-white/5 backdrop-blur-sm"
+    >
+      <div className="w-fit flex flex-col gap-[32px] max-md:gap-[2vh] rounded-[20px] max-md:rounded-[10px] px-[4vw] pt-[8vh] pb-[4vh] max-md:p-[16px] bg-white text-[--dark-slate-blue] dark:text-white dark:bg-[--black-russian]">
         <div className="flex justify-between items-center">
           <h2 className="max-md:text-sm lg:2xl:text-2xl">Select Coins</h2>
           <button
@@ -141,14 +173,14 @@ const AddAssetModal = (props: {
           </button>
         </div>
         <div className="flex max-md:flex-col gap-[2vw]">
-          <div className="px-[2vw] max-md:p-[8px] flex flex-col max-md:flex-row justify-center max-md:justify-start items-center gap-[24px] max-md:gap-[12px] lg:2xl:gap-[36px] aspect-[49/40] max-md:aspect-auto text-2xl bg-white dark:bg-[--mirage] rounded-[8px] lg:2xl:rounded-[12px]">
+          <div className="px-[2vw] max-md:p-[8px] flex flex-col justify-center max-md:justify-start items-center gap-[24px] max-md:gap-[12px] lg:2xl:gap-[36px] w-[200px] max-md:w-full aspect-[49/40] max-md:aspect-auto text-2xl bg-white dark:bg-[--mirage] rounded-[8px] lg:2xl:rounded-[12px]">
             <div className="aspect-square p-[16px] max-md:p-[8px] lg:2xl:p-[24px] rounded-[8px] lg:2xl:rounded-[12px] flex justify-center items-center bg-[--lavender] dark:bg-[--space-cadet]">
               <Avatar className="lg:2xl:w-[48px] max-md:w-[24px] lg:2xl:h-[48px] max-md:h-[24px]">
                 <AvatarImage src={asset.src} />
                 <AvatarFallback></AvatarFallback>
               </Avatar>
             </div>
-            <h3 className="font-bold text-2xl max-md:text-base lg:2xl:text-4xl">
+            <h3 className="font-bold text-2xl max-md:text-base lg:2xl:text-4xl text-center text-wrap">
               {asset.name.length
                 ? `${asset.name} (${asset.symbol.toUpperCase()})`
                 : null}
@@ -156,7 +188,7 @@ const AddAssetModal = (props: {
           </div>
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col gap-[16px] lg:2xl:gap-[24px] p-0"
+            className="flex flex-col gap-[16px] lg:2xl:gap-[24px] grow p-0"
           >
             <Select
               defaultValue={assetData ? assetData.coinId : ""}
@@ -220,6 +252,9 @@ const AddAssetModal = (props: {
                 </span>
               </button>
             </div>
+            <p className="h-[24px] text-center mt-[1vh]">
+              {saveIsLoading && saveClicked && "Saving..."}
+            </p>
           </form>
         </div>
       </div>
