@@ -164,7 +164,7 @@ const RowContent = (props: {
                   height={"h-[36px] lg:2xl:h-[54px]"}
                   width={"w-[120px] lg:2xl:w-[180px] max-sm:grow"}
                   data={lastSevenDays}
-                  className=""
+                  className="pr-[10px] lg:2xl:pr-[15px]"
                   color={
                     percents[2].rising ? "var(--rising)" : "var(--falling)"
                   }
