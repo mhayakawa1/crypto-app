@@ -54,7 +54,7 @@ async function Body(props: { children: any }) {
 
   return (
     <Suspense>
-      <body
+      <body suppressHydrationWarning={true}
         className={`${spaceGrotesk.className} w-full antialiased bg-[--light-gray] dark:bg-[--black-russian] text-white`}
       >
         <ThemeProvider

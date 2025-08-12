@@ -1,31 +1,47 @@
 "use client";
 import { formatNumber } from "@/lib/format/formatNumber";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 
 const ChartContainer = (props: {
   children: any;
   className: string;
   dataLength: number;
+  days: number;
   symbol: string;
   chartInfo: any;
   isLoading: any;
   isSuccess: any;
   activeCoins: any;
   compareData: boolean;
+  xAxis: boolean;
 }) => {
   const {
     children,
     className,
     dataLength,
+    days,
     symbol,
     chartInfo,
     isLoading,
     isSuccess,
     activeCoins,
     compareData,
+    xAxis,
   } = props;
   const [value, setValue] = useState(0);
+  const [xAxisValues, setXAxisValues] = useState([]);
   const [formattedDate, setFormattedDate] = useState("");
+  const prevDays = useRef<any>(0);
+  const incrementValues = useMemo(
+    () => ({
+      1: { incrementBy: 1, maxValue: 24 },
+      7: { incrementBy: 1, maxValue: 7 },
+      14: { incrementBy: 1, maxValue: 14 },
+      30: { incrementBy: 2, maxValue: 15 },
+      365: { incrementBy: 30, maxValue: 12 },
+    }),
+    []
+  );
 
   useEffect(() => {
     if (!formattedDate.length) {
@@ -45,10 +61,31 @@ const ChartContainer = (props: {
         : activeCoins[0].volumeMarketCap.totalVolume;
       setValue(newValue);
     }
-  }, [activeCoins, chartInfo, formattedDate.length, symbol, value]);
+    if (prevDays.current !== days && dataLength) {
+      const newXAxisValues: any = [];
+      const incrementValue: any = incrementValues[days as keyof object];
+      for (let i = 1; i <= dataLength; i += incrementValue.incrementBy) {
+        if (newXAxisValues.length < incrementValue.maxValue) {
+          newXAxisValues.push(i);
+        }
+      }
+      prevDays.current = days;
+      setXAxisValues(newXAxisValues);
+    }
+  }, [
+    activeCoins,
+    chartInfo,
+    dataLength,
+    days,
+    formattedDate.length,
+    incrementValues,
+    symbol,
+    value,
+    xAxisValues.length,
+  ]);
   return (
     <div
-      className={`flex flex-col justify-start gap-[4vh] grow bg-white dark:bg-[--mirage] text-[--american-blue] dark:text-white px-[2vw] max-md:px-[4vw] py-[2vh] max-sm:pt-[16px] rounded-[16px] lg:2xl:rounded-[24px] ${className}`}
+      className={`flex flex-col justify-between bg-white dark:bg-[--mirage] text-[--american-blue] dark:text-white px-[2vw] max-md:px-[4vw] py-[2vh] max-sm:pt-[16px] rounded-[16px] lg:2xl:rounded-[24px] ${className}`}
     >
       {typeof chartInfo === "string" ? (
         <h3 className="lg:2xl:text-xl">{chartInfo}</h3>
@@ -85,7 +122,6 @@ const ChartContainer = (props: {
           </li>
         </ul>
       )}
-
       {isLoading && (
         <div className="absolute bottom-[2vh] h-[164px] w-[90%] flex justify-center items-center">
           <h3 className="lg:2xl:text-xl text-[--dark-slate-blue] dark:text-white text-center">
@@ -101,6 +137,13 @@ const ChartContainer = (props: {
             No data.
           </h3>
         </div>
+      ) : null}
+      {xAxis && xAxisValues.length ? (
+        <ul className="absolute bottom-[2vh] w-[91%] px-[10px] mt-auto mb-0 flex justify-between text-xs lg:2xl:text-lg opacity-75">
+          {xAxisValues.map((value: number) => (
+            <li key={value}>{value}</li>
+          ))}
+        </ul>
       ) : null}
     </div>
   );

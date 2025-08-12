@@ -94,16 +94,17 @@ const ConverterChart = (props: {
     <ChartContainer
       className="h-fit flex justify-between text-xl"
       dataLength={coinData.length}
+      days={days}
       symbol={symbol}
       chartInfo={chartInfo}
       isLoading={isLoading}
       isSuccess={isSuccess}
       activeCoins={null}
       compareData={false}
+      xAxis={true}
     >
       {isSuccess ? (
         <AreaChartComponent
-          xAxis={true}
           height={"h-[32vh] max-md:max-xl:h-[16vh]"}
           width={"w-full"}
           data={coinData}
