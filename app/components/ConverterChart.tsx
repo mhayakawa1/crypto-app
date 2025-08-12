@@ -21,7 +21,6 @@ const ConverterChart = (props: {
   const [coinData, setCoinData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [chartInfo, setChartInfo] = useState("");
 
   function useQuery(coin: string) {
@@ -40,7 +39,6 @@ const ConverterChart = (props: {
         const { pricesData } = formattedData;
         setPrices(pricesData);
       } else if (isError) {
-        setErrorMessage("No data.");
         setIsSuccess(false);
         setTimeout(() => {
           refetch();
@@ -74,8 +72,6 @@ const ConverterChart = (props: {
         }
       });
       setCoinData(comparedPrices);
-    } else {
-      setErrorMessage("No data.");
     }
   }, [
     coinA,
@@ -96,23 +92,23 @@ const ConverterChart = (props: {
 
   return (
     <ChartContainer
-      className="h-fit flex justify-between text-xl"
+      className="relative w-full h-fit flex justify-between text-xl"
       dataLength={coinData.length}
+      days={days}
       symbol={symbol}
       chartInfo={chartInfo}
       isLoading={isLoading}
       isSuccess={isSuccess}
-      errorMessage={errorMessage}
       activeCoins={null}
       compareData={false}
+      xAxis={true}
     >
       {isSuccess ? (
         <AreaChartComponent
-          xAxis={true}
           height={"h-[32vh] max-md:max-xl:h-[16vh]"}
           width={"w-full"}
           data={coinData}
-          className=""
+          className="pb-[2vh]"
           color={"var(--soft-blue)"}
           fill={"url(#area-blue)"}
           shouldUpdateChart={true}

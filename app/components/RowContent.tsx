@@ -160,7 +160,6 @@ const RowContent = (props: {
             <TableCell className="rounded-r-xl p-0 w-grow max-sm:w-[40%] h-full flex items-center">
               {lastSevenDays.length ? (
                 <AreaChartComponent
-                  xAxis={false}
                   height={"h-[36px] lg:2xl:h-[54px]"}
                   width={"w-[120px] lg:2xl:w-[180px] max-sm:grow"}
                   data={lastSevenDays}
