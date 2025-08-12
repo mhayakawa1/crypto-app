@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, YAxis } from "recharts";
 
 const chartConfig = {
   value: {
@@ -30,7 +30,6 @@ const BarChartComponent = (props: {
   shouldUpdateChart: boolean;
   toggleUpdateCharts: any;
   width: string;
-  xAxis: boolean;
 }) => {
   const {
     activeCoins,
@@ -44,7 +43,6 @@ const BarChartComponent = (props: {
     shouldUpdateChart,
     toggleUpdateCharts,
     width,
-    xAxis,
   } = props;
   const activeCount = activeCoins.length;
   const prevChartData = useRef<any>([{ name: "", value: 0 }]);
@@ -103,7 +101,7 @@ const BarChartComponent = (props: {
 
   return (
     <ChartContainer
-      className={`${height} ${width} p-auto m-0`}
+      className={`${height} ${width} p-auto pb-[16px] lg:2xl:pb-[24px] m-0`}
       config={chartConfig}
     >
       <BarChart accessibilityLayer data={chartData}>
@@ -130,7 +128,6 @@ const BarChartComponent = (props: {
             </linearGradient>
           ))}
         </defs>
-        {xAxis && <XAxis dataKey="name" axisLine={false} tickLine={false} />}
         <YAxis
           domain={["auto", "dataMax"]}
           axisLine={false}

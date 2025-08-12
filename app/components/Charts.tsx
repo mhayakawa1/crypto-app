@@ -35,7 +35,6 @@ const Charts = (props: {
   } = props;
   const prevCurrency = useRef<any>(currency);
   const [initialRender, setInitialRender] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [count, setCount] = useState(0);
@@ -77,7 +76,6 @@ const Charts = (props: {
       }
       if (isError && "error" in error) {
         setIsSuccess(false);
-        setErrorMessage(`${error.error}. Refetching...`);
         toggleTimer(true);
         if (count % 10 === 0) {
           refetch();
@@ -197,50 +195,48 @@ const Charts = (props: {
     <div className="flex flex-col gap-[2vh]">
       <div className="w-full h-auto flex max-md:flex-col justify-between gap-[1vw] pt-[120px] lg:2xl:pt-[180px] max-sm:pt-[86px]">
         <ChartContainer
-          className="relative h-auto w-[50%] max-sm:w-full pb-[194px] lg:2xl:pb-[291px] max-sm:pb-[130px] flex justify-between"
+          className="relative w-[50%] max-md:w-full h-full pb-[194px] lg:2xl:pb-[291px] max-sm:pb-[130px]"
           dataLength={pricesA.length}
+          days={days}
           symbol={currency.symbol}
           chartInfo={{
             isPrice: true,
           }}
           isLoading={isLoading}
           isSuccess={isSuccess}
-          errorMessage={errorMessage}
           activeCoins={activeCoins}
           compareData={compareData}
+          xAxis={true}
         >
           {activeCoins.map((coin: any, index: number) => {
             const { data, color, fill } = chartsData[index];
-            const firstCoin = Boolean(!index);
             return (
               <AreaChartComponent
                 key={coin.id}
-                className="absolute"
+                className="absolute pb-[16px] lg:2xl:pb-[24px] px-[4px]"
                 color={color}
                 data={data}
                 fill={fill}
-                height={`h-[164px] lg:2xl:h-[246px] max-sm:h-[100px] ${
-                  !firstCoin && "pb-[30px] lg:2xl:pb-[45px]"
-                }`}
+                height={`h-[164px] lg:2xl:h-[246px] max-sm:h-[100px]`}
                 shouldUpdateChart={shouldUpdateCharts}
-                width={"w-[90%]"}
-                xAxis={Boolean(!index)}
+                width={"w-[91%]"}
               />
             );
           })}
         </ChartContainer>
         <ChartContainer
-          className="relative h-auto w-[50%] max-sm:w-full flex justify-between"
+          className="relative w-[50%] max-md:w-full flex justify-between"
           dataLength={volumesA.length}
+          days={days}
           symbol={currency.symbol}
           chartInfo={{
             isPrice: false,
           }}
           isLoading={isLoading}
           isSuccess={isSuccess}
-          errorMessage={errorMessage}
           activeCoins={activeCoins}
           compareData={compareData}
+          xAxis={true}
         >
           <BarChartComponent
             activeCoins={activeCoins}
@@ -254,7 +250,6 @@ const Charts = (props: {
             shouldUpdateChart={shouldUpdateCharts}
             toggleUpdateCharts={toggleUpdateCharts}
             width="w-full"
-            xAxis={true}
           />
         </ChartContainer>
       </div>

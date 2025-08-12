@@ -90,7 +90,7 @@ const Converter = (props: { currency: any; coinsList: any }) => {
   ]);
 
   return (
-    <div className="pb-[8vh]">
+    <div className="pb-[16vh] max-sm:pb-[100px]">
       <div className="flex flex-col justify-between items-start pb-[4vh]">
         <h2 className="text-[--dark-slate-blue] dark:text-white">
           Online currency converter
