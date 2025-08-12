@@ -29,9 +29,10 @@ const ChartContainer = (props: {
     xAxis,
   } = props;
   const [value, setValue] = useState(0);
-  const [xAxisValues, setXAxisValues] = useState([]);
+  const [xAxisValues, setXAxisValues]: any = useState([]);
   const [formattedDate, setFormattedDate] = useState("");
   const prevDays = useRef<any>(0);
+  const prevDataLength = useRef<any>(0);
   const incrementValues = useMemo(
     () => ({
       1: { incrementBy: 1, maxValue: 24 },
@@ -61,16 +62,21 @@ const ChartContainer = (props: {
         : activeCoins[0].volumeMarketCap.totalVolume;
       setValue(newValue);
     }
-    if (prevDays.current !== days && dataLength) {
+    if (prevDays.current !== days && prevDataLength.current !== dataLength) {
       const newXAxisValues: any = [];
-      const incrementValue: any = incrementValues[days as keyof object];
-      for (let i = 1; i <= dataLength; i += incrementValue.incrementBy) {
-        if (newXAxisValues.length < incrementValue.maxValue) {
-          newXAxisValues.push(i);
+      if (days === 365) {
+        setXAxisValues(Array.from({ length: 12 }, (_, i) => i + 1));
+      } else {
+        const incrementValue: any = incrementValues[days as keyof object];
+        for (let i = 1; i <= dataLength; i += incrementValue.incrementBy) {
+          if (newXAxisValues.length < incrementValue.maxValue) {
+            newXAxisValues.push(i);
+          }
         }
+        setXAxisValues(newXAxisValues);
       }
       prevDays.current = days;
-      setXAxisValues(newXAxisValues);
+      prevDataLength.current = dataLength;
     }
   }, [
     activeCoins,
@@ -139,7 +145,11 @@ const ChartContainer = (props: {
         </div>
       ) : null}
       {xAxis && xAxisValues.length ? (
-        <ul className="absolute bottom-[2vh] w-[91%] px-[10px] mt-auto mb-0 flex justify-between text-xs lg:2xl:text-lg opacity-75">
+        <ul
+          className={`${
+            activeCoins ? "w-[91%] px-[10px]" : "w-[95.5%] max-sm:w-[91%] px-[4px]"
+          } mx-auto absolute bottom-[2vh] mt-auto mb-0 flex justify-between text-xs lg:2xl:text-lg opacity-75`}
+        >
           {xAxisValues.map((value: number) => (
             <li key={value}>{value}</li>
           ))}

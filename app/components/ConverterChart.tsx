@@ -92,7 +92,7 @@ const ConverterChart = (props: {
 
   return (
     <ChartContainer
-      className="h-fit flex justify-between text-xl"
+      className="relative w-full h-fit flex justify-between text-xl"
       dataLength={coinData.length}
       days={days}
       symbol={symbol}
@@ -108,7 +108,7 @@ const ConverterChart = (props: {
           height={"h-[32vh] max-md:max-xl:h-[16vh]"}
           width={"w-full"}
           data={coinData}
-          className=""
+          className="pb-[2vh]"
           color={"var(--soft-blue)"}
           fill={"url(#area-blue)"}
           shouldUpdateChart={true}
