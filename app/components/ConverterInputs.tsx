@@ -8,7 +8,6 @@ import InputContainer from "./InputContainer";
 const ConverterInputs = (props: {
   data: any;
   updateCoins: any;
-  convert: any;
   coinA: any;
   coinB: any;
   amountCoinA: any;
@@ -19,7 +18,6 @@ const ConverterInputs = (props: {
   const {
     data,
     updateCoins,
-    convert,
     coinA,
     coinB,
     amountCoinA,
@@ -43,7 +41,7 @@ const ConverterInputs = (props: {
           />
           <InputContainer
             name="Bitcoin"
-            sell={true}
+            sell={false}
             priceData={coinB}
             coinsData={data}
             amount={amountCoinB}
@@ -51,10 +49,7 @@ const ConverterInputs = (props: {
             defaultValue={"ethereum"}
             currency={currency}
           />
-          <button
-            onClick={() => convert(coinA.price, coinB.price)}
-            className="absolute flex justify-center items-center w-[48px] lg:2xl:w-[72] h-[48px] lg:2xl:h-[72] rounded-[50%] border-[4px] lg:2xl:border-[6px] border-[--perano] dark:border-[#13121a] bg-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-          >
+          <div className="absolute flex justify-center items-center w-[48px] lg:2xl:w-[72] h-[48px] lg:2xl:h-[72] rounded-[50%] border-[4px] lg:2xl:border-[6px] border-[--perano] dark:border-[#13121a] bg-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <Image
               src={darkActive ? VerticalSwitchWhite : VerticalSwitchBlue}
               alt=""
@@ -62,7 +57,7 @@ const ConverterInputs = (props: {
               height={24}
               className="lg:2xl:w-[36] lg:2xl:h-[36]"
             />
-          </button>
+          </div>
         </div>
       ) : null}
     </div>

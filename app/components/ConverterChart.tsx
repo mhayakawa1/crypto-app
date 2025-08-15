@@ -63,14 +63,16 @@ const ConverterChart = (props: {
       setChartInfo(
         `${nameA} (${symbolA.toUpperCase()}) to ${nameB} (${symbolB.toUpperCase()})`
       );
-      const comparedPrices = pricesA.map((element: any, index: number) => {
-        if (pricesB[index]) {
-          return {
-            name: element.name,
-            value: element.value / pricesB[index].value,
-          };
-        }
-      });
+      const comparedPrices = pricesA
+        .map((element: any, index: number) => {
+          if (pricesB[index]) {
+            return {
+              name: element.name,
+              value: element.value / pricesB[index].value,
+            };
+          }
+        })
+        .filter((element: any) => element !== undefined);
       setCoinData(comparedPrices);
     }
   }, [

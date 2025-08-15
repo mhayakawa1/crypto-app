@@ -83,7 +83,11 @@ const InputContainer = (props: {
               />
             ) : (
               <span className="pr-[15px] w-full text-2xl max-lg:max-xl:text-xl lg:2xl:text-3xl text-right self-end">
-                {Number(amount.toFixed(2)).toLocaleString()}
+                {amount
+                  ? Number(amount.toFixed(2)).toLocaleString()
+                  : amount === 0
+                  ? 0
+                  : ""}
               </span>
             )}
           </div>
