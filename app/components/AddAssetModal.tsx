@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import {
   Select,
@@ -41,6 +41,7 @@ const AddAssetModal = (props: {
   const [updated, setUpdated] = useState(false);
   const [saveIsLoading, setSaveIsLoading] = useState(false);
   const [saveClicked, setSaveClicked] = useState(false);
+  const [changeInitialPrice, setChangeInitialPrice] = useState(false);
   const coinsList: any = useAppSelector((state) => state.coinsList);
   const dispatch = useAppDispatch();
 
@@ -57,7 +58,7 @@ const AddAssetModal = (props: {
     { skip: skip }
   );
 
-  function dispatchData() {
+  const dispatchData = useCallback(() => {
     if (asset.coinId.length) {
       const newAsset: any = JSON.parse(JSON.stringify(asset));
       if (assetData) {
@@ -71,7 +72,7 @@ const AddAssetModal = (props: {
       }
       toggleAddModal(null, -1);
     }
-  }
+  }, [asset, assetData, dispatch, index, toggleAddModal]);
 
   function handleSubmit(event: any) {
     event.preventDefault();
@@ -106,6 +107,7 @@ const AddAssetModal = (props: {
         )}`;
         newAsset.apiDate = newApiDate;
       }
+      setChangeInitialPrice(true);
     }
     setAsset(newAsset);
   };
@@ -116,10 +118,11 @@ const AddAssetModal = (props: {
       setDefaultValue(assetData.coinId);
       setUpdated(true);
     }
-    if (isSuccess && asset.name === coinData.name) {
+    if (isSuccess && asset.name === coinData.name && changeInitialPrice) {
       const newAsset = asset;
       newAsset.initialPrice = coinData.market_data.current_price;
       setAsset(newAsset);
+      setChangeInitialPrice(false);
       if (saveIsLoading) {
         dispatchData();
       }
@@ -144,6 +147,7 @@ const AddAssetModal = (props: {
   }, [
     assetData,
     asset,
+    changeInitialPrice,
     coinData,
     coinsList,
     day,
