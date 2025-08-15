@@ -22,6 +22,7 @@ const Converter = (props: { currency: any; coinsList: any }) => {
     price: 0,
     symbol: "",
   });
+  const [initialRender, setInitialRender] = useState(true);
   const [days, setDays] = useState(1);
   const [intervalDaily, setIntervalDaily] = useState(false);
   const [formattedDate, setFormattedDate] = useState("");
@@ -37,8 +38,11 @@ const Converter = (props: { currency: any; coinsList: any }) => {
 
   const updateCoins = useCallback(
     (amount: any, isCoinA: any, coinId: any) => {
-      if (amount) {
+      if (amount !== null) {
         setAmountCoinA(amount);
+        if (!amount) {
+          setAmountCoinB(amount);
+        }
       }
       if (coinId) {
         const newCoinData = formattedData.find(
@@ -80,11 +84,27 @@ const Converter = (props: { currency: any; coinsList: any }) => {
         )}`
       );
     }
+    if (
+      (initialRender && coinA.name.length && coinB.name.length) ||
+      (!initialRender && amountCoinA)
+    ) {
+      convert(coinA.price, coinB.price);
+      if (initialRender) {
+        setInitialRender(false);
+      }
+    }
   }, [
+    amountCoinA,
+    coinA.name.length,
+    coinA.price,
+    coinB.name.length,
+    coinB.price,
+    convert,
     coinsList,
     formattedData,
     formattedData.length,
     formattedDate,
+    initialRender,
     updateCoins,
     shouldUpdateCoins,
   ]);
@@ -103,7 +123,6 @@ const Converter = (props: { currency: any; coinsList: any }) => {
         <ConverterInputs
           data={formattedData}
           updateCoins={updateCoins}
-          convert={convert}
           coinA={coinA}
           coinB={coinB}
           amountCoinA={amountCoinA}

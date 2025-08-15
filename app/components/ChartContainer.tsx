@@ -114,14 +114,12 @@ const ChartContainer = (props: {
                 : "--"}
             </li>
           ) : null}
-          <li
-            className={`flex flex-col gap-[16px] lg:2xl:gap-[24px] max-sm:gap-[8px] dark:text-white ${
-              activeCoins && "pt-[24px] lg:2xl:pt-[36px] max-sm:pt-0"
-            }`}
-          >
-            <span className="text-2xl lg:2xl:text-4xl max-sm:text-xl font-bold">
-              {formatNumber(value, symbol)}
-            </span>
+          <li className="flex flex-col gap-[16px] lg:2xl:gap-[24px] max-sm:gap-[8px] dark:text-white pt-[24px] lg:2xl:pt-[36px] max-sm:pt-0">
+            {activeCoins ? (
+              <span className="text-2xl lg:2xl:text-4xl max-sm:text-xl font-bold">
+                {formatNumber(value, symbol)}
+              </span>
+            ) : null}
             <span className="bordertext-base lg:2xl:text-2xl max-sm:text-xs">
               {formattedDate.length ? formattedDate : "--"}
             </span>
@@ -147,7 +145,9 @@ const ChartContainer = (props: {
       {xAxis && xAxisValues.length ? (
         <ul
           className={`${
-            activeCoins ? "w-[91%] px-[10px]" : "w-[95.5%] max-sm:w-[91%] px-[4px]"
+            activeCoins
+              ? "w-[91%] px-[10px]"
+              : "w-[95.5%] max-md:w-[91%] max-sm:w-[90%] px-[5px] max-sm:px-[4px]"
           } mx-auto absolute bottom-[2vh] mt-auto mb-0 flex justify-between text-xs lg:2xl:text-lg opacity-75`}
         >
           {xAxisValues.map((value: number) => (
